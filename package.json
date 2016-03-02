@@ -1,0 +1,24 @@
+{
+    "name": "node-push",
+    "version": "1.0.0",
+    "main": "push.js",
+    "description": "A wrapper for the Ableton Push to give easy to use APIs for controlling/being controlled by the Push",
+    "dependencies": {
+        "dateformat":"1.0.12",
+        "lodash.filter": "~3.1.1",
+        "lodash.foreach": "^3.0.0",
+        "lodash.map": "^3.1.0",
+        "lodash.partial": "^3.1.0",
+        "lodash.partialright": "^3.1.0"
+    },
+    "devDependencies": {
+        "jasmine": "~2.3.1"
+    },
+    "scripts": {
+        "test": "jasmine",
+        "start": "node app.js",
+        "build": "browserify app.js -o bundle.js"
+    },
+    "author": "https://github.com/crosslandwa",
+    "license": "MIT"
+}
