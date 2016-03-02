@@ -4,7 +4,8 @@ const EventEmitter = require('events'),
     util = require('util'),
     Buttons = require('./src/buttons.js'),
     Knobs = require('./src/knobs'),
-    Grid = require('./src/grid.js');
+    Grid = require('./src/grid.js'),
+    Touchstrip = require('./src/touchstrip.js');
 
 function Push(midi_out) {
     EventEmitter.call(this);
@@ -12,6 +13,7 @@ function Push(midi_out) {
     this.buttons = new Buttons(midi_out);
     this.knobs = new Knobs();
     this.grid = new Grid(midi_out);
+    this.touchstrip = new Touchstrip(midi_out);
 }
 util.inherits(Push, EventEmitter);
 
@@ -25,7 +27,8 @@ function handle_midi_cc(push, index, value) {
 } 
 
 function handle_midi_note(push, note, velocity) {
-    var module = note <= 12 ? push.knobs : push.grid;
+    var module = note < 12 ? push.knobs : push.grid;
+    if (note == 12) module = push.touchstrip;
     module.receive_midi_note(note, velocity);
 }
 

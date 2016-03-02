@@ -113,5 +113,22 @@ describe('Ableton Push wrapper', function() {
             push.knobs.one.on('touched', done);
             push.receive_midi([144, 0, 126]);
         });
+
+        it('emit released events when touched', function(done) {
+            push.knobs.swing.on('released', done);
+            push.receive_midi([144, 9, 0]);
+        });
+    });
+
+    describe('touchstrip', () => {
+        it('emits touched events when touched', function(done) {
+            push.touchstrip.on('touched', done);
+            push.receive_midi([144, 12, 126]);
+        });
+
+        it('emits released events when touched', function(done) {
+            push.touchstrip.on('released', done);
+            push.receive_midi([144, 12, 0]);
+        });
     });
 });
