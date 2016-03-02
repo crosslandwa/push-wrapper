@@ -108,5 +108,10 @@ describe('Ableton Push wrapper', function() {
             });
             push.receive_midi([176, 15, 126]);
         });
+
+        it('emit touched events when touched', function(done) {
+            push.knobs.one.on('touched', done);
+            push.receive_midi([144, 0, 126]);
+        });
     });
 });

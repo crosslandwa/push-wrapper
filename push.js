@@ -25,7 +25,8 @@ function handle_midi_cc(push, index, value) {
 } 
 
 function handle_midi_note(push, note, velocity) {
-    push.grid.receive_midi_note(note, velocity);
+    var module = note <= 12 ? push.knobs : push.grid;
+    module.receive_midi_note(note, velocity);
 }
 
 var midi_messages = {
