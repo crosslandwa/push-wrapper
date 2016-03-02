@@ -32,6 +32,10 @@ function handle_midi_note(push, note, velocity) {
     module.receive_midi_note(note, velocity);
 }
 
+function handle_midi_pitch_bend(push, lsb_byte, msb_byte) {
+    push.touchstrip.receive_midi_pitch_bend((msb_byte << 7) + lsb_byte);
+}
+
 var midi_messages = {
     'note-off': 128, // note number, velocity
     'note-on': 144, // note number, velocity
@@ -56,6 +60,9 @@ Push.prototype.receive_midi = function(bytes) {
         case (midi_messages['note-on']):
         case (midi_messages['note-off']):
             handle_midi_note(this, bytes[1], bytes[2]);
+            break;
+        case (midi_messages['pitch-bend']):
+            handle_midi_pitch_bend(this, bytes[1], bytes[2]);
             break;
     }
 }

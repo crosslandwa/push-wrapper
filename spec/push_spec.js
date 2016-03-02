@@ -130,5 +130,13 @@ describe('Ableton Push wrapper', function() {
             push.touchstrip.on('released', done);
             push.receive_midi([144, 12, 0]);
         });
+
+        it('emits pitchbend events when the hardware is rubbed', function(done) {
+            push.touchstrip.on('pitchbend', bend_amount => {
+                expect(bend_amount).toEqual(385);
+                done();
+            });
+            push.receive_midi([224, 1, 3]); // equivalent to 0b 0000011 0000001
+        });
     });
 });
