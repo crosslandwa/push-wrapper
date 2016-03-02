@@ -37,6 +37,8 @@ Knobs.prototype.receive_midi_cc = function(index, value) {
         var knob_name = ccToKnobMap[index];
         var delta = value < 64 ? value : value - 128;
         this[knob_name].emit('turned', delta);
+    } else {
+        console.log('No knob known for CC: ' + index);
     }
 }
 
@@ -45,6 +47,8 @@ Knobs.prototype.receive_midi_note = function(note, velocity) {
         var knob_name = noteToKnobMap[note];
         var event_name = velocity > 0 ? 'touched' : 'released';
         this[knob_name].emit(event_name);
+    } else {
+        console.log('No knob known for note: ' + note);
     }
 }
 
