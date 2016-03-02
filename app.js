@@ -17,24 +17,16 @@ window.addEventListener('load', function() {
 
 function off_we_go(bound_push) {
     const push = bound_push;
-    push.knobs.one.on('turned', function(delta) {console.log('knob 1: ' + delta)});
+    push.knobs.one.on('turned', (delta) => {console.log('knob 1: ' + delta)});
     push.touchstrip.on('touched', () => console.log('strip touched'));
     push.touchstrip.on('released', () => console.log('strip released'));
     push.touchstrip.on('pitchbend', (pb) => console.log('strip pitchbend ' + pb));
-    push.buttons.play.on('pressed', function() {
-        push.buttons.play.led_on();
-        player(60, 127);
-    });
-    push.buttons.play.on('released', function() {
-        push.buttons.play.led_off();
-        player(60, 0);
-    });
 
     foreach([0, 1, 2, 3, 4], partial(bind_column_to_sample, push))
 }
 
 function light_up_column(push, x, velocity) {
-    foreach([0, 1, 2, 3, 4, 5, 6, 7], function(y) {
+    foreach([0, 1, 2, 3, 4, 5, 6, 7], (y) => {
         if ((velocity / 8) >= y) {
             push.grid.x[x].y[y].led_on(velocity);
         } else {
@@ -44,7 +36,7 @@ function light_up_column(push, x, velocity) {
 }
 
 function turn_off_column(push, x) {
-    foreach([1, 2, 3, 4, 5, 6, 7], function(y) {
+    foreach([1, 2, 3, 4, 5, 6, 7], (y) => {
         push.grid.x[x].y[y].led_off();
     });
     push.grid.x[x].y[0].led_on();
@@ -55,14 +47,14 @@ function turn_off_column(push, x) {
 // note grid LEDs only turn off when all buttons in column released
 function bind_column_to_sample(push, x) {
     var column_count = 0;
-    foreach([0, 1, 2, 3, 4, 5, 6, 7], function(y) {
+    foreach([0, 1, 2, 3, 4, 5, 6, 7], (y) => {
         var grid_button = push.grid.y[y].x[x];
-        grid_button.on('pressed', function(velocity) {
+        grid_button.on('pressed', (velocity) => {
             light_up_column(push, x, velocity);
             player(x + 60, velocity, (y + 1) / 8);
             column_count++;
         });
-        grid_button.on('released', function() {
+        grid_button.on('released', () => {
             column_count--;
             if (column_count == 0) turn_off_column(push, x);
             player(x + 60, 0);
@@ -81,7 +73,7 @@ var btnBox,
     btn;
 var data, cmd, channel, type, note, velocity;
 
-window.addEventListener('load', function() {
+window.addEventListener('load', () => {
     btn = document.getElementsByClassName('button');
     for (var i = 0; i < btn.length; i++) {
         btn[i].addEventListener('mousedown', clickPlayOn);
@@ -129,7 +121,7 @@ function loadAudio(object, url) {
     request.open('GET', url, true);
     request.responseType = 'arraybuffer';
     request.onload = function () {
-        context.decodeAudioData(request.response, function (buffer) {
+        context.decodeAudioData(request.response, (buffer) => {
             object.buffer = buffer;
         });
     }
@@ -141,7 +133,7 @@ function addAudioProperties(object) {
     object.name = object.id;
     object.source = object.dataset.sound;
     loadAudio(object, object.source);
-    object.play = function (volume, f) {
+    object.play = (volume, f) => {
         var freqFactor = (f !== undefined) ? f : 1;
 
         var s = context.createBufferSource();
