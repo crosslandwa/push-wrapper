@@ -18,6 +18,9 @@ window.addEventListener('load', function() {
 function off_we_go(bound_push) {
     const push = bound_push;
     push.knobs.one.on('turned', function(delta) {console.log('knob 1: ' + delta)});
+    push.touchstrip.on('touched', () => console.log('strip touched'));
+    push.touchstrip.on('released', () => console.log('strip released'));
+    push.touchstrip.on('pitchbend', (pb) => console.log('strip pitchbend ' + pb));
     push.buttons.play.on('pressed', function() {
         push.buttons.play.led_on();
         player(60, 127);

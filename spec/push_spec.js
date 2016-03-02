@@ -138,5 +138,32 @@ describe('Ableton Push wrapper', function() {
             });
             push.receive_midi([224, 1, 3]); // equivalent to 0b 0000011 0000001
         });
+
+        it('emits a default pitchbend event after being released', () => {
+            var emittedEvents = [];
+            push.touchstrip.on('touched', () => emittedEvents.push({ 'event': 'touched' }));
+            push.touchstrip.on('released', () => emittedEvents.push({ 'event': 'released' }));
+            push.touchstrip.on('pitchbend', (value) => emittedEvents.push({ 'event': 'pitchbend', 'value': value }));
+
+            push.receive_midi([144, 12, 126]); // touched
+            push.receive_midi([224, 1, 3]);
+            push.receive_midi([224, 2, 3]);
+            push.receive_midi([224, 0, 64]); // hardware sends PB 64 (8192) before sending released event
+            push.receive_midi([144, 12, 0]); // released
+            
+            expect(emittedEvents.length).toEqual(5);
+            expect(emittedEvents[0].event).toEqual('touched');
+
+            expect(emittedEvents[1].event).toEqual('pitchbend');
+            expect(emittedEvents[1].value).toEqual(385);
+
+            expect(emittedEvents[2].event).toEqual('pitchbend');
+            expect(emittedEvents[2].value).toEqual(386);
+
+            expect(emittedEvents[3].event).toEqual('released');
+
+            expect(emittedEvents[4].event).toEqual('pitchbend');
+            expect(emittedEvents[4].value).toEqual(8192);
+        })
     });
 });
