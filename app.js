@@ -1,6 +1,8 @@
 // Example script that creates and uses Push
 
-var Push = require('./push.js');
+const Push = require('./push.js'),
+    foreach = require('lodash.foreach'),
+    partial = require('lodash.partial');
 
 window.addEventListener('load', function() {
     if (navigator.requestMIDIAccess) {
@@ -25,21 +27,43 @@ function off_we_go(bound_push) {
         player(60, 0);
     });
 
-    bind_to_sample(60, push.grid.x[0].y[0]);
-    bind_to_sample(61, push.grid.x[1].y[0]);
-    bind_to_sample(62, push.grid.x[2].y[0]);
-    bind_to_sample(63, push.grid.x[3].y[0]);
-    bind_to_sample(64, push.grid.y[1].x[0]);
+    foreach([0, 1, 2, 3, 4], partial(bind_column_to_sample, push))
 }
 
-function bind_to_sample(index, grid_button) {
-    grid_button.on('pressed', function(velocity) {
-        grid_button.led_on(velocity);
-        player(index, velocity);
+function light_up_column(push, x, velocity) {
+    foreach([0, 1, 2, 3, 4, 5, 6, 7], function(y) {
+        if ((velocity / 8) >= y) {
+            push.grid.x[x].y[y].led_on(velocity);
+        } else {
+            push.grid.x[x].y[y].led_off();
+        }
+    })
+}
+
+function turn_off_column(push, x) {
+    foreach([1, 2, 3, 4, 5, 6, 7], function(y) {
+        push.grid.x[x].y[y].led_off();
     });
-    grid_button.on('released', function() {
-        grid_button.led_off();
-        player(index, 0);
+    push.grid.x[x].y[0].led_on();
+}
+
+// all buttons in the same grid column play the same note
+// the higher up the grid, the higher the LP filter frequency
+// note grid LEDs only turn off when all buttons in column released
+function bind_column_to_sample(push, x) {
+    var column_count = 0;
+    foreach([0, 1, 2, 3, 4, 5, 6, 7], function(y) {
+        var grid_button = push.grid.y[y].x[x];
+        grid_button.on('pressed', function(velocity) {
+            light_up_column(push, x, velocity);
+            player(x + 60, velocity, (y + 1) / 8);
+            column_count++;
+        });
+        grid_button.on('released', function() {
+            column_count--;
+            if (column_count == 0) turn_off_column(push, x);
+            player(x + 60, 0);
+        });
     });
 }
 
@@ -84,7 +108,7 @@ function clickPlayOff(e) {
     e.target.classList.remove('active');
 }
 
-function player(note, velocity) {
+function player(note, velocity, f) {
     var sample = sampleMap['key' + note];
     if (sample) {
         if (type == (0x80 & 0xf0) || velocity == 0) { //QuNexus always returns 144
@@ -92,7 +116,7 @@ function player(note, velocity) {
             return;
         }
         btn[sample - 1].classList.add('active');
-        btn[sample - 1].play(velocity);
+        btn[sample - 1].play(velocity, f);
     }
 }
 
@@ -114,15 +138,20 @@ function addAudioProperties(object) {
     object.name = object.id;
     object.source = object.dataset.sound;
     loadAudio(object, object.source);
-    object.play = function (volume) {
+    object.play = function (volume, f) {
+        var freqFactor = (f !== undefined) ? f : 1;
+
         var s = context.createBufferSource();
+        var f = context.createBiquadFilter();
+        f.frequency.value = freqFactor * freqFactor * 12000; // TODO exponentially scaled
         var g = context.createGain();
         var v;
         s.buffer = object.buffer;
         s.playbackRate.value = randomRange(0.5, 2);
         if (volume) {
             v = rangeMap(volume, 1, 127, 0.2, 2);
-            s.connect(g);
+            s.connect(f);
+            f.connect(g);
             g.gain.value = v * v;
             g.connect(context.destination);
         } else {
