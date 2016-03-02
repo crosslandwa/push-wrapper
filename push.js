@@ -13,7 +13,7 @@ function Push(midi_out) {
     this.buttons = new Buttons(midi_out);
     this.knobs = new Knobs();
     this.grid = new Grid(midi_out);
-    this.touchstrip = new Touchstrip(midi_out);
+    this.touchstrip = new Touchstrip();
 }
 util.inherits(Push, EventEmitter);
 
