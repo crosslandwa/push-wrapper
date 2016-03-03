@@ -13,19 +13,17 @@ The node-push wrapper encapsulates the MIDI messaging sent to/from the Ableton P
 
 ## why
 
-I wanted to pose myself a couple of challenges/questions and used this project to drive out some solutions/answers. These cover both front-end development issues and musical tool development
+I posed myself a couple of front-end/musical-tool development questions and used this project to answer them.
 
 ### Can I write/test code in node (fast feedback) and deploy for use in the browser?
-- Yes.
 - Node/npm provides the environment for rapid test driven development
-- Utilising ports/adaptors design pattern enables me to isolate the 'Push wrapper' from the Web MIDI API used when deployed in the browser
-  - The API presented relies on two simple methods for MIDI input/output that can be mocked/stubbed in tests and integrate seemlessly with the Web MIDI API when running in the browser
-- 'Browserify' (http://browserify.org/) utilised as a tool (and integrated into an npm workflow) to bundle all the node application code into a single JS file that can be deployed/run in the context of a JS app running in the web browser
+- Utilising ports/adaptors design pattern enables isolation of 'Push wrapper' code from the Web MIDI API used when deployed in the browser (MIDI IO simple to stub in tests, and integrates easily with the Web MIDI API when running in the browser)
+- [Browserify](http://browserify.org/) used (and integrated into an npm workflow) to bundle all the node application code into a single JS file for use in the web browser
 
-### Can I use the web browser as a 'fast-booting' environment for my musical tools, compared to my current tools of choice (MaxMSP, Ableton Live + Max4Live)?
+### Can I use the web browser as a *fast-booting* and *performant* environment (compared to e.g. MaxMSP, Ableton Live + Max4Live)?
 - TBD
 
-### Can i write a 'reasonable looking' and 'useful' app in a web browser in a timeframe comparable to MaxMSP development?
+### Can i write a *reasonable looking* and *useful* app in a web browser in a timeframe comparable to MaxMSP development?
 - TBD
 
 # API documentation
