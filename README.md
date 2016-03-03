@@ -79,7 +79,7 @@ This convinience method works nicely on OS X, but on windows the Push likely rep
 ## Control events and feedback commands
 
 ```
-//-----buttons-----
+//-----BUTTONS-----
 
 // control
 push.buttons.BUTTON_NAME.on('pressed', () => // button pressed actions);
@@ -91,7 +91,7 @@ push.buttons.BUTTON_NAME.led_off()
 
 // BUTTON_NAME values: tap_tempo, metronome, master, stop, 1/4, 1/4t, 1/8, 1/8t, 1/16, 1/16t, 1/32, 1/32t, left, right, up, down, select, shift, note, session, add_effect, add_track, octave_down, octave_up, repeat, accent, scales, user, mute, solo, step_in, step_out, play, rec, new, duplicate, automation, fixed_length, device, browse, track, clip, volume, pan_&_send, quantize, double, delete, undo
 
-//-----knobs-----
+//-----KNOBS-----
 
 // control
 push.knobs.KNOB_NAME.on('turned', (delta) => { // delta = number of clicks. positive = clockwise, negative = anti-clockwise } );
