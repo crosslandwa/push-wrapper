@@ -88,7 +88,7 @@ Push.create_bound_to_web_midi_api = function(midiAccess) {
         console.log('Found input: ' + input.value.name);
         if ('Ableton Push User Port' == input.value.name) {
             console.log('Binding MIDI input to ' + input.value.name);
-            input.value.onmidimessage = function(event) { push.receive_midi(event.data) };
+            input.value.onmidimessage = (event) => { push.receive_midi(event.data) };
             break;
         }
     }

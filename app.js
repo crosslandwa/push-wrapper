@@ -4,7 +4,7 @@ const Push = require('./push.js'),
     foreach = require('lodash.foreach'),
     partial = require('lodash.partial');
 
-window.addEventListener('load', function() {
+window.addEventListener('load', () => {
     if (navigator.requestMIDIAccess) {
         navigator.requestMIDIAccess({ sysex: false })
             .then(Push.create_bound_to_web_midi_api)
@@ -67,7 +67,6 @@ function bind_column_to_sample(push, x) {
 var log = console.log.bind(console),
     keyData,
     midi;
-var AudioContext = AudioContext || webkitAudioContext; // for ios/safari
 var context = new AudioContext();
 var btnBox,
     btn;

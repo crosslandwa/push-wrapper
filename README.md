@@ -30,15 +30,13 @@ I wanted to pose myself a couple of challenges/questions and used this project t
 
 # API documentation
 
-Once constructed, MIDI messages sent from the Push hardware are surfaced as events that can be listened to in your application code (see [Event Emitter](https://nodejs.org/api/events.html)). The push wrapper presents each element of the Push hardware as a distinct object that emits events.
+The push wrapper presents each element of the Push hardware as a distinct object that emits **control events** (see [Event Emitter](https://nodejs.org/api/events.html)) in response to receiving MIDI messages from the Push hardware (via its `receive_midi` method). 
 
-Similarly, feedback can be sent to the hardware (e.g. turning on button LEDs) by calling the appropriate method on the object in the push wrapper that corresponds to the element on the hardware
+Similarly, **feedback commands** can be sent to elements of the hardware (e.g. turning on button LEDs) by calling the appropriate method on the object in the push wrapper (causing the wrapper to output the corresponding MIDI command)
 
-## Construction and MIDI IO
+## Instantiation and MIDI IO
 
 ### Create new Push wrapper
-
-The Push wrapper is instantiated and sends and receives MIDI by:
 
 ```
 const Push = require('./push.js');
@@ -50,50 +48,29 @@ var midi_out = {
 var push = new Push(midi_out);
 
 var midi_bytes = [144, 100, 127];
-push.receive_midi(midi_bytes); // midi_bytes expected to be an array
+push.receive_midi(midi_bytes); // wrapper expects midi_bytes to be an array
 ```
-
-**MIDI output**
-- When any **feedback commands** are issued to the Push wrapper, it will call `midi_out.send` to send the appropriate MIDI commands to the Push hardware.
-
-**MIDI input**
-- The Push wrapper exposes a single method (`receive_midi`) for receiving and parsing MIDI commands from the Push hardware
-- Typically MIDI received from the Push hardware will cause the wrapper to emit **control events**
 
 ### Web MIDI API integration
-. If you are using the Web MIDI API you can bind a MIDI input to the Push wrapper:
+If you are using the Web MIDI API you can bind a MIDI input/output ports to the Push wrapper. It's no coincidence the interfaces expected by the wrapper closely match those exposed by the Web MIDI API:
 ```
-input.value.onmidimessage = function(event) { push.receive_midi(event.data) };
+navigator.requestMIDIAccess().then((midiAccess) => {
+    var input = midiAccess.inputs.values()[0],
+        output = midiAccess.outputs.values()[0];
+
+    var push = new Push(output.value); // bind MIDI output
+    input.value.onmidimessage = (event) => { push.receive_midi(event.data) }; // bind MIDI input
+});
 ```
 
-Similarly you can provide an implementation of `midi_output` that forwards MIDI data to an MIDI output
-```
-var midi_out = {
-    send: function(midi_bytes) {
-        output.value.send(midi_bytes); // note could supply output.value directly, as this has a send(midi_bytes) method
-    }
-}
-```
-
-A static factory method is provided to encapsulate the above by binding the Push wrapper to Web MIDI API input/output ports named "Ableton Push User Port"
+A static factory method is provided to encapsulate binding the Push wrapper to Web MIDI API input/output ports named "Ableton Push User Port"
 ```
 const Push = require('./push.js');
-
-window.addEventListener('load', function() {
-    if (navigator.requestMIDIAccess) {
-        navigator.requestMIDIAccess({ sysex: false })
-            .then(Push.create_bound_to_web_midi_api)
-            .then(off_we_go)
-            .catch(console.error);
-    } else {
-        alert('No MIDI support in your browser');
-    }
-});
-
-function off_we_go(bound_push) {
-    const push = bound_push;
-    // do stuff with the wrapper here
-}
+navigator.requestMIDIAccess({ sysex: false })
+    .then(Push.create_bound_to_web_midi_api)
+    .then((push) => {
+        // do stuff with the wrapper here    
+    });
 ```
 
 ## Buttons
