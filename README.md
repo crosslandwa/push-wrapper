@@ -1,29 +1,32 @@
 # node-push
-A wrapper for using the Ableton Push as a MIDI controller in a web browser.
 
-The code is written using javascript ES2015/ES6 (so expects native Promises and other language features to be available) and is only **known** to work in Google Chrome...
+## What?
 
-## what
+A javascript wrapper for using the Ableton Push as a MIDI controller via a simple event-driven API, encapsulating the generation and parsing of MIDI messages sent to/from the Ableton Push hardware.
 
-node-push can be compiled into javascript (via 'browserify') to use in a Web MIDI API / Web Audio API enabled web browser to use the Ableton Push as a MIDI controller for any (Web Audio API) code running in that browser.
-
-The node-push wrapper encapsulates the MIDI messaging sent to/from the Ableton Push and presents a clean event driven API for hooking Push control/feedback into your application
+node-push can be compiled for use as a MIDI controller in a Web MIDI/Audio API enabled web browser.
 
 ## how to use
 
-## why
+Add details for
+- example app
+- compiling
+- running tests
+
+## Why?
 
 I posed myself a couple of front-end/musical-tool development questions and used this project to answer them.
 
 ### Can I write/test code in node and deploy for use in the browser?
 - Node/npm provides a fast feedback environment for rapid test driven development
-- Utilising ports/adaptors design pattern enables isolation of 'Push wrapper' code from the Web MIDI API used when deployed in the browser (MIDI IO simple to stub in tests, and integrates easily with the Web MIDI API when running in the browser)
-- [Browserify](http://browserify.org/) used (and integrated into an npm workflow) to bundle all the node application code into a single JS file for use in the web browser
+- Utilising [ports & adaptors](http://alistair.cockburn.us/Hexagonal+architecture) design pattern enables isolation of 'Push wrapper' code from the Web MIDI API used when deployed in the browser
+  - presents simple MIDI IO interfaces that are easy to stub in tests
+- [Browserify](http://browserify.org/) integrated into an npm workflow to bundle all the node application code into a single JS file for use in the web browser application
 
 ### Can I use the web browser as a *fast-booting* and *performant* environment (compared to e.g. MaxMSP, Ableton Live + Max4Live)?
 - TBD
 
-### Can i write a *reasonable looking* and *useful* app in a web browser in a timeframe comparable to MaxMSP development?
+### Can i write a *reasonable looking* and *useful* app in a web browser (in a timeframe comparable to MaxMSP development)?
 - TBD
 
 # API documentation
@@ -106,3 +109,7 @@ push.knobs.KNOB_NAME.on('turned', (delta) => { // do stuff here } );
 Initial version of the app based off blog post here: http://www.keithmcmillen.com/blog/making-music-in-the-browser-web-midi-api/
 
 I intend to create my own example app to include with the wrapper to demonstrate its use...
+
+# Disclaimer
+
+The code is written using javascript [ES2015/ES6](http://es6-features.org/) so expects native Promises and other language features to be available. It is only **known** to work in Google Chrome/OS X...
