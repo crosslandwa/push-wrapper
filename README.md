@@ -30,6 +30,10 @@ I wanted to pose myself a couple of challenges/questions and used this project t
 
 # API documentation
 
+Once constructed, MIDI messages sent from the Push hardware are surfaced as events that can be listened to in your application code (see [Event Emitter](https://nodejs.org/api/events.html)). The push wrapper presents each element of the Push hardware as a distinct object that emits events.
+
+Similarly, feedback can be sent to the hardware (e.g. turning on button LEDs) by calling the appropriate method on the object in the push wrapper that corresponds to the element on the hardware
+
 ## Construction and MIDI IO
 
 ### Create new Push wrapper
@@ -92,9 +96,26 @@ function off_we_go(bound_push) {
     // do stuff with the wrapper here
 }
 ```
-## Control events
 
-## Feedback commands
+## Buttons
+
+Individual buttons can be bound to with the below commands by replacing `BUTTON_NAME` with the `name_of_the_button`
+
+(do I want a long list of button names here?)
+
+### Control events
+```
+push.buttons.BUTTON_NAME.on('pressed', () => console.log('BUTTON_NAME pressed'));
+push.buttons.BUTTON_NAME.on('released', () => console.log('BUTTON_NAME released'));
+```
+
+
+### Feedback commands
+```
+push.buttons.BUTTON_NAME.led_on()
+push.buttons.BUTTON_NAME.led_off()
+```
+
 
 # app example credits/enhancement
 
