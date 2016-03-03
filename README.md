@@ -116,6 +116,17 @@ push.buttons.BUTTON_NAME.led_on()
 push.buttons.BUTTON_NAME.led_off()
 ```
 
+## Knobs
+
+The 11 knobs on the hardware can emit events when turned, and are bound by name
+
+(Do I want a list of knob names here?)
+
+### Control events
+```
+// delta gives the 'number of clicks' turned : positive = clockwise, negative = anti-clockwise
+push.knobs.KNOB_NAME.on('turned', (delta) => { // do stuff here } );
+```
 
 # app example credits/enhancement
 
