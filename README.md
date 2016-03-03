@@ -38,44 +38,44 @@ Similarly, feedback can be sent to the hardware (e.g. turning on button LEDs) by
 
 ### Create new Push wrapper
 
-The Push wrapper must be instantiated with a `midi_out` object as a dependency (see below)
+The Push wrapper is instantiated and sends and receives MIDI by:
 
 ```
 const Push = require('./push.js');
-var midi_out; 
-var push = new Push(midi_out);
-```
-
-### MIDI output
-
-The Push wrapper is dependent on a `midi_out` object that satisfies the following interface:
-
-```
 var midi_out = {
     send: function(midi_bytes) {
         // implementation expects midi_bytes to be an array
     }
 }
-```
+var push = new Push(midi_out);
 
-When any **feedback commands** are issued to the Push wrapper, it will call `midi_out.send` to send the appropriate MIDI commands to the Push hardware
-
-### MIDI input
-
-The Push wrapper exposes a single method for receiving and parsing MIDI commands from the Push hardware
-```
 var midi_bytes = [144, 100, 127];
 push.receive_midi(midi_bytes); // midi_bytes expected to be an array
 ```
 
-Typically MIDI received from the Push hardware will cause the wrapper to emit **control events**. If you are using the Web MIDI API you can bind a MIDI input to the Push wrapper:
+**MIDI output**
+- When any **feedback commands** are issued to the Push wrapper, it will call `midi_out.send` to send the appropriate MIDI commands to the Push hardware.
+
+**MIDI input**
+- The Push wrapper exposes a single method (`receive_midi`) for receiving and parsing MIDI commands from the Push hardware
+- Typically MIDI received from the Push hardware will cause the wrapper to emit **control events**
+
+### Web MIDI API integration
+. If you are using the Web MIDI API you can bind a MIDI input to the Push wrapper:
 ```
 input.value.onmidimessage = function(event) { push.receive_midi(event.data) };
 ```
 
-### Convenient creation in the browser
+Similarly you can provide an implementation of `midi_output` that forwards MIDI data to an MIDI output
+```
+var midi_out = {
+    send: function(midi_bytes) {
+        output.value.send(midi_bytes); // note could supply output.value directly, as this has a send(midi_bytes) method
+    }
+}
+```
 
-The main use case for the Push wrapper is within a web browser, interacting with the Web MIDI API. To that end a static factory method is provided that will bind the Push wrapper to MIDI input and output ports with the name "Ableton Push User Port"
+A static factory method is provided to encapsulate the above by binding the Push wrapper to Web MIDI API input/output ports named "Ableton Push User Port"
 ```
 const Push = require('./push.js');
 
@@ -92,7 +92,6 @@ window.addEventListener('load', function() {
 
 function off_we_go(bound_push) {
     const push = bound_push;
-    
     // do stuff with the wrapper here
 }
 ```
@@ -108,7 +107,6 @@ Individual buttons can be bound to with the below commands by replacing `BUTTON_
 push.buttons.BUTTON_NAME.on('pressed', () => console.log('BUTTON_NAME pressed'));
 push.buttons.BUTTON_NAME.on('released', () => console.log('BUTTON_NAME released'));
 ```
-
 
 ### Feedback commands
 ```
