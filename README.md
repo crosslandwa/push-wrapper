@@ -74,34 +74,24 @@ navigator.requestMIDIAccess({ sysex: false })
     });
 ```
 
-## Buttons
+## Control events and feedback commands
 
-Individual buttons can be bound to with the below commands by replacing `BUTTON_NAME` with the `name_of_the_button`
-
-(do I want a long list of button names here?)
-
-### Control events
 ```
-push.buttons.BUTTON_NAME.on('pressed', () => console.log('BUTTON_NAME pressed'));
-push.buttons.BUTTON_NAME.on('released', () => console.log('BUTTON_NAME released'));
-```
-
-### Feedback commands
-```
+//-----buttons-----
+// control
+push.buttons.BUTTON_NAME.on('pressed', () => // button pressed actions);
+push.buttons.BUTTON_NAME.on('released', () => // button released actions);
+// feedback
 push.buttons.BUTTON_NAME.led_on()
 push.buttons.BUTTON_NAME.led_off()
-```
+// BUTTON_NAME values:
+// tap_tempo, metronome, master, stop, 1/4, 1/4t, 1/8, 1/8t, 1/16, 1/16t, 1/32, 1/32t, left, right, up, down, select, shift, note, session, add_effect, add_track, octave_down, octave_up, repeat, accent, scales, user, mute, solo, step_in, step_out, play, rec, new, duplicate, automation, fixed_length, device, browse, track, clip, volume, pan_&_send, quantize, double, delete, undo
 
-## Knobs
-
-The 11 knobs on the hardware can emit events when turned, and are bound by name
-
-(Do I want a list of knob names here?)
-
-### Control events
-```
-// delta gives the 'number of clicks' turned : positive = clockwise, negative = anti-clockwise
-push.knobs.KNOB_NAME.on('turned', (delta) => { // do stuff here } );
+//-----knobs-----
+// control
+push.knobs.KNOB_NAME.on('turned', (delta) => { // delta = number of clicks. positive = clockwise, negative = anti-clockwise } );
+// KNOB_NAME values:
+// tempo, swing, one, two, three, four, five, six, seven, eight, master
 ```
 
 # app example credits/enhancement
