@@ -78,6 +78,8 @@ This convinience method works nicely on OS X, but on windows the Push likely rep
 
 ## Control events and feedback commands
 
+All interactions with the wrapper are documented in the [push_spec.js](spec/push_spec.js) test suite, but can be summarised as below.
+
 ```
 //-----BUTTONS-----
 
