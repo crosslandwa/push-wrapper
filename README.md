@@ -1,5 +1,7 @@
 # node-push
-A wrapper for using the Ableton Push as a MIDI controller in a web browser
+A wrapper for using the Ableton Push as a MIDI controller in a web browser.
+
+The code is written using javascript ES2015/ES6 (so expects native Promises and other language features to be available) and is only **known** to work in Google Chrome...
 
 ## what
 
@@ -27,6 +29,72 @@ I wanted to pose myself a couple of challenges/questions and used this project t
 - TBD
 
 # API documentation
+
+## Construction and MIDI IO
+
+### Create new Push wrapper
+
+The Push wrapper must be instantiated with a `midi_out` object as a dependency (see below)
+
+```
+const Push = require('./push.js');
+var midi_out; 
+var push = new Push(midi_out);
+```
+
+### MIDI output
+
+The Push wrapper is dependent on a `midi_out` object that satisfies the following interface:
+
+```
+var midi_out = {
+    send: function(midi_bytes) {
+        // implementation expects midi_bytes to be an array
+    }
+}
+```
+
+When any **feedback commands** are issued to the Push wrapper, it will call `midi_out.send` to send the appropriate MIDI commands to the Push hardware
+
+### MIDI input
+
+The Push wrapper exposes a single method for receiving and parsing MIDI commands from the Push hardware
+```
+var midi_bytes = [144, 100, 127];
+push.receive_midi(midi_bytes); // midi_bytes expected to be an array
+```
+
+Typically MIDI received from the Push hardware will cause the wrapper to emit **control events**. If you are using the Web MIDI API you can bind a MIDI input to the Push wrapper:
+```
+input.value.onmidimessage = function(event) { push.receive_midi(event.data) };
+```
+
+### Convenient creation in the browser
+
+The main use case for the Push wrapper is within a web browser, interacting with the Web MIDI API. To that end a static factory method is provided that will bind the Push wrapper to MIDI input and output ports with the name "Ableton Push User Port"
+```
+const Push = require('./push.js');
+
+window.addEventListener('load', function() {
+    if (navigator.requestMIDIAccess) {
+        navigator.requestMIDIAccess({ sysex: false })
+            .then(Push.create_bound_to_web_midi_api)
+            .then(off_we_go)
+            .catch(console.error);
+    } else {
+        alert('No MIDI support in your browser');
+    }
+});
+
+function off_we_go(bound_push) {
+    const push = bound_push;
+    
+    // do stuff with the wrapper here
+}
+```
+## Control events
+
+## Feedback commands
 
 # app example credits/enhancement
 
