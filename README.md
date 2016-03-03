@@ -15,8 +15,8 @@ The node-push wrapper encapsulates the MIDI messaging sent to/from the Ableton P
 
 I posed myself a couple of front-end/musical-tool development questions and used this project to answer them.
 
-### Can I write/test code in node (fast feedback) and deploy for use in the browser?
-- Node/npm provides the environment for rapid test driven development
+### Can I write/test code in node and deploy for use in the browser?
+- Node/npm provides a fast feedback environment for rapid test driven development
 - Utilising ports/adaptors design pattern enables isolation of 'Push wrapper' code from the Web MIDI API used when deployed in the browser (MIDI IO simple to stub in tests, and integrates easily with the Web MIDI API when running in the browser)
 - [Browserify](http://browserify.org/) used (and integrated into an npm workflow) to bundle all the node application code into a single JS file for use in the web browser
 
