@@ -74,6 +74,8 @@ navigator.requestMIDIAccess({ sysex: false })
     });
 ```
 
+This convinience method works nicely on OS X, but on windows the Push likely reports itself as "USB Device 1" or similar (MIDI devices did last time I checked in) - you may have to roll your own binding if using this under windows...
+
 ## Control events and feedback commands
 
 ```
