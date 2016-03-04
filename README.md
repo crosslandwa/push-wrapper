@@ -93,11 +93,14 @@ push.buttons.BUTTON_NAME.led_off()
 
 //-----KNOBS-----
 
+push.knobs.master.on('touched', () => // knob touching start actions);
+push.knobs.master.on('released', () => // knob touching stop actions);
 push.knobs.KNOB_NAME.on('turned', (delta) => { // delta = number of clicks. positive = clockwise, negative = anti-clockwise } );
 
 // KNOB_NAME values: tempo, swing, one, two, three, four, five, six, seven, eight, master
 
 //-----TOUCHSTRIP-----
+
 push.touchstrip.on('touched', () => // touchstrip pushed actions);
 push.touchstrip.on('released', () => // touchstrip released actions);
 push.touchstrip.on('pitchbend', (amount) => // amount = 14bit value (0 -> 16383));
