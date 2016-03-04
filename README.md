@@ -81,6 +81,21 @@ This convinience method works nicely on OS X, but on windows the Push likely rep
 All interactions with the wrapper are documented in the [push_spec.js](spec/push_spec.js) test suite, but can be summarised as below.
 
 ```
+//-----GRID-----
+
+push.grid.x[X].y[Y].on('pressed', (velocity) => { // grid pressed actions. velocity = 1 -> 127 });
+push.grid.x[X].y[Y].on('released', () => // grid released actions);
+
+push.grid.x[X].y[Y].led_on(value); // value = 1 -> 127, giving various colours
+push.grid.x[X].y[Y].led_on(); // turns on LED, defaulting to orange (value = 100)
+push.grid.x[X].y[Y].led_off(); // turns LED off
+
+// X, Y values: 1 -> 8, where x[1].y[1] is the bottom left grid pad, and x[8].y[8] is the top-right
+
+// note can reference pads by x.y or y.x, i.e. these are equivalent
+push.grid.x[1].y[7].led_on();
+push.grid.y[7].x[1].led_on();
+
 //-----BUTTONS-----
 
 push.buttons.BUTTON_NAME.on('pressed', () => // button pressed actions);
@@ -95,7 +110,7 @@ push.buttons.BUTTON_NAME.led_off()
 
 push.knobs.KNOB_NAME.on('touched', () => // knob touching start actions);
 push.knobs.KNOB_NAME.on('released', () => // knob touching stop actions);
-push.knobs.KNOB_NAME.on('turned', (delta) => { // delta = number of clicks. positive = clockwise, negative = anti-clockwise } );
+push.knobs.KNOB_NAME.on('turned', (delta) => { // delta = number of clicks. positive = clockwise, negative = anti-clockwise });
 
 // KNOB_NAME values: tempo, swing, one, two, three, four, five, six, seven, eight, master
 
