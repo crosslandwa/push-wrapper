@@ -22,7 +22,7 @@ describe('Ableton Push wrapper', function() {
     });
 
     describe('grid', function() {
-        it('emits pressed events with velocity in response to button MIDI note messages', function(done) {
+        it('emits pressed events with velocity in response to grid MIDI note messages', function(done) {
             push.grid.x[0].y[1].on('pressed', function(velocity) {
                 expect(velocity).toEqual(123);
                 done();
@@ -30,7 +30,7 @@ describe('Ableton Push wrapper', function() {
             push.receive_midi([144, 44, 123]);
         });
 
-        it('emits released events in response to button MIDI note-off messages', function(done) {
+        it('emits released events in response to grid MIDI note-off messages', function(done) {
             push.grid.y[0].x[1].on('released', done); // note can refer to grid locations x.y and y.x
             push.receive_midi([144, 37, 0]);
         });
@@ -109,24 +109,24 @@ describe('Ableton Push wrapper', function() {
             push.receive_midi([176, 15, 126]);
         });
 
-        it('emit touched events when touched', function(done) {
+        it('emit touched events when touched (receives knob MIDI note on)', function(done) {
             push.knobs.one.on('touched', done);
             push.receive_midi([144, 0, 126]);
         });
 
-        it('emit released events when touched', function(done) {
+        it('emit released events when touching stops (receives knob MIDI note off)', function(done) {
             push.knobs.swing.on('released', done);
             push.receive_midi([144, 9, 0]);
         });
     });
 
     describe('touchstrip', () => {
-        it('emits touched events when touched', function(done) {
+        it('emits touched events when touched (receives touchstrip MIDI note on)', function(done) {
             push.touchstrip.on('touched', done);
             push.receive_midi([144, 12, 126]);
         });
 
-        it('emits released events when touched', function(done) {
+        it('emits released events when touching stops (receives touchstrip MIDI note off)', function(done) {
             push.touchstrip.on('released', done);
             push.receive_midi([144, 12, 0]);
         });

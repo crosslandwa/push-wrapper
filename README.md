@@ -83,11 +83,9 @@ All interactions with the wrapper are documented in the [push_spec.js](spec/push
 ```
 //-----BUTTONS-----
 
-// control
 push.buttons.BUTTON_NAME.on('pressed', () => // button pressed actions);
 push.buttons.BUTTON_NAME.on('released', () => // button released actions);
 
-// feedback
 push.buttons.BUTTON_NAME.led_on()
 push.buttons.BUTTON_NAME.led_off()
 
@@ -95,10 +93,14 @@ push.buttons.BUTTON_NAME.led_off()
 
 //-----KNOBS-----
 
-// control
 push.knobs.KNOB_NAME.on('turned', (delta) => { // delta = number of clicks. positive = clockwise, negative = anti-clockwise } );
 
 // KNOB_NAME values: tempo, swing, one, two, three, four, five, six, seven, eight, master
+
+//-----TOUCHSTRIP-----
+push.touchstrip.on('touched', () => // touchstrip pushed actions);
+push.touchstrip.on('released', () => // touchstrip released actions);
+push.touchstrip.on('pitchbend', (amount) => // amount = 14bit value (0 -> 16383));
 ```
 
 # app example credits/enhancement
