@@ -1,19 +1,19 @@
 var Push = require('../push.js');
 
-describe('Ableton Push wrapper', function() {
+describe('Ableton Push wrapper', () => {
     var push, sent_bytes = [];
 
-    beforeEach(function() {
-        push = new Push({ send: function(bytes) { sent_bytes = bytes } });
+    beforeEach(() => {
+        push = new Push({ send: (bytes) => { sent_bytes = bytes } });
     })
 
-    it('can be instantiated multiple times and act independently', function() {
+    it('can be instantiated multiple times and act independently', () => {
         var push_1_called = false,
             push_2_called = false,
             push2 = new Push();
 
-        push.buttons.add_track.on('pressed', function() { push_1_called = true });
-        push2.buttons.add_track.on('pressed', function() { push_2_called = true });
+        push.buttons.add_track.on('pressed', () => { push_1_called = true });
+        push2.buttons.add_track.on('pressed', () => { push_2_called = true });
 
         push.receive_midi([176, 53, 120]);
 
@@ -21,21 +21,21 @@ describe('Ableton Push wrapper', function() {
         expect(push_2_called).toEqual(false);
     });
 
-    describe('grid', function() {
-        it('emits pressed events with velocity in response to grid MIDI note messages', function(done) {
-            push.grid.x[0].y[1].on('pressed', function(velocity) {
+    describe('grid', () => {
+        it('emits pressed events with velocity in response to grid MIDI note messages', (done) => {
+            push.grid.x[0].y[1].on('pressed', (velocity) => {
                 expect(velocity).toEqual(123);
                 done();
             })
             push.receive_midi([144, 44, 123]);
         });
 
-        it('emits released events in response to grid MIDI note-off messages', function(done) {
+        it('emits released events in response to grid MIDI note-off messages', (done) => {
             push.grid.y[0].x[1].on('released', done); // note can refer to grid locations x.y and y.x
             push.receive_midi([144, 37, 0]);
         });
 
-        it('buttons can have LED turned on', function() {
+        it('buttons can have LED turned on', () => {
             push.grid.x[7].y[7].led_on(101);
             expect(sent_bytes).toEqual([144, 99, 101]);
 
@@ -43,95 +43,95 @@ describe('Ableton Push wrapper', function() {
             expect(sent_bytes).toEqual([144, 91, 100]); // default colour of 100 if 'velocity' not provided
         })
 
-        it('buttons can have LED turned off', function() {
+        it('buttons can have LED turned off', () => {
             push.grid.x[6].y[7].led_off();
             expect(sent_bytes).toEqual([144, 98, 0]);
         })
     });
 
-    describe('buttons', function() {
-        it('emit pressed events in response to button MIDI CC messages', function() {
+    describe('buttons', () => {
+        it('emit pressed events in response to button MIDI CC messages', () => {
             var called = false;
-            push.buttons.add_track.on('pressed', function() { called = true });
+            push.buttons.add_track.on('pressed', () => { called = true });
             push.receive_midi([176, 53, 120]);
             expect(called).toEqual(true);
             // this works as events emitted synchronously (could call done() in event handler)
         });
 
-        it('emit released events in response to button MIDI CC messages with velocity zero', function() {
+        it('emit released events in response to button MIDI CC messages with velocity zero', () => {
             var called = false;
-            push.buttons.add_effect.on('released', function() { called = true });
+            push.buttons.add_effect.on('released', () => { called = true });
             push.receive_midi([176, 52, 0]);
             expect(called).toEqual(true);
         });
 
-        it('can have their LED turned on', function() {
+        it('can have their LED turned on', () => {
             push.buttons.add_effect.led_on();
             expect(sent_bytes).toEqual([176, 52, 127]);
         })
 
-        it('can have their LED turned off', function() {
+        it('can have their LED turned off', () => {
             push.buttons.add_effect.led_off();
             expect(sent_bytes).toEqual([176, 52, 0]);
         })
     })
 
-    describe('knobs', function() {
-        it('emit turned events with a positive delta in response to clockwise turns of the master knob', function(done) {
-            push.knobs.master.on('turned', function(delta) {
+    describe('knobs', () => {
+        it('emit turned events with a positive delta in response to clockwise turns of the master knob', (done) => {
+            push.knobs.master.on('turned', (delta) => {
                 expect(delta).toEqual(1);
                 done();
             });
             push.receive_midi([176, 79, 1]);
         });
 
-        it('emit turned events with a positive delta in response to clockwise turns of the tempo knob', function(done) {
-            push.knobs.tempo.on('turned', function(delta) {
+        it('emit turned events with a positive delta in response to clockwise turns of the tempo knob', (done) => {
+            push.knobs.tempo.on('turned', (delta) => {
                 expect(delta).toEqual(2);
                 done();
             });
             push.receive_midi([176, 14, 2]);
         });
 
-        it('emit turned events with a negative delta in response to clockwise turns of the 1st knob', function(done) {
-            push.knobs.one.on('turned', function(delta) {
+        it('emit turned events with a negative delta in response to clockwise turns of the 1st knob', (done) => {
+            push.knobs.one.on('turned', (delta) => {
                 expect(delta).toEqual(-1);
                 done();
             });
             push.receive_midi([176, 71, 127]);
         });
 
-        it('emit turned events with a negative delta in response to clockwise turns of the swing knob', function(done) {
-            push.knobs.swing.on('turned', function(delta) {
+        it('emit turned events with a negative delta in response to clockwise turns of the swing knob', (done) => {
+            push.knobs.swing.on('turned', (delta) => {
                 expect(delta).toEqual(-2);
                 done();
             });
             push.receive_midi([176, 15, 126]);
         });
 
-        it('emit touched events when touched (receives knob MIDI note on)', function(done) {
+        it('emit touched events when touched (receives knob MIDI note on)', (done) => {
             push.knobs.one.on('touched', done);
             push.receive_midi([144, 0, 126]);
         });
 
-        it('emit released events when touching stops (receives knob MIDI note off)', function(done) {
+        it('emit released events when touching stops (receives knob MIDI note off)', (done) => {
             push.knobs.swing.on('released', done);
             push.receive_midi([144, 9, 0]);
         });
     });
 
     describe('touchstrip', () => {
-        it('emits touched events when touched (receives touchstrip MIDI note on)', function(done) {
+        it('emits touched events when touched (receives touchstrip MIDI note on)', (done) => {
             push.touchstrip.on('touched', done);
             push.receive_midi([144, 12, 126]);
         });
 
-        it('emits released events when touching stops (receives touchstrip MIDI note off)', function(done) {
+        it('emits released events when touching stops (receives touchstrip MIDI note off)', (done) => {
             push.touchstrip.on('released', done);
             push.receive_midi([144, 12, 0]);
         });
 
-        it('emits pitchbend events when the hardware is rubbed', function(done) {
+        it('emits pitchbend events when the hardware is rubbed', (done) => {
             push.touchstrip.on('pitchbend', bend_amount => {
                 expect(bend_amount).toEqual(385);
                 done();

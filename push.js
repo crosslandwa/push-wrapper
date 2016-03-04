@@ -82,7 +82,7 @@ Push.create_bound_to_web_midi_api = function(midiAccess) {
         }
     }
 
-    if (push === undefined) push = new Push({ send: function(bytes) { 'no implementation by default' } });
+    if (push === undefined) push = new Push({ send: (bytes) => { 'no implementation by default' } });
 
     for (var input = inputs.next(); input && !input.done; input = inputs.next()) {
         console.log('Found input: ' + input.value.name);
