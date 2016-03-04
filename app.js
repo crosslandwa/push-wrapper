@@ -22,11 +22,11 @@ function off_we_go(bound_push) {
     push.touchstrip.on('released', () => console.log('strip released'));
     push.touchstrip.on('pitchbend', (pb) => console.log('strip pitchbend ' + pb));
 
-    foreach([0, 1, 2, 3, 4], partial(bind_column_to_sample, push))
+    foreach([1, 2, 3, 4, 5], partial(bind_column_to_sample, push))
 }
 
 function light_up_column(push, x, velocity) {
-    foreach([0, 1, 2, 3, 4, 5, 6, 7], (y) => {
+    foreach([1, 2, 3, 4, 5, 6, 7, 8], (y) => {
         if ((velocity / 8) >= y) {
             push.grid.x[x].y[y].led_on(velocity);
         } else {
@@ -36,10 +36,10 @@ function light_up_column(push, x, velocity) {
 }
 
 function turn_off_column(push, x) {
-    foreach([1, 2, 3, 4, 5, 6, 7], (y) => {
+    foreach([2, 3, 4, 5, 6, 7, 8], (y) => {
         push.grid.x[x].y[y].led_off();
     });
-    push.grid.x[x].y[0].led_on();
+    push.grid.x[x].y[1].led_on();
 }
 
 // all buttons in the same grid column play the same note
@@ -47,17 +47,17 @@ function turn_off_column(push, x) {
 // note grid LEDs only turn off when all buttons in column released
 function bind_column_to_sample(push, x) {
     var column_count = 0;
-    foreach([0, 1, 2, 3, 4, 5, 6, 7], (y) => {
+    foreach([1, 2, 3, 4, 5, 6, 7, 8], (y) => {
         var grid_button = push.grid.y[y].x[x];
         grid_button.on('pressed', (velocity) => {
             light_up_column(push, x, velocity);
-            player(x + 60, velocity, (y + 1) / 8);
+            player(x + 59, velocity, y / 8);
             column_count++;
         });
         grid_button.on('released', () => {
             column_count--;
             if (column_count == 0) turn_off_column(push, x);
-            player(x + 60, 0);
+            player(x + 59, 0);
         });
     });
 }

@@ -14,30 +14,32 @@ GridButton.prototype.led_off = function() { this.midi_out.send([144, this.note, 
 function Grid(midi_out) {
     this.x = {};
     this.y = {};
-    for (var x = 0; x < 8; x++) {
+    for (var x = 1; x <= 8; x++) {
         this.x[x] = { y: {} }
-        for (var y = 0; y < 8; y++) {
-            this.x[x].y[y] = new GridButton(midi_out, x + (y * 8) + 36);
+        for (var y = 1; y <= 8; y++) {
+            this.x[x].y[y] = new GridButton(midi_out, (x - 1) + ((y - 1) * 8) + 36);
         }
     }
     // allow to reference grid locations by y.x (as well as x.y)
-    for (var y = 0; y < 8; y++) {
+    for (var y = 1; y <= 8; y++) {
         this.y[y] = { x: {} }
-        for (var x = 0; x < 8; x++) {
+        for (var x = 1; x <= 8; x++) {
             this.y[y].x[x] = this.x[x].y[y];
         }
     }
 }
 
 Grid.prototype.receive_midi_note = function(note, velocity) {
-    if ((36 <= note) && (note <= 99)) {
-        var indexed_from_zero = note - 36,
-            vel = parseInt(velocity),
-            button = this.x[indexed_from_zero % 8].y[parseInt(indexed_from_zero / 8)];
-        vel > 0 ? button.emit('pressed', vel) : button.emit('released');
-    } else {
+    if ((note < 36) || (note > 99)) {
         console.log('No grid button known for MIDI note: ' + note);
+        return;
     }
+    var indexed_from_zero = note - 36,
+        vel = parseInt(velocity),
+        x = (indexed_from_zero % 8) + 1,
+        y = parseInt(indexed_from_zero / 8) + 1,
+        button = this.x[x].y[y];
+    vel > 0 ? button.emit('pressed', vel) : button.emit('released');
 } 
 
 module.exports = Grid;
