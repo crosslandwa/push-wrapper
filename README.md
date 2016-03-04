@@ -19,12 +19,12 @@ I posed myself a couple of front-end/musical-tool development questions and used
 
 ### Can I write/test code in node and deploy for use in the browser?
 - Node/npm provides a fast feedback environment for rapid test driven development
-- Utilising [ports & adaptors](http://alistair.cockburn.us/Hexagonal+architecture) design pattern enables isolation of 'Push wrapper' code from the Web MIDI API used when deployed in the browser
-  - presents simple MIDI IO interfaces that are easy to stub in tests
+- Utilising [ports & adaptors](http://alistair.cockburn.us/Hexagonal+architecture) design pattern enables testing of Push wrapper code in isolation from the Web MIDI API used when deployed in the browser
 - [Browserify](http://browserify.org/) integrated into an npm workflow to bundle all the node application code into a single JS file for use in the web browser application
 
 ### Can I use the web browser as a *fast-booting* and *performant* environment (compared to e.g. MaxMSP, Ableton Live + Max4Live)?
-- TBD
+- Fast booting? Yeah! 
+- Performant? TBD
 
 ### Can i write a *reasonable looking* and *useful* app in a web browser (in a timeframe comparable to MaxMSP development)?
 - TBD
@@ -123,7 +123,7 @@ push.touchstrip.on('released', () => /* touchstrip released actions */);
 push.touchstrip.on('pitchbend', (amount) => { /* amount = 14bit value (0 -> 16383) */});
 ```
 
-# app example credits/enhancement
+# App example credits/enhancement
 
 Initial version of the app based off blog post here: http://www.keithmcmillen.com/blog/making-music-in-the-browser-web-midi-api/
 
