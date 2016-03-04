@@ -83,14 +83,14 @@ All interactions with the wrapper are documented in the [push_spec.js](spec/push
 ```
 //-----GRID-----
 
-push.grid.x[X].y[Y].on('pressed', (velocity) => { // grid pressed actions. velocity = 1 -> 127 });
-push.grid.x[X].y[Y].on('released', () => // grid released actions);
+push.grid.x[X].y[Y].on('pressed', (velocity) => { // pad pressed actions. velocity = 1 -> 127 });
+push.grid.x[X].y[Y].on('released', () => // pad released actions);
 
 push.grid.x[X].y[Y].led_on(value); // value = 1 -> 127, giving various colours
 push.grid.x[X].y[Y].led_on(); // turns on LED, defaulting to orange (value = 100)
 push.grid.x[X].y[Y].led_off(); // turns LED off
 
-// X, Y values: 1 -> 8, where x[1].y[1] is the bottom left grid pad, and x[8].y[8] is the top-right
+// X, Y values: 1 -> 8, where x[1].y[1] is the bottom left pad, and x[8].y[8] is the top-right
 
 // note can reference pads by x.y or y.x, i.e. these are equivalent
 push.grid.x[1].y[7].led_on();
