@@ -80,11 +80,11 @@ This convinience method works nicely on OS X, but on windows the Push likely rep
 
 All interactions with the wrapper are documented in the [push_spec.js](spec/push_spec.js) test suite, but can be summarised as below.
 
-```
+```javascript
 //-----GRID-----
 
-push.grid.x[X].y[Y].on('pressed', (velocity) => { // pad pressed actions. velocity = 1 -> 127 });
-push.grid.x[X].y[Y].on('released', () => // pad released actions);
+push.grid.x[X].y[Y].on('pressed', (velocity) => { /* pad pressed actions. velocity = 1 -> 127 */});
+push.grid.x[X].y[Y].on('released', () => /* pad released actions */);
 
 push.grid.x[X].y[Y].led_on(value); // value = 1 -> 127, giving various colours
 push.grid.x[X].y[Y].led_on(); // turns on LED, defaulting to orange (value = 100)
@@ -98,8 +98,8 @@ push.grid.y[7].x[1].led_on();
 
 //-----BUTTONS-----
 
-push.buttons.BUTTON_NAME.on('pressed', () => // button pressed actions);
-push.buttons.BUTTON_NAME.on('released', () => // button released actions);
+push.buttons.BUTTON_NAME.on('pressed', () => /* button pressed actions */);
+push.buttons.BUTTON_NAME.on('released', () => /* button released actions */);
 
 push.buttons.BUTTON_NAME.led_on()
 push.buttons.BUTTON_NAME.led_off()
@@ -108,17 +108,17 @@ push.buttons.BUTTON_NAME.led_off()
 
 //-----KNOBS-----
 
-push.knobs.KNOB_NAME.on('touched', () => // knob touching start actions);
-push.knobs.KNOB_NAME.on('released', () => // knob touching stop actions);
-push.knobs.KNOB_NAME.on('turned', (delta) => { // delta = number of clicks. positive = clockwise, negative = anti-clockwise });
+push.knobs.KNOB_NAME.on('touched', () => /* knob touching start actions */);
+push.knobs.KNOB_NAME.on('released', () => /* knob touching stop actions */);
+push.knobs.KNOB_NAME.on('turned', (delta) => { /* delta = number of clicks. positive = clockwise, negative = anti-clockwise */});
 
 // KNOB_NAME values: tempo, swing, one, two, three, four, five, six, seven, eight, master
 
 //-----TOUCHSTRIP-----
 
-push.touchstrip.on('touched', () => // touchstrip pushed actions);
-push.touchstrip.on('released', () => // touchstrip released actions);
-push.touchstrip.on('pitchbend', (amount) => // amount = 14bit value (0 -> 16383));
+push.touchstrip.on('touched', () => /* touchstrip pushed actions */);
+push.touchstrip.on('released', () => /* touchstrip released actions */);
+push.touchstrip.on('pitchbend', (amount) => { /* amount = 14bit value (0 -> 16383) */});
 ```
 
 # app example credits/enhancement
