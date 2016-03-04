@@ -10,6 +10,12 @@ util.inherits(GridButton, EventEmitter);
 
 GridButton.prototype.led_on = function(value) { this.midi_out.send([144, this.note, value ? value : 100]) }
 GridButton.prototype.led_off = function() { this.midi_out.send([144, this.note, 0]) }
+GridButton.prototype.led_rgb = function(r, g, b) {
+    var index = this.note - 36,
+        msb = [r, g, b].map((x) => (x & 240) >> 4),
+        lsb = [r, g, b].map((x) => x & 15);
+    this.midi_out.send([240, 71, 127, 21, 4, 0, 8, index, 0, msb[0], lsb[0], msb[1], lsb[1], msb[2], lsb[2], 247]);
+}
 
 function Grid(midi_out) {
     this.x = {};

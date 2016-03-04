@@ -22,7 +22,7 @@ describe('Ableton Push wrapper', () => {
     });
 
     describe('grid', () => {
-        it('emits pressed events with velocity in response to grid MIDI note messages', (done) => {
+        it('emits pressed events with velocity in response to pad MIDI note messages', (done) => {
             push.grid.x[1].y[2].on('pressed', (velocity) => {
                 expect(velocity).toEqual(123);
                 done();
@@ -30,12 +30,12 @@ describe('Ableton Push wrapper', () => {
             push.receive_midi([144, 44, 123]);
         });
 
-        it('emits released events in response to grid MIDI note-off messages', (done) => {
+        it('emits released events in response to pad MIDI note-off messages', (done) => {
             push.grid.y[1].x[2].on('released', done); // note can refer to grid locations x.y and y.x
             push.receive_midi([144, 37, 0]);
         });
 
-        it('buttons can have LED turned on', () => {
+        it('pads can have LED turned on', () => {
             push.grid.x[8].y[8].led_on(101);
             expect(sent_bytes).toEqual([144, 99, 101]);
 
@@ -43,10 +43,15 @@ describe('Ableton Push wrapper', () => {
             expect(sent_bytes).toEqual([144, 91, 100]); // default colour of 100 if 'velocity' not provided
         })
 
-        it('buttons can have LED turned off', () => {
+        it('pads can have LED turned off', () => {
             push.grid.x[7].y[8].led_off();
             expect(sent_bytes).toEqual([144, 98, 0]);
         })
+
+        it('pad LEDs can be controlled by RGB values', () => {
+            push.grid.x[7].y[1].led_rgb(216, 80, 255);
+            expect(sent_bytes).toEqual([240, 71, 127, 21, 4, 0, 8, 6, 0, 13, 8, 5, 0, 15, 15, 247]);
+        });
     });
 
     describe('buttons', () => {

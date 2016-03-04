@@ -91,6 +91,7 @@ push.grid.x[X].y[Y].on('released', () => /* pad released actions */);
 push.grid.x[X].y[Y].led_on(value); // value = 1 -> 127, giving various colours
 push.grid.x[X].y[Y].led_on(); // turns on LED, defaulting to orange (value = 100)
 push.grid.x[X].y[Y].led_off(); // turns LED off
+push.grid.x[X].y[Y].led_rgb(r, g, b); // specify LED by RGB values (0-255)
 
 // X, Y values: 1 -> 8, where x[1].y[1] is the bottom left pad, and x[8].y[8] is the top-right
 
