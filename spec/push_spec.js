@@ -61,11 +61,24 @@ describe('Ableton Push wrapper', () => {
             push.control.state.one.on('pressed', () => state_control_button_pressed = true);
             push.control.selection.five.on('pressed', () => selection_control_button_pressed = true);
 
-            push.receive_midi([176, 102, 120]);
-            push.receive_midi([176, 24, 120]);
+            push.receive_midi([176, 102, 127]);
+            push.receive_midi([176, 24, 127]);
 
             expect(state_control_button_pressed).toEqual(true);
             expect(selection_control_button_pressed).toEqual(true);
+        });
+
+        it('emit released events in response receiving control pad MIDI CC messages', () => {
+            var state_control_button_released = false,
+                selection_control_button_released = false;
+            push.control.state.one.on('released', () => state_control_button_released = true);
+            push.control.selection.five.on('released', () => selection_control_button_released = true);
+
+            push.receive_midi([176, 102, 0]);
+            push.receive_midi([176, 24, 0]);
+
+            expect(state_control_button_released).toEqual(true);
+            expect(selection_control_button_released).toEqual(true);
         });
     });
 
