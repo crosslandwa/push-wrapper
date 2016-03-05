@@ -4,6 +4,8 @@ const Push = require('./push.js'),
     foreach = require('lodash.foreach'),
     partial = require('lodash.partial');
 
+var playbackRate = 1;
+
 window.addEventListener('load', () => {
     if (navigator.requestMIDIAccess) {
         navigator.requestMIDIAccess({ sysex: false })
@@ -20,7 +22,7 @@ function off_we_go(bound_push) {
     push.knobs.one.on('turned', (delta) => {console.log('knob 1: ' + delta)});
     push.touchstrip.on('pressed', () => console.log('strip pressed'));
     push.touchstrip.on('released', () => console.log('strip released'));
-    push.touchstrip.on('pitchbend', (pb) => console.log('strip pitchbend ' + pb));
+    push.touchstrip.on('pitchbend', (pb) => playbackRate = pb > 8192 ? pb / 4096 : pb / 8192);
 
     foreach([1, 2, 3, 4, 5], partial(bind_column_to_sample, push))
 }
@@ -51,7 +53,7 @@ function bind_column_to_sample(push, x) {
         var grid_button = push.grid.y[y].x[x];
         grid_button.on('pressed', (velocity) => {
             light_up_column(push, x, velocity);
-            player(x + 59, velocity, y / 8);
+            player(x + 59, velocity, y);
             column_count++;
         });
         grid_button.on('released', () => {
@@ -133,15 +135,16 @@ function addAudioProperties(object) {
     object.source = object.dataset.sound;
     loadAudio(object, object.source);
     object.play = (volume, f) => {
-        var freqFactor = (f !== undefined) ? f : 1;
+        var freqFactor = (f !== undefined) ? f : 8;
 
         var s = context.createBufferSource();
         var f = context.createBiquadFilter();
-        f.frequency.value = freqFactor * freqFactor * 12000; // TODO exponentially scaled
+        f.frequency.value = [0, 100, 200, 400, 800, 2000, 6000, 10000, 20000][freqFactor]
         var g = context.createGain();
         var v;
         s.buffer = object.buffer;
-        s.playbackRate.value = randomRange(0.5, 2);
+        // s.playbackRate.value = randomRange(0.5, 2);
+        s.playbackRate.value = playbackRate;
         if (volume) {
             v = rangeMap(volume, 1, 127, 0.2, 2);
             s.connect(f);
