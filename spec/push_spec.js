@@ -54,6 +54,21 @@ describe('Ableton Push wrapper', () => {
         });
     });
 
+    describe('control pads', () => {
+        it('emit pressed events in response receiving control pad MIDI CC messages', () => {
+            var state_control_button_pressed = false,
+                selection_control_button_pressed = false;
+            push.control.state.one.on('pressed', () => state_control_button_pressed = true);
+            push.control.selection.five.on('pressed', () => selection_control_button_pressed = true);
+
+            push.receive_midi([176, 102, 120]);
+            push.receive_midi([176, 24, 120]);
+
+            expect(state_control_button_pressed).toEqual(true);
+            expect(selection_control_button_pressed).toEqual(true);
+        });
+    });
+
     describe('buttons', () => {
         it('emit pressed events in response to button MIDI CC messages', () => {
             var called = false;
@@ -114,7 +129,7 @@ describe('Ableton Push wrapper', () => {
             push.receive_midi([176, 15, 126]);
         });
 
-        it('emit touched events when touched (receives knob MIDI note on)', (done) => {
+        it('emit pressed events when pressed (receives knob MIDI note on)', (done) => {
             push.knobs.one.on('pressed', done);
             push.receive_midi([144, 0, 126]);
         });
@@ -126,7 +141,7 @@ describe('Ableton Push wrapper', () => {
     });
 
     describe('touchstrip', () => {
-        it('emits touched events when touched (receives touchstrip MIDI note on)', (done) => {
+        it('emits pressed events when pressed (receives touchstrip MIDI note on)', (done) => {
             push.touchstrip.on('pressed', done);
             push.receive_midi([144, 12, 126]);
         });
@@ -150,7 +165,7 @@ describe('Ableton Push wrapper', () => {
             push.touchstrip.on('released', () => emittedEvents.push({ 'event': 'released' }));
             push.touchstrip.on('pitchbend', (value) => emittedEvents.push({ 'event': 'pitchbend', 'value': value }));
 
-            push.receive_midi([144, 12, 126]); // touched
+            push.receive_midi([144, 12, 126]); // pressed
             push.receive_midi([224, 1, 3]);
             push.receive_midi([224, 2, 3]);
             push.receive_midi([224, 0, 64]); // hardware sends PB 64 (8192) before sending released event

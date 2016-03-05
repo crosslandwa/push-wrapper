@@ -5,7 +5,8 @@ const EventEmitter = require('events'),
     Buttons = require('./src/buttons.js'),
     Knobs = require('./src/knobs'),
     Grid = require('./src/grid.js'),
-    Touchstrip = require('./src/touchstrip.js');
+    Touchstrip = require('./src/touchstrip.js'),
+    ControlPads = require('./src/control-pads.js');
 
 function Push(midi_out) {
     EventEmitter.call(this);
@@ -14,6 +15,7 @@ function Push(midi_out) {
     this.knobs = new Knobs();
     this.grid = new Grid(midi_out);
     this.touchstrip = new Touchstrip();
+    this.control = new ControlPads(midi_out);
 }
 util.inherits(Push, EventEmitter);
 
@@ -21,6 +23,10 @@ function handle_midi_cc(push, index, value) {
     var module = push.buttons;
     if ((index == 14) || (index == 15) || ((index >= 71) && (index <= 79))) {
         module = push.knobs;
+    }
+
+    if (((20 <= index) && (index <= 27)) || ((102 <= index) && (index <= 109))) {
+        module = push.control;
     }
 
     module.receive_midi_cc(index, value);
