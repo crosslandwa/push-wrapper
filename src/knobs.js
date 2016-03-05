@@ -45,7 +45,7 @@ Knobs.prototype.receive_midi_cc = function(index, value) {
 Knobs.prototype.receive_midi_note = function(note, velocity) {
     if (noteToKnobMap.hasOwnProperty(note)) { 
         var knob_name = noteToKnobMap[note];
-        var event_name = velocity > 0 ? 'touched' : 'released';
+        var event_name = velocity > 0 ? 'pressed' : 'released';
         this[knob_name].emit(event_name);
     } else {
         console.log('No knob known for note: ' + note);

@@ -18,7 +18,7 @@ TouchStrip.prototype.receive_midi_note = function(note, velocity) {
     }
 
     if (velocity > 0) {
-        this.emit('touched');
+        this.emit('pressed');
     } else {
         this.emit('released');
         this.emit('pitchbend', 8192);

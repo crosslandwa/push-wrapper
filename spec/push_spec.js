@@ -115,7 +115,7 @@ describe('Ableton Push wrapper', () => {
         });
 
         it('emit touched events when touched (receives knob MIDI note on)', (done) => {
-            push.knobs.one.on('touched', done);
+            push.knobs.one.on('pressed', done);
             push.receive_midi([144, 0, 126]);
         });
 
@@ -127,7 +127,7 @@ describe('Ableton Push wrapper', () => {
 
     describe('touchstrip', () => {
         it('emits touched events when touched (receives touchstrip MIDI note on)', (done) => {
-            push.touchstrip.on('touched', done);
+            push.touchstrip.on('pressed', done);
             push.receive_midi([144, 12, 126]);
         });
 
@@ -146,7 +146,7 @@ describe('Ableton Push wrapper', () => {
 
         it('emits a default pitchbend event after being released', () => {
             var emittedEvents = [];
-            push.touchstrip.on('touched', () => emittedEvents.push({ 'event': 'touched' }));
+            push.touchstrip.on('pressed', () => emittedEvents.push({ 'event': 'pressed' }));
             push.touchstrip.on('released', () => emittedEvents.push({ 'event': 'released' }));
             push.touchstrip.on('pitchbend', (value) => emittedEvents.push({ 'event': 'pitchbend', 'value': value }));
 
@@ -157,7 +157,7 @@ describe('Ableton Push wrapper', () => {
             push.receive_midi([144, 12, 0]); // released
             
             expect(emittedEvents.length).toEqual(5);
-            expect(emittedEvents[0].event).toEqual('touched');
+            expect(emittedEvents[0].event).toEqual('pressed');
 
             expect(emittedEvents[1].event).toEqual('pitchbend');
             expect(emittedEvents[1].value).toEqual(385);
