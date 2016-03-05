@@ -23,7 +23,7 @@ function handle_midi_cc(push, index, value) {
     var module;
 
     switch (true) {
-        case ((index == 14) || (index == 15) || ((index >= 71) && (index <= 79))):
+        case (push.knobs.handles_cc(index)):
             module = push.knobs;
             break;
         case (push.control.handles_cc(index)):

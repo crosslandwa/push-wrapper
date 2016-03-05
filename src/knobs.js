@@ -32,14 +32,14 @@ function Knobs() {
     foreach(knobMap, (value, key) => this[key] = new Knob());
 }
 
+Knobs.prototype.handles_cc = function(index) {
+    return ccToKnobMap.hasOwnProperty(index);
+}
+
 Knobs.prototype.receive_midi_cc = function(index, value) {
-    if (ccToKnobMap.hasOwnProperty(index)) {
-        var knob_name = ccToKnobMap[index];
-        var delta = value < 64 ? value : value - 128;
-        this[knob_name].emit('turned', delta);
-    } else {
-        console.log('No knob known for CC: ' + index);
-    }
+    var knob_name = ccToKnobMap[index];
+    var delta = value < 64 ? value : value - 128;
+    this[knob_name].emit('turned', delta);
 }
 
 Knobs.prototype.receive_midi_note = function(note, velocity) {
