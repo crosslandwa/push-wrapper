@@ -26,7 +26,7 @@ function handle_midi_cc(push, index, value) {
         case ((index == 14) || (index == 15) || ((index >= 71) && (index <= 79))):
             module = push.knobs;
             break;
-        case (((20 <= index) && (index <= 27)) || ((102 <= index) && (index <= 109))):
+        case (push.control.handles_cc(index)):
             module = push.control;
             break
         case (push.buttons.handles_cc(index)):

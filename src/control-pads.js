@@ -41,11 +41,11 @@ function row(cc) {
     return cc < 100 ? 'selection' : 'state';
 }
 
+ControlPads.prototype.handles_cc = function(index) {
+    return ccToPadMap.hasOwnProperty(index);
+}
+
 ControlPads.prototype.receive_midi_cc = function(cc, value) {
-    if (!ccToPadMap.hasOwnProperty(cc)) {
-        console.log('No button known for CC: ' + cc);
-        return;
-    }
     var pad_name = ccToPadMap[cc];
     this[row(cc)][pad_name].emit(pressed_or_released(value));
 } 
