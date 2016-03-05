@@ -20,13 +20,17 @@ function Push(midi_out) {
 util.inherits(Push, EventEmitter);
 
 function handle_midi_cc(push, index, value) {
-    var module = push.buttons;
-    if ((index == 14) || (index == 15) || ((index >= 71) && (index <= 79))) {
-        module = push.knobs;
-    }
+    var module;
 
-    if (((20 <= index) && (index <= 27)) || ((102 <= index) && (index <= 109))) {
-        module = push.control;
+    switch (true) {
+        case ((index == 14) || (index == 15) || ((index >= 71) && (index <= 79))):
+            module = push.knobs;
+            break;
+        case (((20 <= index) && (index <= 27)) || ((102 <= index) && (index <= 109))):
+            module = push.control;
+            break
+        default:
+            module = push.buttons;
     }
 
     module.receive_midi_cc(index, value);
