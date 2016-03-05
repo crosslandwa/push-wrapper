@@ -68,14 +68,12 @@ function Buttons(midi_out) {
 }
 
 Buttons.prototype.receive_midi_cc = function(index, value) {
-    if (ccToButtonMap.hasOwnProperty(index)) {
-        var button_name = ccToButtonMap[index];
-        console.log(button_name + ' ' + pressed_or_released(value));
-        this[button_name].emit(pressed_or_released(value));
-    } else {
-        console.log('No button known for CC: ' + index);
-    }
-} 
+    this[ccToButtonMap[index]].emit(pressed_or_released(value));
+}
+
+Buttons.prototype.handles_cc = function(index) {
+    return ccToButtonMap.hasOwnProperty(index);
+}
 
 function pressed_or_released(velocity) {
     return parseInt(velocity) > 0 ? 'pressed' : 'released';

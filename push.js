@@ -29,8 +29,12 @@ function handle_midi_cc(push, index, value) {
         case (((20 <= index) && (index <= 27)) || ((102 <= index) && (index <= 109))):
             module = push.control;
             break
-        default:
+        case (push.buttons.handles_cc(index)):
             module = push.buttons;
+            break;
+        default:
+            console.log('No known mapping for CC: ' + index);
+            return;
     }
 
     module.receive_midi_cc(index, value);
