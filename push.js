@@ -20,24 +20,15 @@ function Push(midi_out) {
 util.inherits(Push, EventEmitter);
 
 function handle_midi_cc(push, index, value) {
-    var module;
+    var module = [push.knobs, push.control, push.buttons]
+        .filter((module) => module.handles_cc(index));
 
-    switch (true) {
-        case (push.knobs.handles_cc(index)):
-            module = push.knobs;
-            break;
-        case (push.control.handles_cc(index)):
-            module = push.control;
-            break
-        case (push.buttons.handles_cc(index)):
-            module = push.buttons;
-            break;
-        default:
-            console.log('No known mapping for CC: ' + index);
-            return;
+    if (module.length == 0) {
+        console.log('No known mapping for CC: ' + index);
+        return;
     }
 
-    module.receive_midi_cc(index, value);
+    module[0].receive_midi_cc(index, value);
 } 
 
 function handle_midi_note(push, note, velocity) {
