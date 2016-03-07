@@ -8,6 +8,17 @@ node-push can be compiled for use as a MIDI controller in a Web MIDI/Audio API e
 
 ## how to use
 
+Installation
+
+    cd node-push
+    sudo npm install -g browserify
+    npm install // installs dependencies
+    npm run build // bundles all example-site/app.js and all its dependencies into single file example-site/bundle.js
+
+Load app in browser
+
+    // TODO detail generating cert and starting HTTPS server
+
 Add details for
 - example app
 - compiling

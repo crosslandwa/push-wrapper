@@ -17,7 +17,7 @@
     "scripts": {
         "test": "jasmine",
         "start": "node app.js",
-        "build": "browserify app.js -o bundle.js"
+        "build": "browserify ./example-site/app.js -o ./example-site/bundle.js"
     },
     "author": "https://github.com/crosslandwa",
     "license": "MIT"

@@ -1,6 +1,6 @@
 // Example script that creates and uses Push
 
-const Push = require('./push.js'),
+const Push = require('../push.js'),
     foreach = require('lodash.foreach'),
     partial = require('lodash.partial');
 
@@ -8,7 +8,7 @@ var playbackRate = 1;
 
 window.addEventListener('load', () => {
     if (navigator.requestMIDIAccess) {
-        navigator.requestMIDIAccess({ sysex: false })
+        navigator.requestMIDIAccess({ sysex: true })
             .then(Push.create_bound_to_web_midi_api)
             .then(off_we_go)
             .catch(console.error);
