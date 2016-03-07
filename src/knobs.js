@@ -32,8 +32,8 @@ function Knobs() {
     foreach(knobMap, (value, key) => this[key] = new Knob());
 }
 
-Knobs.prototype.handles_cc = function(index) {
-    return ccToKnobMap.hasOwnProperty(index);
+Knobs.prototype.handled_ccs = function(array) {
+    return Object.keys(ccToKnobMap);
 }
 
 Knobs.prototype.receive_midi_cc = function(index, value) {

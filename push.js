@@ -6,7 +6,8 @@ const EventEmitter = require('events'),
     Knobs = require('./src/knobs'),
     Grid = require('./src/grid.js'),
     Touchstrip = require('./src/touchstrip.js'),
-    ControlPads = require('./src/control-pads.js');
+    ControlPads = require('./src/control-pads.js'),
+    foreach = require('lodash.foreach');
 
 function Push(midi_out) {
     EventEmitter.call(this);
@@ -16,20 +17,21 @@ function Push(midi_out) {
     this.grid = new Grid(midi_out);
     this.touchstrip = new Touchstrip();
     this.control = new ControlPads(midi_out);
+    this.ccMap = [];
+
+    foreach(this.knobs.handled_ccs(), (value, key) => this.ccMap[value] = this.knobs);
+    foreach(this.control.handled_ccs(), (value, key) => this.ccMap[value] = this.control);
+    foreach(this.buttons.handled_ccs(), (value, key) => this.ccMap[value] = this.buttons);
 }
 util.inherits(Push, EventEmitter);
 
 function handle_midi_cc(push, index, value) {
-    var module = [push.knobs, push.control, push.buttons]
-        .filter((module) => module.handles_cc(index));
-
-    if (module.length == 0) {
+    if (index in push.ccMap) {
+        push.ccMap[index].receive_midi_cc(index, value);
+    } else {
         console.log('No known mapping for CC: ' + index);
-        return;
     }
-
-    module[0].receive_midi_cc(index, value);
-} 
+}
 
 function handle_midi_note(push, note, velocity) {
     var module = note < 12 ? push.knobs : push.grid;

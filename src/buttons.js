@@ -71,8 +71,8 @@ Buttons.prototype.receive_midi_cc = function(index, value) {
     this[ccToButtonMap[index]].emit(pressed_or_released(value));
 }
 
-Buttons.prototype.handles_cc = function(index) {
-    return ccToButtonMap.hasOwnProperty(index);
+Buttons.prototype.handled_ccs = function(array) {
+    return Object.keys(ccToButtonMap);
 }
 
 function pressed_or_released(velocity) {

@@ -41,8 +41,8 @@ function row(cc) {
     return cc < 100 ? 'selection' : 'state';
 }
 
-ControlPads.prototype.handles_cc = function(index) {
-    return ccToPadMap.hasOwnProperty(index);
+ControlPads.prototype.handled_ccs = function(array) {
+    return Object.keys(ccToPadMap);
 }
 
 ControlPads.prototype.receive_midi_cc = function(cc, value) {
