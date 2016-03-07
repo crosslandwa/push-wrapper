@@ -135,6 +135,16 @@ push.knobs.KNOB_NAME.on('turned', (delta) => { /* delta = number of clicks. posi
 push.touchstrip.on('pressed', () => /* touchstrip pushed actions */);
 push.touchstrip.on('released', () => /* touchstrip released actions */);
 push.touchstrip.on('pitchbend', (amount) => { /* amount = 14bit value (0 -> 16383) */});
+
+//-----LCDS-----
+push.lcd.x[X].y[Y].update(text); /* text is a 1-8 character string */
+
+// X values: 1 -> 8, Y values: 1 -> 4
+// where x[1].y[1] is the bottom left 8 character segment of the LCD, and x[8].y[4] is the top-right
+
+// note can reference LCD segments by x.y or y.x, i.e. these are equivalent
+push.lcd.x[1].y[4].update('bananas');
+push.lcd.y[4].x[1].update('bananas');
 ```
 
 # App example credits/enhancement
