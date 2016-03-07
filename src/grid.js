@@ -23,14 +23,8 @@ function Grid(midi_out) {
     for (var x = 1; x <= 8; x++) {
         this.x[x] = { y: {} }
         for (var y = 1; y <= 8; y++) {
-            this.x[x].y[y] = new GridButton(midi_out, (x - 1) + ((y - 1) * 8) + 36);
-        }
-    }
-    // allow to reference grid locations by y.x (as well as x.y)
-    for (var y = 1; y <= 8; y++) {
-        this.y[y] = { x: {} }
-        for (var x = 1; x <= 8; x++) {
-            this.y[y].x[x] = this.x[x].y[y];
+            if (this.y[y] === undefined) this.y[y] = { x: {} };
+            this.y[y].x[x] = this.x[x].y[y] = new GridButton(midi_out, (x - 1) + ((y - 1) * 8) + 36);
         }
     }
 }

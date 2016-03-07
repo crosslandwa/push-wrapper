@@ -22,13 +22,8 @@ function LCDs(midi_out) {
     foreach(one_to_eight, (x) => {
         this.x[x] = { y: {} };
         foreach(one_to_four, (y) => {
-            this.x[x].y[y] = new LCDSegment(this, y);
-        })
-    });
-    foreach(one_to_four, (y) => {
-        this.y[y] = { x: {} };
-        foreach(one_to_eight, (x) => {
-            this.y[y].x[x] = this.x[x].y[y];
+            if (this.y[y] === undefined) this.y[y] = { x: {} };
+            this.y[y].x[x] = this.x[x].y[y] = new LCDSegment(this, y)
         })
     });
 }
