@@ -6,39 +6,45 @@ A javascript wrapper for using the Ableton Push as a MIDI controller via a simpl
 
 node-push can be compiled for use as a MIDI controller in a Web MIDI/Audio API enabled web browser.
 
+### Disclaimer
+
+The code is written using javascript [ES2015/ES6](http://es6-features.org/) so expects native Promises and other language features to be available. It is only **known** to work in Google Chrome/OS X...
+
 ## how to use
 
-Installation
+Assuming you have node/npm installed on your system...
+
+**Running tests**
+
+    npm test
+
+**Compiling for running in browser**
+
+    npm run build
+
+### Example app
+
+Whilst the Push wrapper **is** the product, this repo ships with an example application to see it in action. To prepare and run the example app (should this ship ready compiled?) complete the following steps
+
+**Installation**
 
     cd node-push
     sudo npm install -g browserify
-    npm install // installs dependencies
-    npm run build // bundles all example-site/app.js and all its dependencies into single file example-site/bundle.js
+    npm install # installs dependencies
+    npm run build # bundles example-site/app.js and all its dependencies into single file example-site/bundle.js
 
-Load app in browser
+**Start web server**
 
-    // TODO detail generating cert and starting HTTPS server
+Needs https webserver (for sysex). Python one works on Mac OS X. First time run have to generate certificate
 
-Add details for
-- example app
-- compiling
-- running tests
+    cd example-site
+    python simple-http-server.py # Fill in details for certificate when prompted
 
-## Why?
+**Load app in browser**
 
-I posed myself a couple of front-end/musical-tool development questions and used this project to answer them.
-
-### Can I write/test code in node and deploy for use in the browser?
-- Node/npm provides a fast feedback environment for rapid test driven development
-- Utilising [ports & adaptors](http://alistair.cockburn.us/Hexagonal+architecture) design pattern enables testing of Push wrapper code in isolation from the Web MIDI API used when deployed in the browser
-- [Browserify](http://browserify.org/) integrated into an npm workflow to bundle all the node application code into a single JS file for use in the web browser application
-
-### Can I use the web browser as a *fast-booting* and *performant* environment (compared to e.g. MaxMSP, Ableton Live + Max4Live)?
-- Fast booting? Yeah! 
-- Performant? TBD
-
-### Can i write a *reasonable looking* and *useful* app in a web browser (in a timeframe comparable to MaxMSP development)?
-- TBD
+- Navigate to xxx in Chrome
+- Accept invalid cert
+- Allow browser use of MIDI devices
 
 # API documentation
 
@@ -152,7 +158,3 @@ push.lcd.y[4].x[1].update('bananas');
 Initial version of the app based off blog post here: http://www.keithmcmillen.com/blog/making-music-in-the-browser-web-midi-api/
 
 I intend to create my own example app to include with the wrapper to demonstrate its use...
-
-# Disclaimer
-
-The code is written using javascript [ES2015/ES6](http://es6-features.org/) so expects native Promises and other language features to be available. It is only **known** to work in Google Chrome/OS X...
