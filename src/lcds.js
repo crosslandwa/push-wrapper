@@ -20,6 +20,13 @@ function LCDs(midi_out) {
     this.x = {};
     this.y = {};
     this.init();
+
+    this.x[8].y[4].update(' powered');
+    this.x[8].y[3].update('      by');
+    this.x[8].y[2].update('   node-');
+    this.x[8].y[1].update('    push');
+
+    foreach(one_to_four, row => this.update_row(row));
 }
 
 LCDs.prototype.init = function() {
@@ -30,11 +37,6 @@ LCDs.prototype.init = function() {
             this.y[y].x[x] = this.x[x].y[y] = new LCDSegment(this, y)
         })
     });
-
-    this.x[8].y[4].update(' powered');
-    this.x[8].y[3].update('      by');
-    this.x[8].y[2].update('   node-');
-    this.x[8].y[1].update('    push');
 
     foreach(one_to_four, row => this.update_row(row));
 }

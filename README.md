@@ -73,7 +73,7 @@ push.receive_midi(midi_bytes); // wrapper expects midi_bytes to be an array
 If you are using the Web MIDI API you can bind a MIDI input/output ports to the Push wrapper. It's no coincidence the interfaces expected by the wrapper closely match those exposed by the Web MIDI API:
 
 ```javascript
-navigator.requestMIDIAccess().then((midiAccess) => {
+navigator.requestMIDIAccess({ sysex: true }).then((midiAccess) => {
     var input = midiAccess.inputs.values()[0],
         output = midiAccess.outputs.values()[0];
 
@@ -86,7 +86,7 @@ A static factory method is provided to encapsulate binding the Push wrapper to W
 
 ```javascript
 const Push = require('./push.js');
-navigator.requestMIDIAccess()
+navigator.requestMIDIAccess({ sysex: true })
     .then(Push.create_bound_to_web_midi_api)
     .then((push) => {
         // do stuff with the wrapper here    
@@ -108,15 +108,13 @@ push.grid.x[X].y[Y].on('released', () => /* pad released actions */);
 push.grid.x[X].y[Y].led_on(value); // value = 1 -> 127, giving various colours
 push.grid.x[X].y[Y].led_on(); // turns on LED, defaulting to orange (value = 100)
 push.grid.x[X].y[Y].led_off(); // turns LED off
+push.grid.x[X].y[Y].led_rgb(r, g, b); // specify LED by RGB values (0-255)
 
 // X, Y values: 1 -> 8, where x[1].y[1] is the bottom left pad, and x[8].y[8] is the top-right
 
 // note can reference pads by x.y or y.x, i.e. these are equivalent
 push.grid.x[1].y[7].led_on();
 push.grid.y[7].x[1].led_on();
-
-// finally, this only works in the browser on pages using HTTPS (and requires MIDI Access with sysex:true)
-push.grid.x[X].y[Y].led_rgb(r, g, b); // specify LED by RGB values (0-255)
 
 //-----BUTTONS-----
 
@@ -143,6 +141,8 @@ push.touchstrip.on('released', () => /* touchstrip released actions */);
 push.touchstrip.on('pitchbend', (amount) => { /* amount = 14bit value (0 -> 16383) */});
 
 //-----LCDS-----
+push.lcd.init() /* clears all LCD text */
+
 push.lcd.x[X].y[Y].update(text); /* text is a 1-8 character string */
 
 // X values: 1 -> 8, Y values: 1 -> 4

@@ -84,6 +84,8 @@ describe('Ableton Push wrapper', () => {
 
     describe('lcd strips', () => {
         it('can be updated with 8 chars of text across four rows per channel', () => {
+            push.lcd.init();
+
             push.lcd.x[1].y[1].update('more-than-8');
             expect(sent_bytes).toEqual([240, 71, 127, 21, 27, 0, 69, 0,
                 109, 111, 114, 101, 45, 116, 104, 97, // char codes for "m o r e - t h a"
@@ -97,7 +99,7 @@ describe('Ableton Push wrapper', () => {
                 32, 32, 32, 32, 32, 32, 32, 32,
                 32, 32, 32, 32, 32, 32, 32, 32,
                 32,
-                32, 32, 32, 32, 112, 117, 115, 104, // " powered" / "      by" / "   node-" / "    push"
+                32, 32, 32, 32, 32, 32, 32, 32,
                 247]
             );
 
@@ -114,7 +116,7 @@ describe('Ableton Push wrapper', () => {
                 32, 32, 32, 32, 32, 32, 32, 32,
                 32, 32, 32, 32, 32, 32, 32, 32,
                 32,
-                32, 32, 32, 32, 112, 117, 115, 104, // " powered" / "      by" / "   node-" / "    push"
+                32, 32, 32, 32, 32, 32, 32, 32,
                 247]
             );
 
@@ -131,10 +133,40 @@ describe('Ableton Push wrapper', () => {
                 32, 32, 32, 32, 32, 32, 32, 32,
                 32, 32, 32, 32, 32, 32, 32, 32,
                 32,
-                32, 112, 111, 119, 101, 114, 101, 100,  // " powered" / "      by" / "   node-" / "    push"
+                32, 32, 32, 32, 32, 32, 32, 32,
                 247]
             );
-        })
+        });
+
+        it('can be initialised so all LCDs are blank', () => {
+            var sent_bytes = [];
+            push = new Push({ send: (bytes) => { sent_bytes = sent_bytes.concat(bytes) } });
+
+            // on load Push initialises LCD with 'powered by node-push' text, so clear before test
+            sent_bytes = [];
+            push.lcd.init();
+
+            var blank_line = [32, 32, 32, 32, 32, 32, 32, 32,
+                32,
+                32, 32, 32, 32, 32, 32, 32, 32,
+                32, 32, 32, 32, 32, 32, 32, 32,
+                32,
+                32, 32, 32, 32, 32, 32, 32, 32,
+                32, 32, 32, 32, 32, 32, 32, 32,
+                32,
+                32, 32, 32, 32, 32, 32, 32, 32,
+                32, 32, 32, 32, 32, 32, 32, 32,
+                32,
+                32, 32, 32, 32, 32, 32, 32, 32
+            ];
+
+            expect(sent_bytes).toEqual(
+                [240, 71, 127, 21, 27, 0, 69, 0].concat(blank_line).concat([247])
+                .concat([240, 71, 127, 21, 26, 0, 69, 0].concat(blank_line).concat([247]))
+                .concat([240, 71, 127, 21, 25, 0, 69, 0].concat(blank_line).concat([247]))
+                .concat([240, 71, 127, 21, 24, 0, 69, 0].concat(blank_line).concat([247]))
+            );
+        });
     });
 
     describe('buttons', () => {
