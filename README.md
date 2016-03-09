@@ -87,7 +87,8 @@ push.grid.x[X].y[Y].led_on(); // turns on LED, defaulting to orange (value = 100
 push.grid.x[X].y[Y].led_off(); // turns LED off
 push.grid.x[X].y[Y].led_rgb(r, g, b); // specify LED by RGB values (0-255)
 
-// X, Y values: 1 -> 8, where x[1].y[1] is the bottom left pad, and x[8].y[8] is the top-right
+// X, Y values: 1 -> 8
+// where x[1].y[1] is the bottom left pad, and x[8].y[8] is the top-right
 
 // note can reference pads by x.y or y.x, i.e. these are equivalent
 push.grid.x[1].y[7].led_on();
@@ -101,7 +102,12 @@ push.buttons.BUTTON_NAME.on('released', () => /* button released actions */);
 push.buttons.BUTTON_NAME.led_on()
 push.buttons.BUTTON_NAME.led_off()
 
-// BUTTON_NAME values: tap_tempo, metronome, master, stop, 1/4, 1/4t, 1/8, 1/8t, 1/16, 1/16t, 1/32, 1/32t, left, right, up, down, select, shift, note, session, add_effect, add_track, octave_down, octave_up, repeat, accent, scales, user, mute, solo, step_in, step_out, play, rec, new, duplicate, automation, fixed_length, device, browse, track, clip, volume, pan_&_send, quantize, double, delete, undo
+// BUTTON_NAME values:
+// tap_tempo, metronome, master, stop, 1/4, 1/4t, 1/8, 1/8t, 1/16, 1/16t, 1/32, 1/32t,
+// left, right, up, down, select, shift, note, session, add_effect, add_track,
+// octave_down, octave_up, repeat, accent, scales, user, mute, solo, step_in, step_out,
+// play, rec, new, duplicate, automation, fixed_length, device, browse, track, clip,
+// volume, pan_&_send, quantize, double, delete, undo
 
 //-----KNOBS-----
 
@@ -109,7 +115,8 @@ push.knobs.KNOB_NAME.on('pressed', () => /* knob touching start actions */);
 push.knobs.KNOB_NAME.on('released', () => /* knob touching stop actions */);
 push.knobs.KNOB_NAME.on('turned', (delta) => { /* delta = number of clicks. positive = clockwise, negative = anti-clockwise */});
 
-// KNOB_NAME values: tempo, swing, one, two, three, four, five, six, seven, eight, master
+// KNOB_NAME values:
+// tempo, swing, one, two, three, four, five, six, seven, eight, master
 
 //-----TOUCHSTRIP-----
 
