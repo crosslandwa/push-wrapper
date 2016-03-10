@@ -63,8 +63,8 @@ Button.prototype.led_on = function() { this.output(127) }
 Button.prototype.led_dim = function() { this.output(1) }
 Button.prototype.led_off = function() { this.output(0) }
 
-function Buttons(midi_out) {
-    foreach(ccToButtonMap, (value, key) => this[value] = new Button(midi_out, parseInt(key)));
+function Buttons(send_cc) {
+    foreach(ccToButtonMap, (value, key) => this[value] = new Button(send_cc, parseInt(key)));
 }
 
 Buttons.prototype.receive_midi_cc = function(index, value) {
