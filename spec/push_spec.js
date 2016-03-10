@@ -66,6 +66,8 @@ describe('Ableton Push wrapper', () => {
             expect(state_control_button_released).toEqual(true);
             expect(selection_control_button_released).toEqual(true);
         });
+
+        // TODO test and document control of LEDs!
     });
 
     describe('lcd strips', () => {

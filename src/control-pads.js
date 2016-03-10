@@ -21,20 +21,19 @@ var ccToPadMap = {
     109: 'eight'
 }
 
-function Pad(midi_out, cc) {
+function Pad(send_cc, cc) {
     EventEmitter.call(this);
-    this.midi_out = midi_out;
-    this.cc = cc;
+    this.output = function(value) { send_cc(cc, value) };
 }
 util.inherits(Pad, EventEmitter);
 
-Pad.prototype.led_on = function() { this.midi_out.send([176, this.cc, 127]) }
-Pad.prototype.led_off = function() { this.midi_out.send([176, this.cc, 0]) }
+Pad.prototype.led_on = function() { this.output(127) }
+Pad.prototype.led_off = function() { this.output(0) }
 
-function ControlPads(midi_out) {
+function ControlPads(send_cc) {
     this.selection = {};
     this.state = {};
-    foreach(ccToPadMap, (value, key) => this[row(key)][value] = new Pad(midi_out, parseInt(key)));
+    foreach(ccToPadMap, (value, key) => this[row(key)][value] = new Pad(send_cc, parseInt(key)));
 }
 
 function row(cc) {

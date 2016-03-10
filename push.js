@@ -22,7 +22,7 @@ function Push(midi_out) {
     this.knobs = new Knobs();
     this.grid = new Grid(midi_out);
     this.touchstrip = new Touchstrip();
-    this.control = new ControlPads(midi_out);
+    this.control = new ControlPads(this.midi_out.send_cc);
     this.lcd = new LCDs(midi_out);
     this.ccMap = [];
 
