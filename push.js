@@ -14,13 +14,15 @@ function Push(midi_out) {
     EventEmitter.call(this);
 
     this.midi_out = {
-        send_cc: function(cc, value) { midi_out.send([176, cc, value]) }
+        send_cc: function(cc, value) { midi_out.send([176, cc, value]) },
+        send_note: function(note, velocity) { midi_out.send([144, note, velocity]) },
+        send_sysex: function(data) { midi_out.send([240, 71, 127, 21].concat(data).concat([247])) }
     }
 
     this.output_port = midi_out;
     this.buttons = new Buttons(this.midi_out.send_cc);
     this.knobs = new Knobs();
-    this.grid = new Grid(midi_out);
+    this.grid = new Grid(this.midi_out.send_note, this.midi_out.send_sysex);
     this.touchstrip = new Touchstrip();
     this.control = new ControlPads(this.midi_out.send_cc);
     this.lcd = new LCDs(midi_out);
