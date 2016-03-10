@@ -180,6 +180,11 @@ describe('Ableton Push wrapper', () => {
             push.buttons.add_effect.led_off();
             expect(sent_bytes).toEqual([176, 52, 0]);
         })
+
+        it('can have their LED turned on dimly', () => {
+            push.buttons.play.led_dim();
+            expect(sent_bytes).toEqual([176, 85, 1]);
+        })
     })
 
     describe('knobs', () => {

@@ -99,8 +99,9 @@ push.grid.y[7].x[1].led_on();
 push.buttons.BUTTON_NAME.on('pressed', () => /* button pressed actions */);
 push.buttons.BUTTON_NAME.on('released', () => /* button released actions */);
 
-push.buttons.BUTTON_NAME.led_on()
-push.buttons.BUTTON_NAME.led_off()
+push.buttons.BUTTON_NAME.led_on();
+push.buttons.BUTTON_NAME.led_dim();
+push.buttons.BUTTON_NAME.led_off();
 
 // BUTTON_NAME values:
 // tap_tempo, metronome, master, stop, 1/4, 1/4t, 1/8, 1/8t, 1/16, 1/16t, 1/32, 1/32t,
