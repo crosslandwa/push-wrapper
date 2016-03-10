@@ -7,20 +7,6 @@ describe('Ableton Push wrapper', () => {
         push = new Push({ send: (bytes) => { sent_bytes = bytes } });
     })
 
-    it('can be instantiated multiple times and act independently', () => {
-        var push_1_called = false,
-            push_2_called = false,
-            push2 = new Push({ send: (bytes) => {} });
-
-        push.buttons.add_track.on('pressed', () => { push_1_called = true });
-        push2.buttons.add_track.on('pressed', () => { push_2_called = true });
-
-        push.receive_midi([176, 53, 120]);
-
-        expect(push_1_called).toEqual(true);
-        expect(push_2_called).toEqual(false);
-    });
-
     describe('grid', () => {
         it('emits pressed events with velocity in response to pad MIDI note messages', (done) => {
             push.grid.x[1].y[2].on('pressed', (velocity) => {
