@@ -6,16 +6,16 @@ function GridButton(send_note, send_sysex, note) {
     this.note_out = function(velocity) { send_note(note, velocity) };
     this.sysex_out = function(data) { send_sysex(data) };
     this.note = note;
+    this.index = note - 36;
 }
 util.inherits(GridButton, EventEmitter);
 
 GridButton.prototype.led_on = function(value) { this.note_out(value ? value : 100) }
 GridButton.prototype.led_off = function() { this.note_out(0) }
 GridButton.prototype.led_rgb = function(r, g, b) {
-    var index = this.note - 36,
-        msb = [r, g, b].map((x) => (x & 240) >> 4),
+    var msb = [r, g, b].map((x) => (x & 240) >> 4),
         lsb = [r, g, b].map((x) => x & 15);
-    this.sysex_out([4, 0, 8, index, 0, msb[0], lsb[0], msb[1], lsb[1], msb[2], lsb[2]]);
+    this.sysex_out([4, 0, 8, this.index, 0, msb[0], lsb[0], msb[1], lsb[1], msb[2], lsb[2]]);
 }
 
 function Grid(send_note, send_sysex) {
