@@ -11,7 +11,7 @@ window.addEventListener('load', () => {
         navigator.requestMIDIAccess({ sysex: true })
             .then(Push.create_bound_to_web_midi_api)
             .then(off_we_go)
-            .catch(console.error);
+            .catch(function(error) { console.log(error.message) });
     } else {
         alert('No MIDI support in your browser');
     }
@@ -19,10 +19,31 @@ window.addEventListener('load', () => {
 
 function off_we_go(bound_push) {
     const push = bound_push;
+
+    const highlight_when_pressed = function(element) {
+        element.led_dim();
+        element.on('pressed', element.led_on);
+        element.on('released', element.led_dim);
+    }
+
+
     push.knobs.one.on('turned', (delta) => {console.log('knob 1: ' + delta)});
     push.touchstrip.on('pressed', () => console.log('strip pressed'));
     push.touchstrip.on('released', () => console.log('strip released'));
     push.touchstrip.on('pitchbend', (pb) => playbackRate = pb > 8192 ? pb / 4096 : pb / 8192);
+    foreach(push.buttons, highlight_when_pressed);
+
+    foreach(
+        ['one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight'],
+        (index) => {
+            push.control.state[index].led_dim();
+            push.control.state[index].on('pressed', push.control.state[index].led_on);
+            push.control.state[index].on('released', push.control.state[index].led_dim);
+            push.control.selection[index].led_dim();
+            push.control.selection[index].on('pressed', push.control.selection[index].led_on);
+            push.control.selection[index].on('released', push.control.selection[index].led_dim);
+        }
+    );
 
     foreach([1, 2, 3, 4, 5], partial(bind_column_to_sample, push))
 }

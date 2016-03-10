@@ -27,7 +27,8 @@ function Pad(send_cc, cc) {
 }
 util.inherits(Pad, EventEmitter);
 
-Pad.prototype.led_on = function() { this.output(127) }
+Pad.prototype.led_on = function(value) { this.output(value ? value : 4) }
+Pad.prototype.led_dim = function(value) { this.output(value ? value : 1) }
 Pad.prototype.led_off = function() { this.output(0) }
 
 function ControlPads(send_cc) {

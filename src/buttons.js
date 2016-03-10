@@ -59,7 +59,7 @@ function Button(send_cc, cc) {
 }
 util.inherits(Button, EventEmitter);
 
-Button.prototype.led_on = function() { this.output(127) }
+Button.prototype.led_on = function() { this.output(4) }
 Button.prototype.led_dim = function() { this.output(1) }
 Button.prototype.led_off = function() { this.output(0) }
 

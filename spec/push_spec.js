@@ -175,7 +175,7 @@ describe('Ableton Push wrapper', () => {
 
         it('can have their LED turned on', () => {
             push.buttons.add_effect.led_on();
-            expect(sent_bytes).toEqual([176, 52, 127]);
+            expect(sent_bytes).toEqual([176, 52, 4]);
         })
 
         it('can have their LED turned off', () => {
