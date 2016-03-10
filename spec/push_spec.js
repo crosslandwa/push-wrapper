@@ -21,6 +21,16 @@ describe('Ableton Push wrapper', () => {
             push.receive_midi([144, 37, 0]);
         });
 
+        it('emits pressed events in response to button row above grid pad MIDI note messages', (done) => {
+            push.grid.select_one.on('pressed', done)
+            push.receive_midi([176, 102, 127]);
+        });
+
+        it('emits released events in response to button row above grid pad MIDI note messages', (done) => {
+            push.grid.select_one.on('released', done)
+            push.receive_midi([176, 102, 0]);
+        });
+
         it('pads can have LED turned on', () => {
             push.grid.x[8].y[8].led_on(101);
             expect(sent_bytes).toEqual([144, 99, 101]);
@@ -38,32 +48,42 @@ describe('Ableton Push wrapper', () => {
             push.grid.x[7].y[1].led_rgb(216, 80, 255);
             expect(sent_bytes).toEqual([240, 71, 127, 21, 4, 0, 8, 6, 0, 13, 8, 5, 0, 15, 15, 247]);
         });
+
+        it('pads can have LED turned on', () => {
+            push.grid.select_two.led_on(101);
+            expect(sent_bytes).toEqual([176, 103, 101]);
+
+            push.grid.select_two.led_on();
+            expect(sent_bytes).toEqual([176, 103, 100]); // default colour of 100 if 'velocity' not provided
+        })
+
+        it('button row above pads can have LED turned off', () => {
+            push.grid.select_two.led_off();
+            expect(sent_bytes).toEqual([176, 103, 0]);
+        })
+
+        it('button row above pads can have LEDs controlled by RGB values', () => {
+            push.grid.select_two.led_rgb(216, 80, 255);
+            expect(sent_bytes).toEqual([240, 71, 127, 21, 4, 0, 8, 65, 0, 13, 8, 5, 0, 15, 15, 247]);
+        });
     });
 
     describe('control pads', () => {
         it('emit pressed events in response receiving control pad MIDI CC messages', () => {
-            var state_control_button_pressed = false,
-                selection_control_button_pressed = false;
-            push.control.state.one.on('pressed', () => state_control_button_pressed = true);
+            var selection_control_button_pressed = false;
             push.control.selection.five.on('pressed', () => selection_control_button_pressed = true);
 
-            push.receive_midi([176, 102, 127]);
             push.receive_midi([176, 24, 127]);
 
-            expect(state_control_button_pressed).toEqual(true);
             expect(selection_control_button_pressed).toEqual(true);
         });
 
         it('emit released events in response receiving control pad MIDI CC messages', () => {
-            var state_control_button_released = false,
-                selection_control_button_released = false;
-            push.control.state.one.on('released', () => state_control_button_released = true);
+            var selection_control_button_released = false;
             push.control.selection.five.on('released', () => selection_control_button_released = true);
 
-            push.receive_midi([176, 102, 0]);
             push.receive_midi([176, 24, 0]);
 
-            expect(state_control_button_released).toEqual(true);
             expect(selection_control_button_released).toEqual(true);
         });
 

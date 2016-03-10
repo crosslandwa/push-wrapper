@@ -22,7 +22,7 @@ function Push(midi_out_port) {
     this.output_port = midi_out;
     this.buttons = new Buttons(midi_out.send_cc);
     this.knobs = new Knobs();
-    this.grid = new Grid(midi_out.send_note, midi_out.send_sysex);
+    this.grid = new Grid(midi_out.send_note, midi_out.send_cc, midi_out.send_sysex);
     this.touchstrip = new Touchstrip();
     this.control = new ControlPads(midi_out.send_cc);
     this.lcd = new LCDs(midi_out.send_sysex);
@@ -31,6 +31,7 @@ function Push(midi_out_port) {
     foreach(this.knobs.handled_ccs(), (value, key) => this.ccMap[value] = this.knobs);
     foreach(this.control.handled_ccs(), (value, key) => this.ccMap[value] = this.control);
     foreach(this.buttons.handled_ccs(), (value, key) => this.ccMap[value] = this.buttons);
+    foreach(this.grid.handled_ccs(), (value, key) => this.ccMap[value] = this.grid);
 }
 util.inherits(Push, EventEmitter);
 

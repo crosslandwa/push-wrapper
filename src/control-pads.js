@@ -10,15 +10,7 @@ var ccToPadMap = {
     24: 'five',
     25: 'six',
     26: 'seven',
-    27: 'eight',
-    102: 'one', // bottom row ('state')
-    103: 'two',
-    104: 'three',
-    105: 'four',
-    106: 'five',
-    107: 'six',
-    108: 'seven',
-    109: 'eight'
+    27: 'eight'
 }
 
 function Pad(send_cc, cc) {
@@ -41,7 +33,7 @@ function row(cc) {
     return cc < 100 ? 'selection' : 'state';
 }
 
-ControlPads.prototype.handled_ccs = function(array) {
+ControlPads.prototype.handled_ccs = function() {
     return Object.keys(ccToPadMap);
 }
 

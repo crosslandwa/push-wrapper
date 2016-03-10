@@ -32,7 +32,7 @@ function Knobs() {
     foreach(knobMap, (value, key) => this[key] = new Knob());
 }
 
-Knobs.prototype.handled_ccs = function(array) {
+Knobs.prototype.handled_ccs = function() {
     return Object.keys(ccToKnobMap);
 }
 

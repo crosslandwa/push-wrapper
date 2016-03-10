@@ -34,11 +34,17 @@ function off_we_go(bound_push) {
     foreach(push.buttons, highlight_when_pressed);
 
     foreach(
+        ['select_one', 'select_two', 'select_three', 'select_four', 'select_five', 'select_six', 'select_seven', 'select_eight'],
+        (index) => {
+            push.grid[index].led_off();
+            push.grid[index].on('pressed', () => push.grid[index].led_rgb(0, 0, 255));
+            push.grid[index].on('released', push.grid[index].led_off);
+        }
+    );
+
+    foreach(
         ['one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight'],
         (index) => {
-            push.control.state[index].led_dim();
-            push.control.state[index].on('pressed', push.control.state[index].led_on);
-            push.control.state[index].on('released', push.control.state[index].led_dim);
             push.control.selection[index].led_dim();
             push.control.selection[index].on('pressed', push.control.selection[index].led_on);
             push.control.selection[index].on('released', push.control.selection[index].led_dim);
