@@ -84,7 +84,7 @@ describe('Ableton Push wrapper', () => {
 
     describe('lcd strips', () => {
         it('can be updated with 8 chars of text across four rows per channel', () => {
-            push.lcd.init();
+            push.lcd.clear();
 
             push.lcd.x[1].y[1].update('more-than-8');
             expect(sent_bytes).toEqual([240, 71, 127, 21, 27, 0, 69, 0,
@@ -144,7 +144,7 @@ describe('Ableton Push wrapper', () => {
 
             // on load Push initialises LCD with 'powered by node-push' text, so clear before test
             sent_bytes = [];
-            push.lcd.init();
+            push.lcd.clear();
 
             var blank_line = [32, 32, 32, 32, 32, 32, 32, 32,
                 32,

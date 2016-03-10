@@ -19,7 +19,7 @@ function LCDs(midi_out) {
     this.midi_out = midi_out;
     this.x = {};
     this.y = {};
-    this.init();
+    this.clear();
 
     this.x[8].y[4].update(' powered');
     this.x[8].y[3].update('      by');
@@ -29,7 +29,7 @@ function LCDs(midi_out) {
     foreach(one_to_four, row => this.update_row(row));
 }
 
-LCDs.prototype.init = function() {
+LCDs.prototype.clear = function() {
     foreach(one_to_eight, (x) => {
         this.x[x] = { y: {} };
         foreach(one_to_four, (y) => {

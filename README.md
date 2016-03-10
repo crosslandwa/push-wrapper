@@ -125,8 +125,7 @@ push.touchstrip.on('released', () => /* touchstrip released actions */);
 push.touchstrip.on('pitchbend', (amount) => { /* amount = 14bit value (0 -> 16383) */});
 
 //-----LCDS-----
-push.lcd.init() /* clears all LCD text */
-
+push.lcd.clear() /* clears all LCD text */
 push.lcd.x[X].y[Y].update(text); /* text is a 1-8 character string */
 
 // X values: 1 -> 8, Y values: 1 -> 4
