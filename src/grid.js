@@ -3,14 +3,14 @@ const EventEmitter = require('events'),
     foreach = require('lodash.foreach');
 
 const control_buttons = {
-    102: 'select_one',
-    103: 'select_two',
-    104: 'select_three',
-    105: 'select_four',
-    106: 'select_five',
-    107: 'select_six',
-    108: 'select_seven',
-    109: 'select_eight'
+    102: 1,
+    103: 2,
+    104: 3,
+    105: 4,
+    106: 5,
+    107: 6,
+    108: 7,
+    109: 8
 };
 
 function GridButton(send_midi_message, send_sysex, note) {
@@ -32,6 +32,7 @@ GridButton.prototype.led_rgb = function(r, g, b) {
 function Grid(send_note, send_cc, send_sysex) {
     this.x = {};
     this.y = {};
+    this.select = {};
     for (var x = 1; x <= 8; x++) {
         this.x[x] = { y: {} }
         for (var y = 1; y <= 8; y++) {
@@ -40,7 +41,7 @@ function Grid(send_note, send_cc, send_sysex) {
         }
     }
 
-    foreach(control_buttons, (value, key) => this[value] = new GridButton(send_cc, send_sysex, parseInt(key)));
+    foreach(control_buttons, (value, key) => this.select[value] = new GridButton(send_cc, send_sysex, parseInt(key)));
 }
 
 Grid.prototype.receive_midi_note = function(note, velocity) {
@@ -61,7 +62,7 @@ Grid.prototype.handled_ccs = function() {
 }
 
 Grid.prototype.receive_midi_cc = function(index, value) {
-    this[control_buttons[index]].emit(value > 0 ? 'pressed' : 'released');
+    this.select[control_buttons[index]].emit(value > 0 ? 'pressed' : 'released');
 }
 
 module.exports = Grid;

@@ -81,23 +81,20 @@ All interactions with the wrapper are documented in the [push_spec.js](spec/push
 
 push.grid.x[X].y[Y].on('pressed', (velocity) => { /* pad pressed actions. velocity = 1 -> 127 */});
 push.grid.x[X].y[Y].on('released', () => /* pad released actions */);
-push.grid.SELECT.on('pressed', () => /* channel select button pressed actions */);
-push.grid.SELECT.on('released', () => /* channel select button released actions */);
+push.grid.select[X].on('pressed', () => /* channel select button pressed actions */);
+push.grid.select[X].on('released', () => /* channel select button released actions */);
 
 push.grid.x[X].y[Y].led_on(value); // value = 1 -> 127, giving various colours
 push.grid.x[X].y[Y].led_on(); // turns on LED, defaulting to orange (value = 100)
 push.grid.x[X].y[Y].led_off(); // turns LED off
 push.grid.x[X].y[Y].led_rgb(r, g, b); // specify LED by RGB values (0-255)
-push.grid.SELECT.led_on(value); // value = 1 -> 127, giving various colours
-push.grid.SELECT.led_on(); // turns on LED, defaulting to orange (value = 100)
-push.grid.SELECT.led_off(); // turns LED off
-push.grid.SELECT.led_rgb(r, g, b); // specify LED by RGB values (0-255)
+push.grid.select[X].led_on(value); // channel select button LED, value = 1 -> 127, giving various colours
+push.grid.select[X].led_on(); // turns on channel select button LED, defaulting to orange (value = 100)
+push.grid.select[X].led_off(); // turns channel select button LED off
+push.grid.select[X].led_rgb(r, g, b); // specify channel select button LED by RGB values (0-255)
 
 // X, Y values: 1 -> 8
 // where x[1].y[1] is the bottom left pad, and x[8].y[8] is the top-right
-
-// SELECT values:
-// select_one, select_two, select_three, select_four, select_five, select_six, select_seven, select_eight
 
 // note can reference pads by x.y or y.x, i.e. these are equivalent
 push.grid.x[1].y[7].led_on();
