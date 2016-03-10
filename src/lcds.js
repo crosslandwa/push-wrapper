@@ -15,8 +15,8 @@ LCDSegment.prototype.update = function(text) {
     this.lcds.update_row(this.row);
 }
 
-function LCDs(midi_out) {
-    this.midi_out = midi_out;
+function LCDs(send_sysex) {
+    this.send_sysex = send_sysex;
     this.x = {};
     this.y = {};
     this.clear();
@@ -47,12 +47,10 @@ LCDs.prototype.update_row = function(row_number) {
         display_data = display_data.concat(this.x[channel].y[row_number].lcd_data);
         if ((channel % 2) == 1) display_data.push(blank);
     });
-    this.midi_out.send(
-        [240, 71, 127, 21]
-        .concat([28 - row_number])
+    this.send_sysex(
+        [28 - row_number]
         .concat([0, 69, 0])
         .concat(display_data)
-        .concat([247])
     );
 }
 
