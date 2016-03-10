@@ -5,7 +5,6 @@ function GridButton(send_note, send_sysex, note) {
     EventEmitter.call(this);
     this.note_out = function(velocity) { send_note(note, velocity) };
     this.sysex_out = function(data) { send_sysex(data) };
-    this.note = note;
     this.index = note - 36;
 }
 util.inherits(GridButton, EventEmitter);
