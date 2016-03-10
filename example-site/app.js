@@ -34,11 +34,11 @@ function off_we_go(bound_push) {
     foreach(push.buttons, highlight_when_pressed);
 
     foreach(
-        ['select_one', 'select_two', 'select_three', 'select_four', 'select_five', 'select_six', 'select_seven', 'select_eight'],
+        [1, 2, 3, 4, 5, 6, 7, 8],
         (index) => {
-            push.grid[index].led_off();
-            push.grid[index].on('pressed', () => push.grid[index].led_rgb(0, 0, 255));
-            push.grid[index].on('released', push.grid[index].led_off);
+            push.grid.select[index].led_off();
+            push.grid.select[index].on('pressed', () => push.grid.select[index].led_rgb(0, 0, 255));
+            push.grid.select[index].on('released', push.grid.select[index].led_off);
         }
     );
 
