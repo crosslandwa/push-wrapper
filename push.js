@@ -12,8 +12,13 @@ const EventEmitter = require('events'),
 
 function Push(midi_out) {
     EventEmitter.call(this);
+
+    this.midi_out = {
+        send_cc: function(cc, value) { midi_out.send([176, cc, value]) }
+    }
+
     this.output_port = midi_out;
-    this.buttons = new Buttons(midi_out);
+    this.buttons = new Buttons(this.midi_out.send_cc);
     this.knobs = new Knobs();
     this.grid = new Grid(midi_out);
     this.touchstrip = new Touchstrip();

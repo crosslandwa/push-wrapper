@@ -53,16 +53,15 @@ var ccToButtonMap = {
     49: 'shift'
 }
 
-function Button(midi_out, cc) {
+function Button(send_cc, cc) {
     EventEmitter.call(this);
-    this.midi_out = midi_out;
-    this.cc = cc;
+    this.output = function (value) { send_cc(cc, value) };
 }
 util.inherits(Button, EventEmitter);
 
-Button.prototype.led_on = function() { this.midi_out.send([176, this.cc, 127]) }
-Button.prototype.led_dim = function() { this.midi_out.send([176, this.cc, 1]) }
-Button.prototype.led_off = function() { this.midi_out.send([176, this.cc, 0]) }
+Button.prototype.led_on = function() { this.output(127) }
+Button.prototype.led_dim = function() { this.output(1) }
+Button.prototype.led_off = function() { this.output(0) }
 
 function Buttons(midi_out) {
     foreach(ccToButtonMap, (value, key) => this[value] = new Button(midi_out, parseInt(key)));
