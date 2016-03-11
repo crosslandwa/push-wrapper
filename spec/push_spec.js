@@ -81,6 +81,21 @@ describe('Ableton Push wrapper', () => {
             push.receive_midi([176, 24, 0]);
         });
 
+        it('top row of pads above grid can have LED turned on', () => {
+            push.control[1].led_on();
+            expect(sent_bytes).toEqual([176, 20, 4]);
+        })
+
+        it('top row of pads above grid can have LED turned on dimly', () => {
+            push.control[1].led_dim();
+            expect(sent_bytes).toEqual([176, 20, 1]);
+        })
+
+        it('top row of pads above grid can have LED turned off', () => {
+            push.control[1].led_off();
+            expect(sent_bytes).toEqual([176, 20, 0]);
+        })
+
         // TODO test and document control of LEDs!
     });
 
