@@ -6,7 +6,7 @@ const EventEmitter = require('events'),
     Knobs = require('./src/knobs'),
     Grid = require('./src/grid.js'),
     Touchstrip = require('./src/touchstrip.js'),
-    ControlPads = require('./src/control-pads.js'),
+    ControlButtons = require('./src/control-buttons.js'),
     LCDs = require('./src/lcds.js'),
     foreach = require('lodash.foreach');
 
@@ -24,7 +24,7 @@ function Push(midi_out_port) {
     this.knobs = new Knobs();
     this.grid = new Grid(midi_out.send_note, midi_out.send_cc, midi_out.send_sysex);
     this.touchstrip = new Touchstrip();
-    this.control = new ControlPads(midi_out.send_cc);
+    this.control = new ControlButtons(midi_out.send_cc);
     this.lcd = new LCDs(midi_out.send_sysex);
     this.ccMap = [];
 

@@ -68,23 +68,17 @@ describe('Ableton Push wrapper', () => {
         });
     });
 
-    describe('control pads', () => {
-        it('emit pressed events in response receiving control pad MIDI CC messages', () => {
+    describe('control buttons', () => {
+        it('emit pressed events in response receiving top row pad MIDI CC messages', (done) => {
             var selection_control_button_pressed = false;
-            push.control.selection.five.on('pressed', () => selection_control_button_pressed = true);
-
+            push.control[5].on('pressed', done);
             push.receive_midi([176, 24, 127]);
-
-            expect(selection_control_button_pressed).toEqual(true);
         });
 
-        it('emit released events in response receiving control pad MIDI CC messages', () => {
+        it('emit released events in response receiving top row pad MIDI CC messages', (done) => {
             var selection_control_button_released = false;
-            push.control.selection.five.on('released', () => selection_control_button_released = true);
-
+            push.control[5].on('released', done);
             push.receive_midi([176, 24, 0]);
-
-            expect(selection_control_button_released).toEqual(true);
         });
 
         // TODO test and document control of LEDs!
