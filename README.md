@@ -141,6 +141,9 @@ push.lcd.x[X].y[Y].update(text); /* text is a 1-8 character string */
 // note can reference LCD segments by x.y or y.x, i.e. these are equivalent
 push.lcd.x[1].y[4].update('bananas');
 push.lcd.y[4].x[1].update('bananas');
+
+//-----CONTROL BUTTONS-----
+// TODO
 ```
 
 ## Why?

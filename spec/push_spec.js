@@ -122,7 +122,6 @@ describe('Ableton Push wrapper', () => {
             expect(sent_bytes).toEqual([176, 20, 19]);
         })
 
-        // TODO test and document control of LEDs by colours (RGOY)
         // TODO move 1/4, 1/4t etc buttons into control module
     });
 
