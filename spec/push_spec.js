@@ -83,17 +83,43 @@ describe('Ableton Push wrapper', () => {
 
         it('top row of pads above grid can have LED turned on', () => {
             push.control[1].led_on();
-            expect(sent_bytes).toEqual([176, 20, 4]);
+            expect(sent_bytes).toEqual([176, 20, 10]);
         })
 
         it('top row of pads above grid can have LED turned on dimly', () => {
             push.control[1].led_dim();
-            expect(sent_bytes).toEqual([176, 20, 1]);
+            expect(sent_bytes).toEqual([176, 20, 7]);
         })
 
         it('top row of pads above grid can have LED turned off', () => {
             push.control[1].led_off();
             expect(sent_bytes).toEqual([176, 20, 0]);
+        })
+
+        it('can have LEDs colour changed', () => {
+            push.control[1].red();
+            push.control[1].led_on();
+            expect(sent_bytes).toEqual([176, 20, 4]);
+            push.control[1].led_dim();
+            expect(sent_bytes).toEqual([176, 20, 1]);
+
+            push.control[1].orange();
+            push.control[1].led_on();
+            expect(sent_bytes).toEqual([176, 20, 10]);
+            push.control[1].led_dim();
+            expect(sent_bytes).toEqual([176, 20, 7]);
+
+            push.control[1].yellow();
+            push.control[1].led_on();
+            expect(sent_bytes).toEqual([176, 20, 16]);
+            push.control[1].led_dim();
+            expect(sent_bytes).toEqual([176, 20, 13]);
+
+            push.control[1].green();
+            push.control[1].led_on();
+            expect(sent_bytes).toEqual([176, 20, 22]);
+            push.control[1].led_dim();
+            expect(sent_bytes).toEqual([176, 20, 19]);
         })
 
         // TODO test and document control of LEDs by colours (RGOY)
