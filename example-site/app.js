@@ -20,38 +20,36 @@ window.addEventListener('load', () => {
 function off_we_go(bound_push) {
     const push = bound_push;
 
-    const highlight_when_pressed = function(element) {
-        element.led_dim();
-        element.on('pressed', element.led_on);
-        element.on('released', element.led_dim);
-    }
-
-
     push.knobs.one.on('turned', (delta) => {console.log('knob 1: ' + delta)});
     push.touchstrip.on('pressed', () => console.log('strip pressed'));
     push.touchstrip.on('released', () => console.log('strip released'));
     push.touchstrip.on('pitchbend', (pb) => playbackRate = pb > 8192 ? pb / 4096 : pb / 8192);
     foreach(push.buttons, highlight_when_pressed);
+    foreach(push.control, highlight_when_pressed);
 
     foreach(
-        [1, 2, 3, 4, 5, 6, 7, 8],
-        (index) => {
+        {5: 'red', 6: 'orange', 7: 'yellow', 8: 'green'},
+        (colour, index) => {
+            push.lcd.x[index].y[1].update(colour);
             push.grid.select[index].led_off();
-            push.grid.select[index].on('pressed', () => push.grid.select[index].led_rgb(0, 0, 255));
+            push.grid.select[index].on('pressed', () => {
+                push.grid.select[index].led_rgb(0, 0, 255)
+                foreach(push.control, (control_button) => {
+                    control_button[colour]();
+                    control_button.led_dim();
+                });
+            });
             push.grid.select[index].on('released', push.grid.select[index].led_off);
         }
     );
 
-    foreach(
-        ['one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight'],
-        (index) => {
-            push.control.selection[index].led_dim();
-            push.control.selection[index].on('pressed', push.control.selection[index].led_on);
-            push.control.selection[index].on('released', push.control.selection[index].led_dim);
-        }
-    );
-
     foreach([1, 2, 3, 4, 5], partial(bind_column_to_sample, push))
+}
+
+function highlight_when_pressed(element) {
+    element.led_dim();
+    element.on('pressed', element.led_on);
+    element.on('released', element.led_dim);
 }
 
 function light_up_column(push, x, velocity) {

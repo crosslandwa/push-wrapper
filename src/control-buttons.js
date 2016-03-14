@@ -37,8 +37,6 @@ Pad.prototype.yellow = function() { this.colours = [13, 16] }
 Pad.prototype.green = function() { this.colours = [19, 22] }
 
 function ControlButtons(send_cc) {
-    this.selection = {};
-    this.state = {};
     foreach(ccToPadMap, (value, key) => this[value] = new Pad(send_cc, parseInt(key)));
 }
 
