@@ -68,30 +68,28 @@ describe('Ableton Push wrapper', () => {
         });
     });
 
-    describe('control buttons', () => {
+    describe('top row of buttons above grid', () => {
         it('emit pressed events in response receiving top row pad MIDI CC messages', (done) => {
-            var selection_control_button_pressed = false;
             push.control[5].on('pressed', done);
             push.receive_midi([176, 24, 127]);
         });
 
         it('emit released events in response receiving top row pad MIDI CC messages', (done) => {
-            var selection_control_button_released = false;
             push.control[5].on('released', done);
             push.receive_midi([176, 24, 0]);
         });
 
-        it('top row of pads above grid can have LED turned on', () => {
+        it('can have LED turned on', () => {
             push.control[1].led_on();
             expect(sent_bytes).toEqual([176, 20, 10]);
         })
 
-        it('top row of pads above grid can have LED turned on dimly', () => {
+        it('can have LED turned on dimly', () => {
             push.control[1].led_dim();
             expect(sent_bytes).toEqual([176, 20, 7]);
         })
 
-        it('top row of pads above grid can have LED turned off', () => {
+        it('can have LED turned off', () => {
             push.control[1].led_off();
             expect(sent_bytes).toEqual([176, 20, 0]);
         })
@@ -121,8 +119,59 @@ describe('Ableton Push wrapper', () => {
             push.control[1].led_dim();
             expect(sent_bytes).toEqual([176, 20, 19]);
         })
+    });
 
-        // TODO move 1/4, 1/4t etc buttons into control module
+    describe('time division control buttons', () => {
+        it('emit pressed events in response receiving top row pad MIDI CC messages', (done) => {
+            push.control['1/32t'].on('pressed', done);
+            push.receive_midi([176, 43, 127]);
+        });
+
+        it('emit released events in response receiving top row pad MIDI CC messages', (done) => {
+            push.control['1/32t'].on('released', done);
+            push.receive_midi([176, 43, 0]);
+        });
+
+        it('can have LED turned on', () => {
+            push.control['1/4'].led_on();
+            expect(sent_bytes).toEqual([176, 36, 10]);
+        })
+
+        it('can have LED turned on dimly', () => {
+            push.control['1/4'].led_dim();
+            expect(sent_bytes).toEqual([176, 36, 7]);
+        })
+
+        it('can have LED turned off', () => {
+            push.control['1/4'].led_off();
+            expect(sent_bytes).toEqual([176, 36, 0]);
+        })
+
+        it('can have LEDs colour changed', () => {
+            push.control['1/16'].red();
+            push.control['1/16'].led_on();
+            expect(sent_bytes).toEqual([176, 40, 4]);
+            push.control['1/16'].led_dim();
+            expect(sent_bytes).toEqual([176, 40, 1]);
+
+            push.control['1/16'].orange();
+            push.control['1/16'].led_on();
+            expect(sent_bytes).toEqual([176, 40, 10]);
+            push.control['1/16'].led_dim();
+            expect(sent_bytes).toEqual([176, 40, 7]);
+
+            push.control['1/16'].yellow();
+            push.control['1/16'].led_on();
+            expect(sent_bytes).toEqual([176, 40, 16]);
+            push.control['1/16'].led_dim();
+            expect(sent_bytes).toEqual([176, 40, 13]);
+
+            push.control['1/16'].green();
+            push.control['1/16'].led_on();
+            expect(sent_bytes).toEqual([176, 40, 22]);
+            push.control['1/16'].led_dim();
+            expect(sent_bytes).toEqual([176, 40, 19]);
+        })
     });
 
     describe('lcd strips', () => {
@@ -213,12 +262,9 @@ describe('Ableton Push wrapper', () => {
     });
 
     describe('buttons', () => {
-        it('emit pressed events in response to button MIDI CC messages', () => {
-            var called = false;
-            push.buttons.add_track.on('pressed', () => { called = true });
+        it('emit pressed events in response to button MIDI CC messages', (done) => {
+            push.buttons.add_track.on('pressed', done);
             push.receive_midi([176, 53, 120]);
-            expect(called).toEqual(true);
-            // this works as events emitted synchronously (could call done() in event handler)
         });
 
         it('emit released events in response to button MIDI CC messages with velocity zero', () => {
