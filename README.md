@@ -110,11 +110,29 @@ push.buttons.BUTTON_NAME.led_dim();
 push.buttons.BUTTON_NAME.led_off();
 
 // BUTTON_NAME values:
-// tap_tempo, metronome, master, stop, 1/4, 1/4t, 1/8, 1/8t, 1/16, 1/16t, 1/32, 1/32t,
+// tap_tempo, metronome, master, stop, 
 // left, right, up, down, select, shift, note, session, add_effect, add_track,
 // octave_down, octave_up, repeat, accent, scales, user, mute, solo, step_in, step_out,
 // play, rec, new, duplicate, automation, fixed_length, device, browse, track, clip,
 // volume, pan_&_send, quantize, double, delete, undo
+
+//-----CONTROL BUTTONS-----
+push.control[BUTTON_NAME].on('pressed', () => /* control button pressed actions */);
+push.control[BUTTON_NAME].on('released', () => /* control button released actions */);
+
+push.control[BUTTON_NAME].led_on();
+push.control[BUTTON_NAME].led_dim();
+push.control[BUTTON_NAME].led_off();
+
+// LED colour changes, honoured on the next led_on or led_dim invocation
+push.control[BUTTON_NAME].red();
+push.control[BUTTON_NAME].orange();
+push.control[BUTTON_NAME].yellow();
+push.control[BUTTON_NAME].green();
+
+// BUTTON_NAME values:
+// 1/4, 1/4t, 1/8, 1/8t, 1/16, 1/16t, 1/32, 1/32t, (time division control buttons)
+// 1, 2, 3, 4, 5, 6, 7, 8 (top row of buttons above grid)
 
 //-----KNOBS-----
 
@@ -145,9 +163,6 @@ push.lcd.x[X].y[Y].update(text); /* text is a 1-8 character string */
 // note can reference LCD segments by x.y or y.x, i.e. these are equivalent
 push.lcd.x[1].y[4].update('bananas');
 push.lcd.y[4].x[1].update('bananas');
-
-//-----CONTROL BUTTONS-----
-// TODO
 ```
 
 ## Why?
