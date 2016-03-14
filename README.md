@@ -125,6 +125,10 @@ push.knobs.KNOB_NAME.on('turned', (delta) => { /* delta = number of clicks. posi
 // KNOB_NAME values:
 // tempo, swing, one, two, three, four, five, six, seven, eight, master
 
+// note the main eight encoders can also be referenced numerically. These are equivalent
+push.knobs.one.on('turned', () => /* knob 1 turned */);
+push.knobs[1].on('turned', () => /* knob one turned */);
+
 //-----TOUCHSTRIP-----
 
 push.touchstrip.on('pressed', () => /* touchstrip pushed actions */);

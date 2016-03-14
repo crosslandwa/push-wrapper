@@ -30,6 +30,11 @@ util.inherits(Knob, EventEmitter);
 
 function Knobs() {
     foreach(knobMap, (value, key) => this[key] = new Knob());
+    var count = 1;
+    foreach(
+        ['one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight'],
+        (value, key) => this[count++] = this[value] // reference knobs numerically too
+    );
 }
 
 Knobs.prototype.handled_ccs = function() {

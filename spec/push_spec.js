@@ -262,7 +262,7 @@ describe('Ableton Push wrapper', () => {
         });
 
         it('emit turned events with a negative delta in response to clockwise turns of the 1st knob', (done) => {
-            push.knobs.one.on('turned', (delta) => {
+            push.knobs[1].on('turned', (delta) => {
                 expect(delta).toEqual(-1);
                 done();
             });
