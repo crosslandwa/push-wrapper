@@ -2,11 +2,9 @@
 
 ## What?
 
-A javascript wrapper for using the Ableton Push as a MIDI controller via a simple event-driven API, encapsulating the generation and parsing of MIDI messages sent to/from the Ableton Push hardware.
+A javascript wrapper for using the Ableton Push as a MIDI controller via a simple event-driven API, encapsulating the generation and parsing of MIDI messages sent to/from the Ableton Push hardware. node-push is written as a (node) npm module, and can be used in your application via a require statement (see API documentation below). It is assumed you have node/npm installed on your system.
 
 node-push can be used as a MIDI controller in a Web MIDI/Audio API enabled web browser - this repo includes an [example application](example-site/) to demonstrate this.
-
-node-push is written as a (node) npm module, and can be used in your application via a require statement (see API documentation below). It is assumed you have node/npm installed on your system.
 
 **Modification & Running tests**
 
@@ -84,14 +82,14 @@ push.grid.x[X].y[Y].on('released', () => /* pad released actions */);
 push.grid.select[X].on('pressed', () => /* channel select button pressed actions */);
 push.grid.select[X].on('released', () => /* channel select button released actions */);
 
-push.grid.x[X].y[Y].led_on(value); // value = 1 -> 127, giving various colours
-push.grid.x[X].y[Y].led_on(); // turns on LED, defaulting to orange (value = 100)
-push.grid.x[X].y[Y].led_off(); // turns LED off
-push.grid.x[X].y[Y].led_rgb(r, g, b); // specify LED by RGB values (0-255)
-push.grid.select[X].led_on(value); // channel select button LED, value = 1 -> 127, giving various colours
-push.grid.select[X].led_on(); // turns on channel select button LED, defaulting to orange (value = 100)
-push.grid.select[X].led_off(); // turns channel select button LED off
-push.grid.select[X].led_rgb(r, g, b); // specify channel select button LED by RGB values (0-255)
+push.grid.x[X].y[Y].led_on(value); /* value = 1 -> 127, giving various colours */
+push.grid.x[X].y[Y].led_on(); /* turns on LED, defaulting to orange (value = 100) */
+push.grid.x[X].y[Y].led_off(); /* turns LED off */
+push.grid.x[X].y[Y].led_rgb(r, g, b); /* specify LED by RGB values (0-255) */
+push.grid.select[X].led_on(value); /* channel select button LED, value = 1 -> 127, giving various colours */
+push.grid.select[X].led_on(); /* turns on channel select button LED, defaulting to orange (value = 100) */
+push.grid.select[X].led_off(); /* turns channel select button LED off */
+push.grid.select[X].led_rgb(r, g, b); /* specify channel select button LED by RGB values (0-255) */
 
 // X, Y values: 1 -> 8
 // where x[1].y[1] is the bottom left pad, and x[8].y[8] is the top-right
@@ -105,8 +103,8 @@ push.grid.y[7].x[1].led_on();
 push.buttons.BUTTON_NAME.on('pressed', () => /* button pressed actions */);
 push.buttons.BUTTON_NAME.on('released', () => /* button released actions */);
 
-push.buttons.BUTTON_NAME.led_on();
-push.buttons.BUTTON_NAME.led_dim();
+push.buttons.BUTTON_NAME.led_on(); /* colour fixed per button */
+push.buttons.BUTTON_NAME.led_dim(); /* colour fixed per button */
 push.buttons.BUTTON_NAME.led_off();
 
 // BUTTON_NAME values:
@@ -120,11 +118,11 @@ push.buttons.BUTTON_NAME.led_off();
 push.control[BUTTON_NAME].on('pressed', () => /* control button pressed actions */);
 push.control[BUTTON_NAME].on('released', () => /* control button released actions */);
 
-push.control[BUTTON_NAME].led_on();
-push.control[BUTTON_NAME].led_dim();
+push.control[BUTTON_NAME].led_on(); /* colour defaults to orange */
+push.control[BUTTON_NAME].led_dim(); /* colour defaults to orange */
 push.control[BUTTON_NAME].led_off();
 
-// LED colour changes, honoured on the next led_on or led_dim invocation
+// LED colour changes, honoured on the next led_on or led_dim call
 push.control[BUTTON_NAME].red();
 push.control[BUTTON_NAME].orange();
 push.control[BUTTON_NAME].yellow();
