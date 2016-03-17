@@ -46,6 +46,8 @@ var ccToButtonMap = {
     49: 'shift'
 }
 
+var handled_ccs = Object.keys(ccToButtonMap);
+
 function Button(send_cc, cc) {
     EventEmitter.call(this);
     this.output = function (value) { send_cc(cc, value) };
@@ -62,15 +64,11 @@ function led_off(button) { button.output(0) }
 function Buttons(send_cc) {
     foreach(ccToButtonMap, (value, key) => this[value] = new Button(send_cc, parseInt(key)));
     this.receive_midi_cc = partial(receive_midi_cc, this);
-    this.handled_ccs = handled_ccs;
+    this.handled_ccs = function() { return handled_ccs };
 }
 
 function receive_midi_cc (buttons, index, value) {
     buttons[ccToButtonMap[index]].emit(pressed_or_released(value));
-}
-
-function handled_ccs() {
-    return Object.keys(ccToButtonMap);
 }
 
 function pressed_or_released(velocity) {
