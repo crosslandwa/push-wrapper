@@ -8,7 +8,8 @@ const EventEmitter = require('events'),
     Touchstrip = require('./src/touchstrip.js'),
     ControlButtons = require('./src/control-buttons.js'),
     LCDs = require('./src/lcds.js'),
-    foreach = require('lodash.foreach');
+    foreach = require('lodash.foreach'),
+    partial = require('lodash.partial');
 
 function Push(midi_out_port) {
     EventEmitter.call(this);
@@ -32,6 +33,8 @@ function Push(midi_out_port) {
     foreach(this.control.handled_ccs(), (value, key) => this.ccMap[value] = this.control);
     foreach(this.buttons.handled_ccs(), (value, key) => this.ccMap[value] = this.buttons);
     foreach(this.grid.handled_ccs(), (value, key) => this.ccMap[value] = this.grid);
+
+    this.receive_midi = partial(receive_midi, this);
 }
 util.inherits(Push, EventEmitter);
 
@@ -65,21 +68,20 @@ var midi_messages = {
 }
 
 // Handles MIDI (CC) data from Push - causes events to be emitted
-Push.prototype.receive_midi = function(bytes) {
-    // console.log(bytes);
+function receive_midi(push, bytes) {
     var message_type = bytes[0] & 0xf0;
     var midi_channel = bytes[0] & 0x0f;
 
     switch (message_type) {
         case (midi_messages['cc']):
-            handle_midi_cc(this, bytes[1], bytes[2]);
+            handle_midi_cc(push, bytes[1], bytes[2]);
             break;
         case (midi_messages['note-on']):
         case (midi_messages['note-off']):
-            handle_midi_note(this, bytes[1], bytes[2]);
+            handle_midi_note(push, bytes[1], bytes[2]);
             break;
         case (midi_messages['pitch-bend']):
-            handle_midi_pitch_bend(this, bytes[1], bytes[2]);
+            handle_midi_pitch_bend(push, bytes[1], bytes[2]);
             break;
     }
 }
