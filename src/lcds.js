@@ -11,7 +11,7 @@ function LCDSegment(lcds, row) {
 }
 
 LCDSegment.prototype.update = function(text) {
-    this.lcd_data = lcd_data(text);
+    this.lcd_data = lcd_data(String(text));
     this.lcds.update_row(this.row);
 }
 

@@ -195,14 +195,14 @@ describe('Ableton Push wrapper', () => {
                 247]
             );
 
-            push.lcd.x[4].y[1].update('yes');
+            push.lcd.x[4].y[1].update(123);
             expect(sent_bytes).toEqual([240, 71, 127, 21, 27, 0, 69, 0,
                 109, 111, 114, 101, 45, 116, 104, 97, // char codes for "m o r e - t h a"
                 32,
                 32, 32, 32, 32, 32, 32, 32, 32,
                 32, 32, 32, 32, 32, 32, 32, 32,
                 32,
-                121, 101, 115, 32, 32, 32, 32, 32, // char codes for "y e s" padded
+                49, 50, 51, 32, 32, 32, 32, 32, // char codes for "1 2 3" padded
                 32, 32, 32, 32, 32, 32, 32, 32,
                 32,
                 32, 32, 32, 32, 32, 32, 32, 32,
