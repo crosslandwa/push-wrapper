@@ -11,7 +11,6 @@ function Player() {
 util.inherits(Player, EventEmitter);
 
 function play(player) {
-    console.log('boom');
     player.emit('started');
     setTimeout(() => player.emit('stopped'), 3000);
 }

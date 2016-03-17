@@ -14,17 +14,14 @@ window.addEventListener('load', () => {
     }
 });
 
-
-
 function off_we_go(bound_push) {
-    var players = [],
-        btn = document.getElementsByClassName('button');
+    var btn = document.getElementsByClassName('button');
 
     for (var i = 0; i < btn.length; i++) {
-        players[i] = new Player();
-        players[i].on('started', partial(buttonClicked, btn[i]));
-        players[i].on('stopped', partial(buttonReleased, btn[i]));
-        btn[i].addEventListener('mousedown', players[i].play);
+        var player = new Player();
+        player.on('started', partial(buttonClicked, btn[i]));
+        player.on('stopped', partial(buttonReleased, btn[i]));
+        btn[i].addEventListener('mousedown', player.play);
     }
 }
 
