@@ -1,6 +1,7 @@
 const EventEmitter = require('events'),
     util = require('util'),
-    foreach = require('lodash.foreach');
+    foreach = require('lodash.foreach'),
+    partial = require('lodash.partial');
 
 var ccToPadMap = {
     20: 1, // top row above grid
@@ -26,29 +27,33 @@ function Pad(send_cc, cc) {
     EventEmitter.call(this);
     this.output = function(value) { send_cc(cc, value) };
     this.colours = [7, 10]; // dim, bright
+    this.led_on = partial(led_on, this);
+    this.led_dim = partial(led_dim, this);
+    this.led_off = partial(led_off, this);
+    this.red = partial(red, this);
+    this.orange = partial(orange, this);
+    this.yellow = partial(yellow, this);
+    this.green = partial(green, this);
 }
 util.inherits(Pad, EventEmitter);
 
-Pad.prototype.led_on = function() { this.output(this.colours[1]) }
-Pad.prototype.led_dim = function() { this.output(this.colours[0]) }
-Pad.prototype.led_off = function() { this.output(0) }
-Pad.prototype.red = function() { this.colours = [1, 4] }
-Pad.prototype.orange = function() { this.colours = [7, 10] }
-Pad.prototype.yellow = function() { this.colours = [13, 16] }
-Pad.prototype.green = function() { this.colours = [19, 22] }
+function led_on(pad) { pad.output(pad.colours[1]) }
+function led_dim(pad) { pad.output(pad.colours[0]) }
+function led_off(pad) { pad.output(0) }
+function red(pad) { pad.colours = [1, 4] }
+function orange(pad) { pad.colours = [7, 10] }
+function yellow(pad) { pad.colours = [13, 16] }
+function green(pad) { pad.colours = [19, 22] }
 
 function ControlButtons(send_cc) {
     foreach(ccToPadMap, (value, key) => this[value] = new Pad(send_cc, parseInt(key)));
     this.handled_ccs = function() { return handled_ccs };
+    this.receive_midi_cc = partial(receive_midi_cc, this);
 }
 
-ControlButtons.prototype.receive_midi_cc = function(cc, value) {
+function receive_midi_cc(control_buttons, cc, value) {
     var pad_name = ccToPadMap[cc];
-    this[pad_name].emit(pressed_or_released(value));
+    control_buttons[pad_name].emit(value > 0 ? 'pressed' : 'released');
 } 
-
-function pressed_or_released(velocity) {
-    return parseInt(velocity) > 0 ? 'pressed' : 'released';
-}
 
 module.exports = ControlButtons;
