@@ -1,4 +1,5 @@
 const foreach = require('lodash.foreach'),
+    partial = require('lodash.partial'),
     one_to_eight = [1, 2, 3, 4, 5, 6, 7, 8],
     one_to_four = [1, 2, 3, 4]
     zero_to_seven = [0, 1, 2, 3, 4, 5, 6, 7],
@@ -7,18 +8,23 @@ const foreach = require('lodash.foreach'),
 function LCDSegment(lcds, row) {
     this.lcds = lcds
     this.row = row;
-    this.lcd_data = [blank, blank, blank, blank, blank, blank, blank, blank]
+    this.lcd_data = [blank, blank, blank, blank, blank, blank, blank, blank];
+    this.update = partial(update, this);
 }
 
-LCDSegment.prototype.update = function(text) {
-    this.lcd_data = lcd_data(String(text));
-    this.lcds.update_row(this.row);
+function update(lcd_segment, text) {
+    lcd_segment.lcd_data = lcd_data(String(text));
+    lcd_segment.lcds.update_row(lcd_segment.row);
 }
 
 function LCDs(send_sysex) {
+    this.clear = partial(clear, this);
+    this.update_row = partial(update_row, this);
+
     this.send_sysex = send_sysex;
     this.x = {};
     this.y = {};
+
     this.clear();
 
     this.x[8].y[4].update(' powered');
@@ -29,25 +35,25 @@ function LCDs(send_sysex) {
     foreach(one_to_four, row => this.update_row(row));
 }
 
-LCDs.prototype.clear = function() {
+function clear(lcds) {
     foreach(one_to_eight, (x) => {
-        this.x[x] = { y: {} };
+        lcds.x[x] = { y: {} };
         foreach(one_to_four, (y) => {
-            if (this.y[y] === undefined) this.y[y] = { x: {} };
-            this.y[y].x[x] = this.x[x].y[y] = new LCDSegment(this, y)
+            if (lcds.y[y] === undefined) lcds.y[y] = { x: {} };
+            lcds.y[y].x[x] = lcds.x[x].y[y] = new LCDSegment(lcds, y)
         })
     });
 
-    foreach(one_to_four, row => this.update_row(row));
+    foreach(one_to_four, row => lcds.update_row(row));
 }
 
-LCDs.prototype.update_row = function(row_number) {
+function update_row(lcds, row_number) {
     var display_data = [];
     foreach(one_to_eight, (channel) => {
-        display_data = display_data.concat(this.x[channel].y[row_number].lcd_data);
+        display_data = display_data.concat(lcds.x[channel].y[row_number].lcd_data);
         if ((channel % 2) == 1) display_data.push(blank);
     });
-    this.send_sysex(
+    lcds.send_sysex(
         [28 - row_number]
         .concat([0, 69, 0])
         .concat(display_data)
