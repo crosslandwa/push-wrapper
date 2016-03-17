@@ -20,6 +20,7 @@ var ccToPadMap = {
     37: '1/4t',
     36: '1/4',
 }
+const handled_ccs = Object.keys(ccToPadMap);
 
 function Pad(send_cc, cc) {
     EventEmitter.call(this);
@@ -38,10 +39,7 @@ Pad.prototype.green = function() { this.colours = [19, 22] }
 
 function ControlButtons(send_cc) {
     foreach(ccToPadMap, (value, key) => this[value] = new Pad(send_cc, parseInt(key)));
-}
-
-ControlButtons.prototype.handled_ccs = function() {
-    return Object.keys(ccToPadMap);
+    this.handled_ccs = function() { return handled_ccs };
 }
 
 ControlButtons.prototype.receive_midi_cc = function(cc, value) {

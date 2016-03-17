@@ -12,6 +12,7 @@ const control_buttons = {
     108: 7,
     109: 8
 };
+const handled_ccs = Object.keys(control_buttons);
 
 function GridButton(send_midi_message, send_sysex, note) {
     EventEmitter.call(this);
@@ -42,6 +43,7 @@ function Grid(send_note, send_cc, send_sysex) {
     }
 
     foreach(control_buttons, (value, key) => this.select[value] = new GridButton(send_cc, send_sysex, parseInt(key)));
+    this.handled_ccs = function() { return handled_ccs };
 }
 
 Grid.prototype.receive_midi_note = function(note, velocity) {
@@ -55,10 +57,6 @@ Grid.prototype.receive_midi_note = function(note, velocity) {
         y = parseInt(indexed_from_zero / 8) + 1,
         button = this.x[x].y[y];
     vel > 0 ? button.emit('pressed', vel) : button.emit('released');
-}
-
-Grid.prototype.handled_ccs = function() {
-    return Object.keys(control_buttons);
 }
 
 Grid.prototype.receive_midi_cc = function(index, value) {

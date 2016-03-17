@@ -45,8 +45,7 @@ var ccToButtonMap = {
     48: 'select',
     49: 'shift'
 }
-
-var handled_ccs = Object.keys(ccToButtonMap);
+const handled_ccs = Object.keys(ccToButtonMap);
 
 function Button(send_cc, cc) {
     EventEmitter.call(this);

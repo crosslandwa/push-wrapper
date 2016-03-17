@@ -21,7 +21,8 @@ var noteToKnobMap = {};
 foreach(knobMap, (value, key) => {
     ccToKnobMap[value.cc] = key;
     noteToKnobMap[value.note] = key;
-})
+});
+const handled_ccs = Object.keys(ccToKnobMap);
 
 function Knob() {
     EventEmitter.call(this);
@@ -35,10 +36,7 @@ function Knobs() {
         ['one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight'],
         (value, key) => this[count++] = this[value] // reference knobs numerically too
     );
-}
-
-Knobs.prototype.handled_ccs = function() {
-    return Object.keys(ccToKnobMap);
+    this.handled_ccs = function() { return handled_ccs };
 }
 
 Knobs.prototype.receive_midi_cc = function(index, value) {
