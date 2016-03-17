@@ -1,27 +1,30 @@
 const EventEmitter = require('events'),
-    util = require('util');
+    util = require('util'),
+    partial = require('lodash.partial');
 
 function TouchStrip() {
     EventEmitter.call(this);
+    this.receive_midi_pitch_bend = partial(receive_midi_pitch_bend, this);
+    this.receive_midi_note = partial(receive_midi_note, this);
 }
 util.inherits(TouchStrip, EventEmitter);
 
-TouchStrip.prototype.receive_midi_pitch_bend = function(fourteen_bit_value) {
+function receive_midi_pitch_bend(touchstrip, fourteen_bit_value) {
     if (fourteen_bit_value == 8192) return;
-    this.emit('pitchbend', fourteen_bit_value);
+    touchstrip.emit('pitchbend', fourteen_bit_value);
 }
 
-TouchStrip.prototype.receive_midi_note = function(note, velocity) {
+function receive_midi_note(touchstrip, note, velocity) {
     if (note != 12) { 
         console.log('Touchstrip only responds to MIDI note 12. Received: ' + note);
         return;
     }
 
     if (velocity > 0) {
-        this.emit('pressed');
+        touchstrip.emit('pressed');
     } else {
-        this.emit('released');
-        this.emit('pitchbend', 8192);
+        touchstrip.emit('released');
+        touchstrip.emit('pitchbend', 8192);
     }
 }
 
