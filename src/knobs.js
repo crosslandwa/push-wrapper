@@ -1,6 +1,7 @@
 const EventEmitter = require('events'),
     util = require('util'),
-    foreach = require('lodash.foreach');
+    foreach = require('lodash.foreach'),
+    partial = require('lodash.partial');
 
 var knobMap = {
     'tempo': { 'cc': 14, 'note': 10 },
@@ -37,19 +38,21 @@ function Knobs() {
         (value, key) => this[count++] = this[value] // reference knobs numerically too
     );
     this.handled_ccs = function() { return handled_ccs };
+    this.receive_midi_cc = partial(receive_midi_cc, this);
+    this.receive_midi_note = partial(receive_midi_note, this);
 }
 
-Knobs.prototype.receive_midi_cc = function(index, value) {
+function receive_midi_cc(knobs, index, value) {
     var knob_name = ccToKnobMap[index];
     var delta = value < 64 ? value : value - 128;
-    this[knob_name].emit('turned', delta);
+    knobs[knob_name].emit('turned', delta);
 }
 
-Knobs.prototype.receive_midi_note = function(note, velocity) {
+function receive_midi_note(knobs, note, velocity) {
     if (noteToKnobMap.hasOwnProperty(note)) { 
         var knob_name = noteToKnobMap[note];
         var event_name = velocity > 0 ? 'pressed' : 'released';
-        this[knob_name].emit(event_name);
+        knobs[knob_name].emit(event_name);
     } else {
         console.log('No knob known for note: ' + note);
     }
