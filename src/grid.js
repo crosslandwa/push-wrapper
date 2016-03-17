@@ -1,6 +1,7 @@
 const EventEmitter = require('events'),
     util = require('util'),
-    foreach = require('lodash.foreach');
+    foreach = require('lodash.foreach'),
+    partial = require('lodash.partial');
 
 const control_buttons = {
     102: 1,
@@ -19,15 +20,18 @@ function GridButton(send_midi_message, send_sysex, note) {
     this.note_out = function(velocity) { send_midi_message(note, velocity) };
     this.sysex_out = function(data) { send_sysex(data) };
     this.index = note < 102 ? note - 36 : note - 38;
+    this.led_on = partial(led_on, this);
+    this.led_off = partial(led_off, this);
+    this.led_rgb = partial(led_rgb, this);
 }
 util.inherits(GridButton, EventEmitter);
 
-GridButton.prototype.led_on = function(value) { this.note_out(value ? value : 100) }
-GridButton.prototype.led_off = function() { this.note_out(0) }
-GridButton.prototype.led_rgb = function(r, g, b) {
+function led_on(gridButton, value) { gridButton.note_out(value ? value : 100) }
+function led_off(gridButton) { gridButton.note_out(0) }
+function led_rgb(gridButton, r, g, b) {
     var msb = [r, g, b].map((x) => (x & 240) >> 4),
         lsb = [r, g, b].map((x) => x & 15);
-    this.sysex_out([4, 0, 8, this.index, 0, msb[0], lsb[0], msb[1], lsb[1], msb[2], lsb[2]]);
+    gridButton.sysex_out([4, 0, 8, gridButton.index, 0, msb[0], lsb[0], msb[1], lsb[1], msb[2], lsb[2]]);
 }
 
 function Grid(send_note, send_cc, send_sysex) {
@@ -44,9 +48,11 @@ function Grid(send_note, send_cc, send_sysex) {
 
     foreach(control_buttons, (value, key) => this.select[value] = new GridButton(send_cc, send_sysex, parseInt(key)));
     this.handled_ccs = function() { return handled_ccs };
+    this.receive_midi_note = partial(receive_midi_note, this);
+    this.receive_midi_cc = partial(receive_midi_cc, this);
 }
 
-Grid.prototype.receive_midi_note = function(note, velocity) {
+function receive_midi_note(grid, note, velocity) {
     if ((note < 36) || (note > 99)) {
         console.log('No grid button known for MIDI note: ' + note);
         return;
@@ -55,12 +61,12 @@ Grid.prototype.receive_midi_note = function(note, velocity) {
         vel = parseInt(velocity),
         x = (indexed_from_zero % 8) + 1,
         y = parseInt(indexed_from_zero / 8) + 1,
-        button = this.x[x].y[y];
+        button = grid.x[x].y[y];
     vel > 0 ? button.emit('pressed', vel) : button.emit('released');
 }
 
-Grid.prototype.receive_midi_cc = function(index, value) {
-    this.select[control_buttons[index]].emit(value > 0 ? 'pressed' : 'released');
+function receive_midi_cc(grid, index, value) {
+    grid.select[control_buttons[index]].emit(value > 0 ? 'pressed' : 'released');
 }
 
 module.exports = Grid;
