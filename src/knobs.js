@@ -38,7 +38,7 @@ function Knobs() {
         ['one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight'],
         (value, key) => this[count++] = this[value] // reference knobs numerically too
     );
-    this.handled_ccs = function() { return handled_ccs };
+    this.handled_ccs = handled_ccs;
     this.receive_midi_cc = partial(receive_midi_cc, this);
     this.receive_midi_note = partial(receive_midi_note, this);
     this.handled_notes = handled_notes;

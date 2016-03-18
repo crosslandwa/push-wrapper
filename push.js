@@ -37,7 +37,7 @@ function Push(midi_out_port) {
 
     foreach(
         [this.knobs, this.control, this.buttons, this.grid],
-        (module) => foreach(module.handled_ccs(), (value, key) => this.ccMap[value] = module)
+        (module) => foreach(module.handled_ccs, (value, key) => this.ccMap[value] = module)
     );
 
     this.receive_midi = partial(receive_midi, this);

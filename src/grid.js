@@ -50,7 +50,7 @@ function Grid(send_note, send_cc, send_sysex) {
     }
 
     foreach(control_buttons, (value, key) => this.select[value] = new GridButton(send_cc, send_sysex, parseInt(key)));
-    this.handled_ccs = function() { return handled_ccs };
+    this.handled_ccs = handled_ccs;
     this.handled_notes = handled_notes;
     this.receive_midi_note = partial(receive_midi_note, this);
     this.receive_midi_cc = partial(receive_midi_cc, this);

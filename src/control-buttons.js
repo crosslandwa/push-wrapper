@@ -47,7 +47,7 @@ function green(pad) { pad.colours = [19, 22] }
 
 function ControlButtons(send_cc) {
     foreach(ccToPadMap, (value, key) => this[value] = new Pad(send_cc, parseInt(key)));
-    this.handled_ccs = function() { return handled_ccs };
+    this.handled_ccs = handled_ccs;
     this.receive_midi_cc = partial(receive_midi_cc, this);
 }
 

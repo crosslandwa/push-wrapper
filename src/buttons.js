@@ -63,7 +63,7 @@ function led_off(button) { button.output(0) }
 function Buttons(send_cc) {
     foreach(ccToButtonMap, (value, key) => this[value] = new Button(send_cc, parseInt(key)));
     this.receive_midi_cc = partial(receive_midi_cc, this);
-    this.handled_ccs = function() { return handled_ccs };
+    this.handled_ccs = handled_ccs;
 }
 
 function receive_midi_cc (buttons, index, value) {
