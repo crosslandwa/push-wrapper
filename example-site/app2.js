@@ -1,7 +1,8 @@
 const Push = require('../push.js'),
     foreach = require('lodash.foreach'),
     partial = require('lodash.partial'),
-    Player = require('./player.js');
+    Player = require('./player.js'),
+    context = new AudioContext();
 
 window.addEventListener('load', () => {
     if (navigator.requestMIDIAccess) {
@@ -18,7 +19,7 @@ function off_we_go(bound_push) {
     var btn = document.getElementsByClassName('button');
 
     for (var i = 0; i < btn.length; i++) {
-        var player = new Player();
+        var player = new Player(btn[i].dataset.sound, context);
         player.on('started', partial(buttonClicked, btn[i]));
         player.on('stopped', partial(buttonReleased, btn[i]));
         btn[i].addEventListener('mousedown', player.play);
