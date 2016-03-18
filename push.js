@@ -28,11 +28,17 @@ function Push(midi_out_port) {
     this.control = new ControlButtons(midi_out.send_cc);
     this.lcd = new LCDs(midi_out.send_sysex);
     this.ccMap = [];
+    this.noteMap = [];
 
-    foreach(this.knobs.handled_ccs(), (value, key) => this.ccMap[value] = this.knobs);
-    foreach(this.control.handled_ccs(), (value, key) => this.ccMap[value] = this.control);
-    foreach(this.buttons.handled_ccs(), (value, key) => this.ccMap[value] = this.buttons);
-    foreach(this.grid.handled_ccs(), (value, key) => this.ccMap[value] = this.grid);
+    foreach(
+        [this.knobs, this.touchstrip, this.grid],
+        (module) => foreach(module.handled_notes, (value, key) => this.noteMap[value] = module)
+    );
+
+    foreach(
+        [this.knobs, this.control, this.buttons, this.grid],
+        (module) => foreach(module.handled_ccs(), (value, key) => this.ccMap[value] = module)
+    );
 
     this.receive_midi = partial(receive_midi, this);
 }
@@ -47,9 +53,11 @@ function handle_midi_cc(push, index, value) {
 }
 
 function handle_midi_note(push, note, velocity) {
-    var module = note < 12 ? push.knobs : push.grid;
-    if (note == 12) module = push.touchstrip;
-    module.receive_midi_note(note, velocity);
+    if (note in push.noteMap) {
+        push.noteMap[note].receive_midi_note(note, velocity);
+    } else {
+        console.log('No known mapping for note: ' + note);
+    }
 }
 
 function handle_midi_pitch_bend(push, lsb_byte, msb_byte) {

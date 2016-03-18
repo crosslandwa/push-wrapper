@@ -15,6 +15,9 @@ const control_buttons = {
 };
 const handled_ccs = Object.keys(control_buttons);
 
+var handled_notes = [];
+for (var i = 36; i <= 99; i++) handled_notes.push(i);
+
 function GridButton(send_midi_message, send_sysex, note) {
     EventEmitter.call(this);
     this.note_out = function(velocity) { send_midi_message(note, velocity) };
@@ -48,15 +51,12 @@ function Grid(send_note, send_cc, send_sysex) {
 
     foreach(control_buttons, (value, key) => this.select[value] = new GridButton(send_cc, send_sysex, parseInt(key)));
     this.handled_ccs = function() { return handled_ccs };
+    this.handled_notes = handled_notes;
     this.receive_midi_note = partial(receive_midi_note, this);
     this.receive_midi_cc = partial(receive_midi_cc, this);
 }
 
 function receive_midi_note(grid, note, velocity) {
-    if ((note < 36) || (note > 99)) {
-        console.log('No grid button known for MIDI note: ' + note);
-        return;
-    }
     var indexed_from_zero = note - 36,
         vel = parseInt(velocity),
         x = (indexed_from_zero % 8) + 1,

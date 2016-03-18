@@ -1,11 +1,13 @@
 const EventEmitter = require('events'),
     util = require('util'),
-    partial = require('lodash.partial');
+    partial = require('lodash.partial'),
+    handled_notes = [12];
 
 function TouchStrip() {
     EventEmitter.call(this);
     this.receive_midi_pitch_bend = partial(receive_midi_pitch_bend, this);
     this.receive_midi_note = partial(receive_midi_note, this);
+    this.handled_notes = handled_notes;
 }
 util.inherits(TouchStrip, EventEmitter);
 
@@ -15,11 +17,6 @@ function receive_midi_pitch_bend(touchstrip, fourteen_bit_value) {
 }
 
 function receive_midi_note(touchstrip, note, velocity) {
-    if (note != 12) { 
-        console.log('Touchstrip only responds to MIDI note 12. Received: ' + note);
-        return;
-    }
-
     if (velocity > 0) {
         touchstrip.emit('pressed');
     } else {

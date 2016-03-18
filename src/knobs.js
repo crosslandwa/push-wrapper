@@ -23,7 +23,8 @@ foreach(knobMap, (value, key) => {
     ccToKnobMap[value.cc] = key;
     noteToKnobMap[value.note] = key;
 });
-const handled_ccs = Object.keys(ccToKnobMap);
+const handled_ccs = Object.keys(ccToKnobMap),
+    handled_notes = Object.keys(noteToKnobMap);
 
 function Knob() {
     EventEmitter.call(this);
@@ -40,6 +41,7 @@ function Knobs() {
     this.handled_ccs = function() { return handled_ccs };
     this.receive_midi_cc = partial(receive_midi_cc, this);
     this.receive_midi_note = partial(receive_midi_note, this);
+    this.handled_notes = handled_notes;
 }
 
 function receive_midi_cc(knobs, index, value) {
@@ -49,13 +51,9 @@ function receive_midi_cc(knobs, index, value) {
 }
 
 function receive_midi_note(knobs, note, velocity) {
-    if (noteToKnobMap.hasOwnProperty(note)) { 
-        var knob_name = noteToKnobMap[note];
-        var event_name = velocity > 0 ? 'pressed' : 'released';
-        knobs[knob_name].emit(event_name);
-    } else {
-        console.log('No knob known for note: ' + note);
-    }
+    var knob_name = noteToKnobMap[note];
+    var event_name = velocity > 0 ? 'pressed' : 'released';
+    knobs[knob_name].emit(event_name);
 }
 
 module.exports = Knobs;
