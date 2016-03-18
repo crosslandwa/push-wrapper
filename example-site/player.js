@@ -27,12 +27,12 @@ function loadSample(player, asset_url, context) {
 function play(player, context) {
     if (!player.loaded) return;
     player.emit('started');
-    var s = context.createBufferSource();
-    s.playbackRate.value = 0.2;
-    s.buffer = player.buffer;
-    s.addEventListener('ended', () => player.emit('stopped'));
-    s.start();
-    s.connect(context.destination);
+    var source = context.createBufferSource();
+    source.playbackRate.value = 0.2;
+    source.buffer = player.buffer;
+    source.addEventListener('ended', () => player.emit('stopped'));
+    source.connect(context.destination);
+    source.start();
 }
 
 
