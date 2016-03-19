@@ -3,20 +3,20 @@ const EventEmitter = require('events'),
     foreach = require('lodash.foreach'),
     partial = require('lodash.partial');
 
-function Player(asset_url, context) {
+function Player(asset_url, audio_context) {
     EventEmitter.call(this);
-    this.play = partial(play, this, context);
+    this.play = partial(play, this, audio_context);
     this.loaded = false;
-    loadSample(this, asset_url, context);
+    loadSample(this, asset_url, audio_context);
 }
 util.inherits(Player, EventEmitter);
 
-function loadSample(player, asset_url, context) {
+function loadSample(player, asset_url, audio_context) {
     var request = new XMLHttpRequest();
     request.open('GET', asset_url, true);
     request.responseType = 'arraybuffer';
     request.onload = function () {
-        context.decodeAudioData(request.response, (buffer) => {
+        audio_context.decodeAudioData(request.response, (buffer) => {
             player.buffer = buffer;
             player.loaded = true;
         });
@@ -24,14 +24,14 @@ function loadSample(player, asset_url, context) {
     request.send();
 }
 
-function play(player, context) {
+function play(player, audio_context) {
     if (!player.loaded) return;
     player.emit('started');
-    var source = context.createBufferSource();
+    var source = audio_context.createBufferSource();
     source.playbackRate.value = 0.2;
     source.buffer = player.buffer;
     source.addEventListener('ended', () => player.emit('stopped'));
-    source.connect(context.destination);
+    source.connect(audio_context.destination);
     source.start();
 }
 
