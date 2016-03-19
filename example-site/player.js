@@ -6,7 +6,7 @@ const EventEmitter = require('events'),
 function Player(asset_url, audio_context) {
     EventEmitter.call(this);
     this.play = partial(play, this, audio_context);
-    this.loaded = false;
+    this._loaded = false;
     loadSample(this, asset_url, audio_context);
 }
 util.inherits(Player, EventEmitter);
@@ -18,14 +18,14 @@ function loadSample(player, asset_url, audio_context) {
     request.onload = function () {
         audio_context.decodeAudioData(request.response, (buffer) => {
             player.buffer = buffer;
-            player.loaded = true;
+            player._loaded = true;
         });
     }
     request.send();
 }
 
 function play(player, audio_context) {
-    if (!player.loaded) return;
+    if (!player._loaded) return;
     player.emit('started');
     var source = audio_context.createBufferSource();
     source.playbackRate.value = 0.2;
