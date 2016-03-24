@@ -7,49 +7,56 @@ function Player(asset_url, audio_context) {
     EventEmitter.call(this);
     this.play = partial(play, this, audio_context);
     this._loaded = false;
-    this._is_playing = false;
-    this._voice;
-    this._stop = partial(end_playback, this);
-    loadSample(this, asset_url, audio_context);
+    loadSample(asset_url, audio_context, (buffer) => {
+        this._buffer = buffer;
+        this._loaded = true;
+    });
 }
 util.inherits(Player, EventEmitter);
 
-function loadSample(player, asset_url, audio_context) {
+function loadSample(asset_url, audio_context, done) {
     var request = new XMLHttpRequest();
     request.open('GET', asset_url, true);
     request.responseType = 'arraybuffer';
     request.onload = function () {
-        audio_context.decodeAudioData(request.response, (buffer) => {
-            player.buffer = buffer;
-            player._loaded = true;
-        });
+        audio_context.decodeAudioData(request.response, done);
     }
     request.send();
 }
 
+/*
+Cannot use a value of 0 for a gain node that you want to apply exponential ramp too!
+
+Works
+gain.setValueAtTime(0.001, now);
+gain.exponentialRampToValueAtTime(1, now + 0.1);
+
+Not Works!
+gain.setValueAtTime(0, now);
+gain.exponentialRampToValueAtTime(1, now + 0.1);
+*/
+
 function play(player, audio_context) {
     if (!player._loaded) return;
-    if (player._is_playing) end_playback(player);
-    start_playback(player, audio_context); 
-}
 
-function start_playback(player, audio_context) {
-    player._is_playing = true;
-    player._voice = audio_context.createBufferSource();
-    player._voice.playbackRate.value = 0.7;
-    player._voice.buffer = player.buffer;
-    player._voice.addEventListener('ended', player._stop);
-    player._voice.connect(audio_context.destination);
-    player._voice.start();
+    var gain = audio_context.createGain();
+    
+    var source = audio_context.createBufferSource();
+    source.connect(gain);
+
+    gain.connect(audio_context.destination);
+
+    var now = audio_context.currentTime;
+
+    gain.gain.setValueAtTime(1, now);
+    gain.gain.linearRampToValueAtTime(1, now + 0.01);
+    gain.gain.linearRampToValueAtTime(0, now + 0.7);
+
+    source.playbackRate.setValueAtTime(0.5, now);
+    source.buffer = player._buffer;
+    source.addEventListener('ended', () => player.emit('stopped'));
+    source.start();
     player.emit('started');
-}
-
-function end_playback(player) {
-    player._voice.removeEventListener('ended', player._stop);
-    player._voice.stop();
-    delete player._voice;
-    player._is_playing = false;
-    player.emit('stopped');
 }
 
 module.exports = Player;
