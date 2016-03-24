@@ -45,7 +45,7 @@ function play(player, audio_context) {
     if (is_playing(player)) {
         foreach(player._voices, (voice) => {
             voice.gain.gain.cancelScheduledValues(now);
-            voice.gain.gain.linearRampToValueAtTime(0, now + 0.05)
+            voice.gain.gain.linearRampToValueAtTime(0, now + 0.1)
         });
         player.emit('stopped');
     }
