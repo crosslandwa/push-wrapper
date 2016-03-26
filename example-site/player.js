@@ -6,6 +6,7 @@ const EventEmitter = require('events'),
 function Player(asset_url, audio_context) {
     EventEmitter.call(this);
     this.play = partial(play, this, audio_context);
+    this.update_playback_rate = partial(update_playback_rate, this, audio_context);
     this._loaded = false;
     this._voices = [];
     this._playback_rate = 1;
@@ -91,6 +92,18 @@ function anchor(audio_param, now) {
 
 function is_playing(player) {
     return player._voices.length > 0;
+}
+
+function update_playback_rate(player, audio_context, rate) {
+    player._playback_rate = rate;
+    var now = time_now(audio_context);
+    foreach(player._voices, (voice) => {
+        voice.source.playbackRate.setValueAtTime(rate, now);
+    });
+}
+
+function time_now(audio_context) {
+    return audio_context.currentTime;
 }
 
 module.exports = Player;
