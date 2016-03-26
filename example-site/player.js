@@ -44,7 +44,7 @@ gain.linearRampToValueAtTime(0, now + 0.5);
 
 Not clicks:
 gain.cancelScheduledValues(now);
-gain.setValueAtTime(voice.gain.gain.value, now);
+gain.setValueAtTime(gain.value, now);
 gain.linearRampToValueAtTime(0, now + 0.01);            
 */
 
@@ -55,34 +55,37 @@ function play(player, audio_context) {
 
     if (is_playing(player)) {
         foreach(player._voices, (voice) => {
-            voice.gain.gain.cancelScheduledValues(now);
-            voice.gain.gain.setValueAtTime(voice.gain.gain.value, now);
-            voice.gain.gain.linearRampToValueAtTime(0, now + 0.01);
+            voice.gain.cancelScheduledValues(now);
+            anchor(voice.gain, now);
+            voice.gain.linearRampToValueAtTime(0, now + 0.01);
         });
-        player._voices = [];
         player.emit('stopped');
     }
 
-    var gain = audio_context.createGain();
+    var gain_node = audio_context.createGain();
     
     var source = audio_context.createBufferSource();
-    source.connect(gain);
+    source.connect(gain_node);
 
-    gain.connect(audio_context.destination);
+    gain_node.connect(audio_context.destination);
 
-    gain.gain.setValueAtTime(0, now);
-    gain.gain.linearRampToValueAtTime(1, now + 0.01);
+    gain_node.gain.setValueAtTime(0, now);
+    gain_node.gain.linearRampToValueAtTime(1, now + 0.01);
 
     source.playbackRate.setValueAtTime(0.5, now);
     source.buffer = player._buffer;
     source.addEventListener('ended', () => {
-        if (is_playing(player)) player._voices.shift();
+        player._voices.shift();
         if (!is_playing(player)) player.emit('stopped');
     });
 
-    player._voices.push({source: source, gain: gain});
+    player._voices.push({source: source, gain: gain_node.gain});
     source.start();
     player.emit('started');
+}
+
+function anchor(audio_param, now) {
+    audio_param.setValueAtTime(audio_param.value, now);
 }
 
 function is_playing(player) {
