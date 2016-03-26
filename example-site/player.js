@@ -8,6 +8,7 @@ function Player(asset_url, audio_context) {
     this.play = partial(play, this, audio_context);
     this._loaded = false;
     this._voices = [];
+    this._playback_rate = 1;
     loadSample(asset_url, audio_context, (buffer) => {
         this._buffer = buffer;
         this._loaded = true;
@@ -72,7 +73,7 @@ function play(player, audio_context) {
     gain_node.gain.setValueAtTime(0, now);
     gain_node.gain.linearRampToValueAtTime(1, now + 0.01);
 
-    source.playbackRate.setValueAtTime(0.5, now);
+    source.playbackRate.setValueAtTime(player._playback_rate, now);
     source.buffer = player._buffer;
     source.addEventListener('ended', () => {
         player._voices.shift();
