@@ -35,6 +35,17 @@ gain.exponentialRampToValueAtTime(1, now + 0.1);
 Not Works!
 gain.setValueAtTime(0, now);
 gain.exponentialRampToValueAtTime(1, now + 0.1);
+
+Also that cancelling a ramp, then ramping to zero clicked unless 'anchoring' ramp before scheduling change
+
+Clicks:
+gain.cancelScheduledValues(now);
+gain.linearRampToValueAtTime(0, now + 0.5);
+
+Not clicks:
+gain.cancelScheduledValues(now);
+gain.setValueAtTime(voice.gain.gain.value, now);
+gain.linearRampToValueAtTime(0, now + 0.01);            
 */
 
 function play(player, audio_context) {
@@ -45,8 +56,10 @@ function play(player, audio_context) {
     if (is_playing(player)) {
         foreach(player._voices, (voice) => {
             voice.gain.gain.cancelScheduledValues(now);
-            voice.gain.gain.linearRampToValueAtTime(0, now + 0.1)
+            voice.gain.gain.setValueAtTime(voice.gain.gain.value, now);
+            voice.gain.gain.linearRampToValueAtTime(0, now + 0.01);
         });
+        player._voices = [];
         player.emit('stopped');
     }
 
@@ -57,14 +70,13 @@ function play(player, audio_context) {
 
     gain.connect(audio_context.destination);
 
-    gain.gain.setValueAtTime(1, now);
+    gain.gain.setValueAtTime(0, now);
     gain.gain.linearRampToValueAtTime(1, now + 0.01);
-    gain.gain.linearRampToValueAtTime(0, now + 0.7);
 
     source.playbackRate.setValueAtTime(0.5, now);
     source.buffer = player._buffer;
     source.addEventListener('ended', () => {
-        player._voices.shift();
+        if (is_playing(player)) player._voices.shift();
         if (!is_playing(player)) player.emit('stopped');
     });
 
