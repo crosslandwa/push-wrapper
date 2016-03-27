@@ -98,7 +98,7 @@ function update_playback_rate(player, audio_context, rate) {
     player._playback_rate = rate;
     var now = time_now(audio_context);
     foreach(player._voices, (voice) => {
-        voice.source.playbackRate.setValueAtTime(rate, now);
+        voice.source.playbackRate.setValueAtTime(player._playback_rate, now);
     });
 }
 
