@@ -34,8 +34,9 @@ function off_we_go(bound_push) {
 
     foreach(players, (player, i) => {
         turn_off_column(push, i + 1);
-        var sample_name = samples[i].split('.')[0];
-        push.lcd.x[i + 1].y[2].update(sample_name.substr(sample_name.length - 8));
+        var full_path_sample_name = samples[i].split('.')[0];
+        var sample_name = full_path_sample_name.split('/').pop();
+        push.lcd.x[i + 1].y[2].update(sample_name.length > 8 ? sample_name.substr(sample_name.length - 8) : sample_name);
         player.on('started', partial(buttonClicked, buttons[i]));
         player.on('stopped', partial(buttonReleased, buttons[i]));
         player.on('started', partial(turn_on_column, push, i + 1));
