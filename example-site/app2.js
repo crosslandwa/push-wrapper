@@ -4,11 +4,11 @@ const Push = require('../push.js'),
     Player = require('./player.js'),
     context = new AudioContext(),
     samples = [
-        'https://dl.dropboxusercontent.com/s/h9sow482vkw06xe/dinky-kick.mp3',
-        'https://dl.dropboxusercontent.com/s/kkikcupdg9n1qiy/dinky-snare.mp3',
-        'https://dl.dropboxusercontent.com/s/d7jlxp5v4z0n62q/dinky-hat-2.mp3',
-        'https://dl.dropboxusercontent.com/s/rblgnob6tvriudy/dinky-cym.mp3',
-        'https://dl.dropboxusercontent.com/s/umm8cmrmn8n4a46/dinky-cym-noise.mp3'
+        'Bonus_Kick27.mp3',
+        'snare_ac2_r1.mp3',
+        'HandClap.mp3',
+        'Beat07_Hat.mp3',
+        'HH_KIT09_100_TMB.mp3'
     ];
 
 var rate = [1, 1.5, 2, 0.5, 0.25];
