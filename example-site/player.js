@@ -27,29 +27,6 @@ function loadSample(asset_url, audio_context, done) {
     request.send();
 }
 
-/*
-Cannot use a value of 0 for a gain node that you want to apply exponential ramp too!
-
-Works
-gain.setValueAtTime(0.001, now);
-gain.exponentialRampToValueAtTime(1, now + 0.1);
-
-Not Works!
-gain.setValueAtTime(0, now);
-gain.exponentialRampToValueAtTime(1, now + 0.1);
-
-Also that cancelling a ramp, then ramping to zero clicked unless 'anchoring' ramp before scheduling change
-
-Clicks:
-gain.cancelScheduledValues(now);
-gain.linearRampToValueAtTime(0, now + 0.5);
-
-Not clicks:
-gain.cancelScheduledValues(now);
-gain.setValueAtTime(gain.value, now);
-gain.linearRampToValueAtTime(0, now + 0.01);            
-*/
-
 function play(player, audio_context) {
     if (!player._loaded) return;
 
@@ -98,7 +75,7 @@ function update_playback_rate(player, audio_context, rate) {
     player._playback_rate = rate;
     var now = time_now(audio_context);
     foreach(player._voices, (voice) => {
-        voice.source.playbackRate.setValueAtTime(player._playback_rate, now);
+        voice.source.playbackRate.setValueAtTime(player._playback_ratex, now);
     });
 }
 
