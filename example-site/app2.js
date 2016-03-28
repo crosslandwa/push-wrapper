@@ -59,7 +59,7 @@ function bind_column_to_player(push, player, x) {
 
 function turn_on_column(push, x, velocity) {
     foreach([1, 2, 3, 4, 5, 6, 7, 8], (y) => {
-        if (((velocity + 1) / 16) >= y) {
+        if (((velocity + 15) / 16) >= y) {
             push.grid.x[x].y[y].led_on(velocity);
         } else {
             push.grid.x[x].y[y].led_off();

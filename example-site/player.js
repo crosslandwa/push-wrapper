@@ -49,7 +49,7 @@ function play(player, audio_context, velocity) {
     gain_node.connect(audio_context.destination);
 
     gain_node.gain.setValueAtTime(0, now);
-    gain_node.gain.linearRampToValueAtTime(1, now + 0.01);
+    gain_node.gain.linearRampToValueAtTime(velocity / 127, now + 0.01);
 
     source.playbackRate.setValueAtTime(player._playback_rate, now);
     source.buffer = player._buffer;
