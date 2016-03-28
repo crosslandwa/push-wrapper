@@ -8,7 +8,10 @@ const Push = require('../push.js'),
         'samples/snare_ac2_r1.mp3',
         'samples/HandClap.mp3',
         'samples/Beat07_Hat.mp3',
-        'samples/HH_KIT09_100_TMB.mp3'
+        'samples/HH_KIT09_100_TMB.mp3',
+        'samples/clingfilm.mp3',
+        'samples/tang-1.mp3',
+        'samples/Cassette808_Tom01.mp3'
     ];
 
 var rate = [1, 1.5, 2, 0.5, 0.25];
@@ -31,11 +34,13 @@ function off_we_go(bound_push) {
 
     foreach(players, (player, i) => {
         turn_off_column(push, i + 1);
+        var sample_name = samples[i].split('.')[0];
+        push.lcd.x[i + 1].y[2].update(sample_name.substr(sample_name.length - 8));
         player.on('started', partial(buttonClicked, buttons[i]));
         player.on('stopped', partial(buttonReleased, buttons[i]));
         player.on('started', partial(turn_on_column, push, i + 1));
         player.on('stopped', partial(turn_off_column, push, i + 1));
-        buttons[i].addEventListener('mousedown', partial(player.play, 127));
+        buttons[i].addEventListener('mousedown', partial(player.play, 110));
         bind_column_to_player(push, player, i + 1);
     });
 
