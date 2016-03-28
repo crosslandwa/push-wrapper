@@ -4,11 +4,11 @@ const Push = require('../push.js'),
     Player = require('./player.js'),
     context = new AudioContext(),
     samples = [
-        'Bonus_Kick27.mp3',
-        'snare_ac2_r1.mp3',
-        'HandClap.mp3',
-        'Beat07_Hat.mp3',
-        'HH_KIT09_100_TMB.mp3'
+        'samples/Bonus_Kick27.mp3',
+        'samples/snare_ac2_r1.mp3',
+        'samples/HandClap.mp3',
+        'samples/Beat07_Hat.mp3',
+        'samples/HH_KIT09_100_TMB.mp3'
     ];
 
 var rate = [1, 1.5, 2, 0.5, 0.25];
