@@ -27,7 +27,7 @@ function loadSample(asset_url, audio_context, done) {
     request.send();
 }
 
-function play(player, audio_context) {
+function play(player, audio_context, velocity) {
     if (!player._loaded) return;
 
     var now = audio_context.currentTime;
@@ -60,7 +60,7 @@ function play(player, audio_context) {
 
     player._voices.push({source: source, gain: gain_node.gain});
     source.start();
-    player.emit('started');
+    player.emit('started', velocity);
 }
 
 function anchor(audio_param, now) {

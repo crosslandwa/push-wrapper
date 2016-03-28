@@ -35,7 +35,7 @@ function off_we_go(bound_push) {
         player.on('stopped', partial(buttonReleased, buttons[i]));
         player.on('started', partial(turn_on_column, push, i + 1));
         player.on('stopped', partial(turn_off_column, push, i + 1));
-        buttons[i].addEventListener('mousedown', player.play);
+        buttons[i].addEventListener('mousedown', partial(player.play, 127));
         bind_column_to_player(push, player, i + 1);
     });
 
@@ -57,9 +57,13 @@ function bind_column_to_player(push, player, x) {
     });
 }
 
-function turn_on_column(push, x) {
+function turn_on_column(push, x, velocity) {
     foreach([1, 2, 3, 4, 5, 6, 7, 8], (y) => {
-        push.grid.y[y].x[x].led_on();
+        if (((velocity + 1) / 16) >= y) {
+            push.grid.x[x].y[y].led_on(velocity);
+        } else {
+            push.grid.x[x].y[y].led_off();
+        }
     });
 }
 
