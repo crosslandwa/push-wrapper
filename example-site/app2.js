@@ -30,9 +30,13 @@ function off_we_go(bound_push) {
         push = bound_push;
 
     foreach(players, (player, i) => {
+        turn_off_column(push, i + 1);
         player.on('started', partial(buttonClicked, buttons[i]));
         player.on('stopped', partial(buttonReleased, buttons[i]));
+        player.on('started', partial(turn_on_column, push, i + 1));
+        player.on('stopped', partial(turn_off_column, push, i + 1));
         buttons[i].addEventListener('mousedown', player.play);
+        bind_column_to_player(push, player, i + 1);
     });
 
     bind_pitchbend(push, players);
@@ -44,6 +48,26 @@ function create_players() {
         players[i] = new Player(samples[i], context);
     }
     return players;
+}
+
+function bind_column_to_player(push, player, x) {
+    foreach([1, 2, 3, 4, 5, 6, 7, 8], (y) => {
+        var grid_button = push.grid.y[y].x[x];
+        grid_button.on('pressed', player.play);
+    });
+}
+
+function turn_on_column(push, x) {
+    foreach([1, 2, 3, 4, 5, 6, 7, 8], (y) => {
+        push.grid.y[y].x[x].led_on();
+    });
+}
+
+function turn_off_column(push, x) {
+    foreach([2, 3, 4, 5, 6, 7, 8], (y) => {
+        push.grid.y[y].x[x].led_off();
+    });
+    push.grid.y[1].x[x].led_on();
 }
 
 function bind_pitchbend(push, players) {
