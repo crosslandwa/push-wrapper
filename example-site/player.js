@@ -54,12 +54,7 @@ function play(player, audio_context, velocity) {
     source.playbackRate.setValueAtTime(player._playback_rate, now);
     source.buffer = player._buffer;
 
-    source.addEventListener('started', () => {
-        console.log('wtf?');
-    });
-
     source.addEventListener('ended', () => {
-        console.log('ended?');
         player._voices.shift();
         if (!is_playing(player)) player.emit('stopped');
     });
