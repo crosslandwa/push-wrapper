@@ -48,8 +48,7 @@ function off_we_go(bound_push) {
         bind_column_to_player(push, player, i + 1);
     });
 
-    // var repetae = new Repetae(setTimeout);
-    var repetae = new Repetae(web_audio_api_scheduled_event);
+    var repetae = Repetae.create_scheduled_by_audio_context(context);
     
     repetae.press();
     repetae.release(); // switch it on
@@ -108,19 +107,4 @@ function turn_button_display_on(ui_btn) {
 
 function turn_button_display_off(ui_btn) {
     ui_btn.classList.remove('active');
-}
-
-function web_audio_api_scheduled_event(callback, interval_ms) {
-    var source = context.createBufferSource(),
-        now = context.currentTime,
-        buffer = context.createBuffer(1, 1, context.sampleRate),
-        scheduled_at = now + (interval_ms / 1000);
-
-    console.log('Requested at ' + now);
-    console.log('should finish at ' + scheduled_at);
-
-    source.addEventListener('ended', callback);
-    source.buffer = buffer;
-    source.connect(context.destination);
-    source.start(scheduled_at);
 }

@@ -51,10 +51,25 @@ function Repetae(scheduled_execution) {
 util.inherits(Repetae, EventEmitter);
 
 function call_and_reschedule(repetae, scheduled_execution, callback) {
-        if (repetae._is_scheduling) {
-            callback();
-            scheduled_execution(partial(call_and_reschedule, repetae, scheduled_execution, callback), repetae._interval);
-        };
-    }
+    if (repetae._is_scheduling) {
+        callback();
+        scheduled_execution(partial(call_and_reschedule, repetae, scheduled_execution, callback), repetae._interval);
+    };
+}
+
+// Adaptor function used to bind to web Audio API and utilise its audio-rate scheduling
+Repetae.create_scheduled_by_audio_context = function(context) {
+    return new Repetae((callback, interval_ms) => {
+        var source = context.createBufferSource(),
+            now = context.currentTime,
+            buffer = context.createBuffer(1, 1, context.sampleRate),
+            scheduled_at = now + (interval_ms / 1000);
+
+        source.addEventListener('ended', callback);
+        source.buffer = buffer;
+        source.connect(context.destination);
+        source.start(scheduled_at);
+    });
+}
 
 module.exports = Repetae;
