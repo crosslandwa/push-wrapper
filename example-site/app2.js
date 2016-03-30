@@ -3,6 +3,7 @@ const Push = require('../push.js'),
     partial = require('lodash.partial'),
     Player = require('./player.js'),
     context = new AudioContext(),
+    Repetae = require('./repetae.js'),
     samples = [
         'samples/Bonus_Kick27.mp3',
         'samples/snare_ac2_r1.mp3',
@@ -37,12 +38,26 @@ function off_we_go(bound_push) {
         var full_path_sample_name = samples[i].split('.')[0];
         var sample_name = full_path_sample_name.split('/').pop();
         push.lcd.x[i + 1].y[2].update(sample_name.length > 8 ? sample_name.substr(sample_name.length - 8) : sample_name);
-        player.on('started', partial(buttonClicked, buttons[i]));
-        player.on('stopped', partial(buttonReleased, buttons[i]));
+        player.on('started', partial(turn_button_display_on, buttons[i]));
+        player.on('stopped', partial(turn_button_display_off, buttons[i]));
         player.on('started', partial(turn_on_column, push, i + 1));
         player.on('stopped', partial(turn_off_column, push, i + 1));
-        buttons[i].addEventListener('mousedown', partial(player.play, 110));
+        if (i < 7) {
+            buttons[i].addEventListener('mousedown', partial(player.play, 110));
+        }
         bind_column_to_player(push, player, i + 1);
+    });
+
+    // var repetae = new Repetae(setTimeout);
+    var repetae = new Repetae(web_audio_api_scheduled_event);
+    
+    repetae.press();
+    repetae.release(); // switch it on
+    buttons[7].addEventListener('mousedown', () => {
+        repetae.start(partial(players[7].play, 110));
+    });
+    buttons[7].addEventListener('mouseup', () => {
+        repetae.stop();
     });
 
     bind_pitchbend(push, players);
@@ -87,10 +102,25 @@ function bind_pitchbend(push, players) {
     });
 }
 
-function buttonClicked(ui_btn) {
+function turn_button_display_on(ui_btn) {
     ui_btn.classList.add('active');
 }
 
-function buttonReleased(ui_btn) {
+function turn_button_display_off(ui_btn) {
     ui_btn.classList.remove('active');
+}
+
+function web_audio_api_scheduled_event(callback, interval_ms) {
+    var source = context.createBufferSource(),
+        now = context.currentTime,
+        buffer = context.createBuffer(1, 1, context.sampleRate),
+        scheduled_at = now + (interval_ms / 1000);
+
+    console.log('Requested at ' + now);
+    console.log('should finish at ' + scheduled_at);
+
+    source.addEventListener('ended', callback);
+    source.buffer = buffer;
+    source.connect(context.destination);
+    source.start(scheduled_at);
 }

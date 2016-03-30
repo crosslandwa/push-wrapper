@@ -34,6 +34,8 @@ TBD
 
 Initial version of the app based off blog post here: http://www.keithmcmillen.com/blog/making-music-in-the-browser-web-midi-api/
 
+Timing for repeated notes inspired by this: https://github.com/cwilso/metronome
+
 ## TODO
 
 - should this be ready compiled
