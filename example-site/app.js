@@ -15,13 +15,13 @@ const Push = require('../push.js'),
         'samples/Cassette808_Tom01.mp3'
     ],
     repeat_interval_buttons = [
-        { name: '1/32t', amount: 50 },
-        { name: '1/32', amount: 100 },
-        { name: '1/16t', amount: 150 },
-        { name: '1/16', amount: 200 },
-        { name: '1/8t', amount: 250 },
-        { name: '1/8', amount: 300 },
-        { name: '1/4t', amount: 350 },
+        { name: '1/32t', amount: 37.5 },
+        { name: '1/32', amount: 50 },
+        { name: '1/16t', amount: 75 },
+        { name: '1/16', amount: 100 },
+        { name: '1/8t', amount: 150 },
+        { name: '1/8', amount: 200 },
+        { name: '1/4t', amount: 300 },
         { name: '1/4', amount: 400 },
     ];
 
@@ -53,7 +53,7 @@ function off_we_go(bound_push) {
         push.grid.select[column_number].led_on();
         repetae.on('on', partial(push.grid.select[column_number].led_rgb, 0, 0, 255));
         repetae.on('off', push.grid.select[column_number].led_on);
-        repetae.on('interval', push.lcd.x[column_number].y[1].update);
+        repetae.on('interval', (amount_ms) => push.lcd.x[column_number].y[1].update(amount_ms + 'ms'));
         repetae.report_interval();
 
         foreach(repeat_interval_buttons, (button) => {
