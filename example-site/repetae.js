@@ -39,7 +39,12 @@ function Repetae(scheduled_execution) {
     }
 
     this.start = function(callback) {
-        if (!this._active || this._is_scheduling) return;
+        if (!this._active) {
+            callback();
+            return;
+        }
+
+        if (this._is_scheduling) return;
         this._is_scheduling = true;
         call_and_reschedule(this, scheduled_execution, callback);
     }    

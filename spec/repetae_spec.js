@@ -75,7 +75,7 @@ describe('Example app repetae', () => {
 
         setTimeout(() => {
             repetae.stop(); // but we stop after 1.2s, so total invocation count should be 3
-        }, 1300);
+        }, 1200);
 
         setTimeout(function () {
             expect(called_count).toEqual(3);
@@ -83,16 +83,20 @@ describe('Example app repetae', () => {
         }, 1400);
     });
 
-    // TODO: probably want to call callback once if not active
-    it('does not call the passed function whilst off', () => {
+    it('calls the passed function only once whilst off', (done) => {
         var called_count = 0;
 
         repetae.start(() => {
             called_count++;
         });
 
-        repetae.stop();
+        setTimeout(() => {
+            repetae.stop();
+        }, 1300);
 
-        expect(called_count).toEqual(0);
+        setTimeout(function () {
+            expect(called_count).toEqual(1);
+            done();
+        }, 1400);
     });
 });
