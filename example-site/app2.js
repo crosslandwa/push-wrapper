@@ -15,14 +15,14 @@ const Push = require('../push.js'),
         'samples/Cassette808_Tom01.mp3'
     ],
     repeat_interval_buttons = [
-        '1/32t',
-        '1/32',
-        '1/16t',
-        '1/16',
-        '1/8t',
-        '1/8',
-        '1/4t',
-        '1/4'
+        { name: '1/32t', amount: 50 },
+        { name: '1/32', amount: 100 },
+        { name: '1/16t', amount: 150 },
+        { name: '1/16', amount: 200 },
+        { name: '1/8t', amount: 250 },
+        { name: '1/8', amount: 300 },
+        { name: '1/4t', amount: 350 },
+        { name: '1/4', amount: 400 },
     ];
 
 window.addEventListener('load', () => {
@@ -53,6 +53,12 @@ function off_we_go(bound_push) {
         push.grid.select[column_number].led_on();
         repetae.on('on', partial(push.grid.select[column_number].led_rgb, 0, 0, 255));
         repetae.on('off', push.grid.select[column_number].led_on);
+        repetae.on('interval', push.lcd.x[column_number].y[1].update);
+        repetae.report_interval();
+
+        foreach(repeat_interval_buttons, (button) => {
+            push.control[button.name].on('pressed', partial(repetae.interval, button.amount))
+        });
 
         turn_off_column(push, column_number);
         push.lcd.x[column_number].y[2].update(sample_name.length > 8 ? sample_name.substr(sample_name.length - 8) : sample_name);

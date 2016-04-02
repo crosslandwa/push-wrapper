@@ -15,6 +15,7 @@ function Repetae(scheduled_execution) {
     this.interval = partial(interval, this);
     this.start = partial(start, this, scheduled_execution);
     this.stop = partial(stop, this);
+    this.report_interval = partial(report_interval, this);
 }
 util.inherits(Repetae, EventEmitter);
 
@@ -26,25 +27,28 @@ function release(repetae) {
     var started_active = repetae._active,
         time_changed = repetae._time_changed;
 
-    repetae._active = !repetae._active;
     repetae._time_changed = false;
     repetae._being_pressed = false;
     repetae._is_scheduling = false;
 
     switch (true) {
         case (!started_active):
-            console.log
+            repetae._active = true;
             repetae.emit('on');
             break;
         case (started_active && !time_changed):
+            repetae._active = false;
             repetae.emit('off');
             break;
     }
 }
 
 function interval(repetae, amount_ms) {
-    if (repetae._being_pressed) repetae._time_changed = true;
-    repetae._interval = amount_ms > 20 ? amount_ms : 20; // 20ms min interval
+    if (repetae._being_pressed) {
+        repetae._time_changed = true;
+        repetae._interval = amount_ms > 20 ? amount_ms : 20; // 20ms min interval
+        repetae.report_interval();
+    }
 }
 
 function start(repetae, scheduled_execution, callback) {
@@ -67,6 +71,10 @@ function call_and_reschedule(repetae, scheduled_execution, callback) {
 
 function stop(repetae) {
     repetae._is_scheduling = false;
+}
+
+function report_interval(repetae) {
+    repetae.emit('interval', repetae._interval);
 }
 
 // Adaptor function used to bind to web Audio API and utilise its audio-rate scheduling

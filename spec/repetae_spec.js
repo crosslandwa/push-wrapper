@@ -7,7 +7,8 @@ describe('Example app repetae', () => {
         repetae = new Repetae(setTimeout); // use the inbuilt setTimeout function for tests
         emitted_events = [];
         repetae.on('on', (amount) => emitted_events.push('on'));
-        repetae.on('off', () => emitted_events.push('off'))
+        repetae.on('off', () => emitted_events.push('off'));
+        repetae.on('interval', (amount_ms) => emitted_events.push('interval-' + amount_ms));
     })
 
     it('can be turned on', () => {
@@ -21,11 +22,11 @@ describe('Example app repetae', () => {
         repetae.press();
         expect(emitted_events).toEqual([]);
 
-        repetae.interval();
-        expect(emitted_events).toEqual([]);
+        repetae.interval(300);
+        expect(emitted_events).toEqual(['interval-300']);
 
         repetae.release();
-        expect(emitted_events).toEqual(['on']);
+        expect(emitted_events).toEqual(['interval-300', 'on']);
     });
 
     it('can be turned off', () => {
@@ -44,9 +45,9 @@ describe('Example app repetae', () => {
         expect(emitted_events).toEqual(['on']);
 
         repetae.press();
-        repetae.interval();
+        repetae.interval(100);
         repetae.release();
-        expect(emitted_events).toEqual(['on']);
+        expect(emitted_events).toEqual(['on', 'interval-100']);
     });
 
     it('cannot have interval changed while not being pressed', () => {
@@ -54,7 +55,7 @@ describe('Example app repetae', () => {
         repetae.release();
         expect(emitted_events).toEqual(['on']);
 
-        repetae.interval();
+        repetae.interval(200);
 
         repetae.press();
         repetae.release();
@@ -65,7 +66,7 @@ describe('Example app repetae', () => {
         repetae.press();
         repetae.interval(450); // expect to be called at 0, 450, 900, 1350 & 1600ms (i.e. 4 times in 1.4s)
         repetae.release();
-        expect(emitted_events).toEqual(['on']);
+        expect(emitted_events).toEqual(['interval-450', 'on']);
 
         var called_count = 0;
 
@@ -99,4 +100,9 @@ describe('Example app repetae', () => {
             done();
         }, 1400);
     });
+
+    it('reports current interval on request', () => {
+        repetae.report_interval();
+        expect(emitted_events).toEqual(['interval-500']);
+    })
 });
