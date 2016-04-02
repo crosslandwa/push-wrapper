@@ -39,8 +39,7 @@ window.addEventListener('load', () => {
 function off_we_go(bound_push) {
     const buttons = document.getElementsByClassName('button'),
         players = create_players(),
-        push = bound_push,
-        repeaters = [];
+        push = bound_push;
 
     foreach(players, (player, i) => {
         var column_number = i + 1,
@@ -48,11 +47,10 @@ function off_we_go(bound_push) {
             sample_name = full_path_sample_name.split('/').pop(),
             repetae = Repetae.create_scheduled_by_audio_context(context);
 
-        repeaters.push(repetae);
-
         push.grid.select[column_number].on('pressed', repetae.press);
         push.grid.select[column_number].on('released', repetae.release);
 
+        push.grid.select[column_number].led_on();
         repetae.on('on', partial(push.grid.select[column_number].led_rgb, 0, 0, 255));
         repetae.on('off', push.grid.select[column_number].led_on);
 
@@ -63,7 +61,7 @@ function off_we_go(bound_push) {
         player.on('started', partial(turn_on_column, push, column_number));
         player.on('stopped', partial(turn_off_column, push, column_number));
         buttons[i].addEventListener('mousedown', partial(player.play, 110));
-        bind_column_to_player(push, player, column_number);
+        bind_column_to_player(push, player, column_number, repetae);
     });
 
     // var repetae = Repetae.create_scheduled_by_audio_context(context);
@@ -89,10 +87,13 @@ function create_players() {
     return players;
 }
 
-function bind_column_to_player(push, player, x) {
+function bind_column_to_player(push, player, x, repetae) {
     foreach([1, 2, 3, 4, 5, 6, 7, 8], (y) => {
         var grid_button = push.grid.y[y].x[x];
-        grid_button.on('pressed', player.play);
+        grid_button.on('pressed', (velocity) => {
+            repetae.start(partial(player.play, velocity))
+        });
+        grid_button.on('released', repetae.stop);
     });
 }
 
