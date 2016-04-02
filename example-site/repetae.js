@@ -10,56 +10,63 @@ function Repetae(scheduled_execution) {
     this._being_pressed = false;
     this._interval = 500; // ms
 
-    this.press = function() {
-        this._being_pressed = true;
-    }
-
-    this.release = function() {
-        var started_active = this._active,
-            time_changed = this._time_changed;
-
-        this._active = !this._active;
-        this._time_changed = false;
-        this._being_pressed = false;
-        this._is_scheduling = false;
-
-        switch (true) {
-            case (!started_active):
-                this.emit('on');
-                break;
-            case (started_active && !time_changed):
-                this.emit('off');
-                break;
-        }
-    }
-
-    this.interval = function(amount_ms)  {
-        if (this._being_pressed) this._time_changed = true;
-        this._interval = amount_ms > 20 ? amount_ms : 20; // 20ms min interval
-    }
-
-    this.start = function(callback) {
-        if (!this._active) {
-            callback();
-            return;
-        }
-
-        if (this._is_scheduling) return;
-        this._is_scheduling = true;
-        call_and_reschedule(this, scheduled_execution, callback);
-    }    
-
-    this.stop = function() {
-        this._is_scheduling = false;
-    }
+    this.press = partial(press, this);
+    this.release = partial(release, this);
+    this.interval = partial(interval, this);
+    this.start = partial(start, this, scheduled_execution);
+    this.stop = partial(stop, this);
 }
 util.inherits(Repetae, EventEmitter);
+
+function press(repetae) {
+    repetae._being_pressed = true;
+}
+
+function release(repetae) {
+    var started_active = repetae._active,
+        time_changed = repetae._time_changed;
+
+    repetae._active = !repetae._active;
+    repetae._time_changed = false;
+    repetae._being_pressed = false;
+    repetae._is_scheduling = false;
+
+    switch (true) {
+        case (!started_active):
+            console.log
+            repetae.emit('on');
+            break;
+        case (started_active && !time_changed):
+            repetae.emit('off');
+            break;
+    }
+}
+
+function interval(repetae, amount_ms) {
+    if (repetae._being_pressed) repetae._time_changed = true;
+    repetae._interval = amount_ms > 20 ? amount_ms : 20; // 20ms min interval
+}
+
+function start(repetae, scheduled_execution, callback) {
+    if (!repetae._active) {
+        callback();
+        return;
+    }
+
+    if (repetae._is_scheduling) return;
+    repetae._is_scheduling = true;
+    call_and_reschedule(repetae, scheduled_execution, callback);
+}
 
 function call_and_reschedule(repetae, scheduled_execution, callback) {
     if (repetae._is_scheduling) {
         callback();
         scheduled_execution(partial(call_and_reschedule, repetae, scheduled_execution, callback), repetae._interval);
     };
+}
+
+function stop(repetae) {
+    repetae._is_scheduling = false;
 }
 
 // Adaptor function used to bind to web Audio API and utilise its audio-rate scheduling

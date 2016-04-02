@@ -13,9 +13,17 @@ const Push = require('../push.js'),
         'samples/clingfilm.mp3',
         'samples/tang-1.mp3',
         'samples/Cassette808_Tom01.mp3'
+    ],
+    repeat_interval_buttons = [
+        '1/32t',
+        '1/32',
+        '1/16t',
+        '1/16',
+        '1/8t',
+        '1/8',
+        '1/4t',
+        '1/4'
     ];
-
-var rate = [1, 1.5, 2, 0.5, 0.25];
 
 window.addEventListener('load', () => {
     if (navigator.requestMIDIAccess) {
@@ -31,35 +39,46 @@ window.addEventListener('load', () => {
 function off_we_go(bound_push) {
     const buttons = document.getElementsByClassName('button'),
         players = create_players(),
-        push = bound_push;
+        push = bound_push,
+        repeaters = [];
 
     foreach(players, (player, i) => {
-        turn_off_column(push, i + 1);
-        var full_path_sample_name = samples[i].split('.')[0];
-        var sample_name = full_path_sample_name.split('/').pop();
-        push.lcd.x[i + 1].y[2].update(sample_name.length > 8 ? sample_name.substr(sample_name.length - 8) : sample_name);
+        var column_number = i + 1,
+            full_path_sample_name = samples[i].split('.')[0],
+            sample_name = full_path_sample_name.split('/').pop(),
+            repetae = Repetae.create_scheduled_by_audio_context(context);
+
+        repeaters.push(repetae);
+
+        push.grid.select[column_number].on('pressed', repetae.press);
+        push.grid.select[column_number].on('released', repetae.release);
+
+        repetae.on('on', partial(push.grid.select[column_number].led_rgb, 0, 0, 255));
+        repetae.on('off', push.grid.select[column_number].led_on);
+
+        turn_off_column(push, column_number);
+        push.lcd.x[column_number].y[2].update(sample_name.length > 8 ? sample_name.substr(sample_name.length - 8) : sample_name);
         player.on('started', partial(turn_button_display_on, buttons[i]));
         player.on('stopped', partial(turn_button_display_off, buttons[i]));
-        player.on('started', partial(turn_on_column, push, i + 1));
-        player.on('stopped', partial(turn_off_column, push, i + 1));
-        if (i < 7) {
-            buttons[i].addEventListener('mousedown', partial(player.play, 110));
-        }
-        bind_column_to_player(push, player, i + 1);
+        player.on('started', partial(turn_on_column, push, column_number));
+        player.on('stopped', partial(turn_off_column, push, column_number));
+        buttons[i].addEventListener('mousedown', partial(player.play, 110));
+        bind_column_to_player(push, player, column_number);
     });
 
-    var repetae = Repetae.create_scheduled_by_audio_context(context);
+    // var repetae = Repetae.create_scheduled_by_audio_context(context);
     
-    repetae.press();
-    repetae.release(); // switch it on
-    buttons[7].addEventListener('mousedown', () => {
-        repetae.start(partial(players[7].play, 110));
-    });
-    buttons[7].addEventListener('mouseup', () => {
-        repetae.stop();
-    });
+    // repetae.press();
+    // repetae.interval(125);
+    // repetae.release(); // switch it on
+    // buttons[7].addEventListener('mousedown', () => {
+    //     repetae.start(partial(players[7].play, 110));
+    // });
+    // buttons[7].addEventListener('mouseup', () => {
+    //     repetae.stop();
+    // });
 
-    bind_pitchbend(push, players);
+    // bind_pitchbend(push, players);
 }
 
 function create_players() {
