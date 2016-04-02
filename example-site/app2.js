@@ -70,19 +70,11 @@ function off_we_go(bound_push) {
         bind_column_to_player(push, player, column_number, repetae);
     });
 
-    // var repetae = Repetae.create_scheduled_by_audio_context(context);
-    
-    // repetae.press();
-    // repetae.interval(125);
-    // repetae.release(); // switch it on
-    // buttons[7].addEventListener('mousedown', () => {
-    //     repetae.start(partial(players[7].play, 110));
-    // });
-    // buttons[7].addEventListener('mouseup', () => {
-    //     repetae.stop();
-    // });
+    foreach(repeat_interval_buttons, (button) => {
+        push.control[button.name].led_dim();
+    });
 
-    // bind_pitchbend(push, players);
+    bind_pitchbend(push, players);
 }
 
 function create_players() {
