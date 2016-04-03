@@ -79,6 +79,7 @@ All interactions with the wrapper are documented in the [push_spec.js](spec/push
 
 push.grid.x[X].y[Y].on('pressed', (velocity) => { /* pad pressed actions. velocity = 1 -> 127 */});
 push.grid.x[X].y[Y].on('released', () => /* pad released actions */);
+push.grid.x[X].y[Y].on('aftertouch', (pressure) => /* pad aftertouch actions */);
 push.grid.select[X].on('pressed', () => /* channel select button pressed actions */);
 push.grid.select[X].on('released', () => /* channel select button released actions */);
 
