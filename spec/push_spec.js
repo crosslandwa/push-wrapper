@@ -31,6 +31,14 @@ describe('Ableton Push wrapper', () => {
             push.receive_midi([176, 102, 0]);
         });
 
+        it('emits aftertouch events in response to grid pad poly key-pressure MIDI messages', (done) => {
+            push.grid.y[1].x[2].on('aftertouch', (pressure) => {
+                expect(pressure).toEqual(100);
+                done();
+            });
+            push.receive_midi([160, 37, 100]); 
+        })
+
         it('pads can have LED turned on', () => {
             push.grid.x[8].y[8].led_on(101);
             expect(sent_bytes).toEqual([144, 99, 101]);

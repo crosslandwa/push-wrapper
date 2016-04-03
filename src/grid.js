@@ -54,6 +54,7 @@ function Grid(send_note, send_cc, send_sysex) {
     this.handled_notes = handled_notes;
     this.receive_midi_note = partial(receive_midi_note, this);
     this.receive_midi_cc = partial(receive_midi_cc, this);
+    this.receive_midi_poly_pressure = partial(receive_midi_poly_pressure, this);
 }
 
 function receive_midi_note(grid, note, velocity) {
@@ -67,6 +68,17 @@ function receive_midi_note(grid, note, velocity) {
 
 function receive_midi_cc(grid, index, value) {
     grid.select[control_buttons[index]].emit(value > 0 ? 'pressed' : 'released');
+}
+
+function receive_midi_poly_pressure(grid, note, pressure) {
+    button_from_note(grid, note).emit('aftertouch', pressure);
+}
+
+function button_from_note(grid, note) {
+    var indexed_from_zero = note - 36,
+        x = (indexed_from_zero % 8) + 1,
+        y = parseInt(indexed_from_zero / 8) + 1;
+    return grid.x[x].y[y];
 }
 
 module.exports = Grid;

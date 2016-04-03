@@ -64,6 +64,10 @@ function handle_midi_pitch_bend(push, lsb_byte, msb_byte) {
     push.touchstrip.receive_midi_pitch_bend((msb_byte << 7) + lsb_byte);
 }
 
+function handle_midi_poly_pressure(push, note, pressure) {
+    push.grid.receive_midi_poly_pressure(note, pressure);
+}
+
 var midi_messages = {
     'note-off': 128, // note number, velocity
     'note-on': 144, // note number, velocity
@@ -90,6 +94,9 @@ function receive_midi(push, bytes) {
             break;
         case (midi_messages['pitch-bend']):
             handle_midi_pitch_bend(push, bytes[1], bytes[2]);
+            break;
+        case(midi_messages['poly-pressure']):
+            handle_midi_poly_pressure(push, bytes[1], bytes[2]);
             break;
     }
 }
