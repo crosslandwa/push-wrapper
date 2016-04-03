@@ -58,11 +58,8 @@ function Grid(send_note, send_cc, send_sysex) {
 }
 
 function receive_midi_note(grid, note, velocity) {
-    var indexed_from_zero = note - 36,
-        vel = parseInt(velocity),
-        x = (indexed_from_zero % 8) + 1,
-        y = parseInt(indexed_from_zero / 8) + 1,
-        button = grid.x[x].y[y];
+    var button = button_from_note(grid, note),
+        vel = parseInt(velocity);
     vel > 0 ? button.emit('pressed', vel) : button.emit('released');
 }
 
@@ -71,7 +68,7 @@ function receive_midi_cc(grid, index, value) {
 }
 
 function receive_midi_poly_pressure(grid, note, pressure) {
-    button_from_note(grid, note).emit('aftertouch', pressure);
+    button_from_note(grid, note).emit('aftertouch', parseInt(pressure));
 }
 
 function button_from_note(grid, note) {
