@@ -155,6 +155,7 @@ push.touchstrip.on('pitchbend', (amount) => { /* amount = 14bit value (0 -> 1638
 //-----LCDS-----
 push.lcd.clear() /* clears all LCD text */
 push.lcd.x[X].y[Y].update(text); /* text is a 1-8 character string */
+push.lcd.x[X].y[Y].clear(); /* clears specific 8 character segment */
 
 // X values: 1 -> 8, Y values: 1 -> 4
 // where x[1].y[1] is the bottom left 8 character segment of the LCD, and x[8].y[4] is the top-right

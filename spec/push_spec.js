@@ -183,6 +183,12 @@ describe('Ableton Push wrapper', () => {
     });
 
     describe('lcd strips', () => {
+        var blank_segment = [32, 32, 32, 32, 32, 32, 32, 32],
+            blank_line = blank_segment.concat([32]).concat(blank_segment)
+                .concat(blank_segment).concat([32]).concat(blank_segment)
+                .concat(blank_segment).concat([32]).concat(blank_segment)
+                .concat(blank_segment).concat([32]).concat(blank_segment);
+
         it('can be updated with 8 chars of text across four rows per channel', () => {
             push.lcd.clear();
 
@@ -246,25 +252,25 @@ describe('Ableton Push wrapper', () => {
             sent_bytes = [];
             push.lcd.clear();
 
-            var blank_line = [32, 32, 32, 32, 32, 32, 32, 32,
-                32,
-                32, 32, 32, 32, 32, 32, 32, 32,
-                32, 32, 32, 32, 32, 32, 32, 32,
-                32,
-                32, 32, 32, 32, 32, 32, 32, 32,
-                32, 32, 32, 32, 32, 32, 32, 32,
-                32,
-                32, 32, 32, 32, 32, 32, 32, 32,
-                32, 32, 32, 32, 32, 32, 32, 32,
-                32,
-                32, 32, 32, 32, 32, 32, 32, 32
-            ];
-
             expect(sent_bytes).toEqual(
                 [240, 71, 127, 21, 27, 0, 69, 0].concat(blank_line).concat([247])
                 .concat([240, 71, 127, 21, 26, 0, 69, 0].concat(blank_line).concat([247]))
                 .concat([240, 71, 127, 21, 25, 0, 69, 0].concat(blank_line).concat([247]))
                 .concat([240, 71, 127, 21, 24, 0, 69, 0].concat(blank_line).concat([247]))
+            );
+        });
+
+        it('can have individual elements cleared', () => {
+            var sent_bytes = [];
+            push = new Push({ send: (bytes) => { sent_bytes = sent_bytes.concat(bytes) } });
+
+            // on load Push initialises LCD with 'powered by node-push' text, so clear before test
+            sent_bytes = [];
+
+            push.lcd.y[4].x[8].clear();
+
+            expect(sent_bytes).toEqual(
+                [240, 71, 127, 21, 24, 0, 69, 0].concat(blank_line).concat([247])
             );
         });
     });
