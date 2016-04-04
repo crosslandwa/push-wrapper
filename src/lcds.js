@@ -10,6 +10,7 @@ function LCDSegment(lcds, row) {
     this.row = row;
     this.lcd_data = [blank, blank, blank, blank, blank, blank, blank, blank];
     this.update = partial(update, this);
+    this.clear = partial(update, this, '');
 }
 
 function update(lcd_segment, text) {

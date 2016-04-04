@@ -41,6 +41,8 @@ function off_we_go(bound_push) {
         players = create_players(),
         push = bound_push;
 
+    push.lcd.clear();
+
     foreach(players, (player, i) => {
         var column_number = i + 1,
             full_path_sample_name = samples[i].split('.')[0],
