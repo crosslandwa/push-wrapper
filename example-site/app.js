@@ -90,10 +90,18 @@ function create_players() {
 
 function bind_column_to_player(push, player, x, repetae) {
     foreach([1, 2, 3, 4, 5, 6, 7, 8], (y) => {
-        var grid_button = push.grid.y[y].x[x];
+        const grid_button = push.grid.y[y].x[x];
+        let mutable_velocity = 127;
+
+        let playback = function() {
+            player.play(mutable_velocity, filter_frequencies[y]);
+        }
+
         grid_button.on('pressed', (velocity) => {
-            repetae.start(partial(player.play, velocity, filter_frequencies[y]))
+            mutable_velocity = velocity;
+            repetae.start(playback)
         });
+        grid_button.on('aftertouch', (pressure) => mutable_velocity = pressure);
         grid_button.on('released', repetae.stop);
     });
 }
