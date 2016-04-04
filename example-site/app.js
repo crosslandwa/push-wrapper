@@ -23,7 +23,8 @@ const Push = require('../push.js'),
         { name: '1/8', amount: 200 },
         { name: '1/4t', amount: 300 },
         { name: '1/4', amount: 400 },
-    ];
+    ],
+    filter_frequencies = [0, 100, 200, 400, 800, 2000, 6000, 10000, 20000];
 
 window.addEventListener('load', () => {
     if (navigator.requestMIDIAccess) {
@@ -68,7 +69,7 @@ function off_we_go(bound_push) {
         player.on('stopped', partial(turn_button_display_off, buttons[i]));
         player.on('started', partial(turn_on_column, push, column_number));
         player.on('stopped', partial(turn_off_column, push, column_number));
-        buttons[i].addEventListener('mousedown', partial(player.play, 110));
+        buttons[i].addEventListener('mousedown', partial(player.play, 110, filter_frequencies[8]));
         bind_column_to_player(push, player, column_number, repetae);
     });
 
@@ -91,7 +92,7 @@ function bind_column_to_player(push, player, x, repetae) {
     foreach([1, 2, 3, 4, 5, 6, 7, 8], (y) => {
         var grid_button = push.grid.y[y].x[x];
         grid_button.on('pressed', (velocity) => {
-            repetae.start(partial(player.play, velocity))
+            repetae.start(partial(player.play, velocity, filter_frequencies[y]))
         });
         grid_button.on('released', repetae.stop);
     });

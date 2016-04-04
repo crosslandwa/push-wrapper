@@ -27,7 +27,7 @@ function loadSample(asset_url, audio_context, done) {
     request.send();
 }
 
-function play(player, audio_context, velocity) {
+function play(player, audio_context, velocity, cutoff_frequency) {
     if (!player._loaded) return;
 
     var now = audio_context.currentTime;
@@ -42,9 +42,12 @@ function play(player, audio_context, velocity) {
     }
 
     var gain_node = audio_context.createGain();
-    
+    var filter_node = audio_context.createBiquadFilter();       
+    filter_node.frequency.value = cutoff_frequency > 30 ? cutoff_frequency : 30;
     var source = audio_context.createBufferSource();
-    source.connect(gain_node);
+    
+    source.connect(filter_node);
+    filter_node.connect(gain_node);
 
     gain_node.connect(audio_context.destination);
 
