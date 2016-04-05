@@ -72,14 +72,14 @@ This convenience method works nicely on OS X, but on Windows the Push likely rep
 
 ## Control events and feedback commands
 
-All interactions with the wrapper are documented in the [push_spec.js](spec/push_spec.js) test suite, but can be summarised as below.
+All interactions with the wrapper are documented in the [push_spec.js](spec/push_spec.js) test suite, but are summarised below.
 
 ```javascript
 //-----GRID-----
 
 push.grid.x[X].y[Y].on('pressed', (velocity) => { /* pad pressed actions. velocity = 1 -> 127 */});
 push.grid.x[X].y[Y].on('released', () => /* pad released actions */);
-push.grid.x[X].y[Y].on('aftertouch', (pressure) => /* pad aftertouch actions */);
+push.grid.x[X].y[Y].on('aftertouch', (pressure) => /* pad aftertouch actions. pressure = 0 -> 127 */);
 push.grid.select[X].on('pressed', () => /* channel select button pressed actions */);
 push.grid.select[X].on('released', () => /* channel select button released actions */);
 
@@ -94,6 +94,7 @@ push.grid.select[X].led_rgb(r, g, b); /* specify channel select button LED by RG
 
 // X, Y values: 1 -> 8
 // where x[1].y[1] is the bottom left pad, and x[8].y[8] is the top-right
+// select[X] elements represent the row of buttons immediately above the grid pads
 
 // note can reference pads by x.y or y.x, i.e. these are equivalent
 push.grid.x[1].y[7].led_on();
