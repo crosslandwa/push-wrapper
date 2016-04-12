@@ -48,7 +48,7 @@ function off_we_go(bound_push) {
         var column_number = i + 1,
             full_path_sample_name = samples[i].split('.')[0],
             sample_name = full_path_sample_name.split('/').pop(),
-            repetae = Repetae.create_scheduled_by_audio_context(context);
+            repetae = Repetae.create_scheduled_by_audio_context(context, repeat_interval_buttons[7].amount);
 
         push.grid.select[column_number].on('pressed', repetae.press);
         push.grid.select[column_number].on('released', repetae.release);
@@ -57,6 +57,7 @@ function off_we_go(bound_push) {
         repetae.on('on', partial(push.grid.select[column_number].led_rgb, 0, 0, 255));
         repetae.on('off', push.grid.select[column_number].led_on);
         repetae.on('interval', (amount_ms) => push.lcd.x[column_number].y[1].update(amount_ms + 'ms'));
+        
         repetae.report_interval();
 
         foreach(repeat_interval_buttons, (button) => {

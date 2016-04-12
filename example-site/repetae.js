@@ -1,13 +1,13 @@
 const EventEmitter = require('events'),
     util = require('util');
 
-function Repetae(scheduled_execution) {
+function Repetae(scheduled_execution, initial_interval) {
     EventEmitter.call(this);
     var repetae = this;
     this._active = false;
     this._time_changed = false;
     this._being_pressed = false;
-    this._interval = 500; // ms
+    this._interval = initial_interval > 20 ? initial_interval : 500; // ms
 
     this.press = function() {
         repetae._being_pressed = true;
@@ -70,7 +70,7 @@ function Repetae(scheduled_execution) {
 util.inherits(Repetae, EventEmitter);
 
 // Adaptor function used to bind to web Audio API and utilise its audio-rate scheduling
-Repetae.create_scheduled_by_audio_context = function(context) {
+Repetae.create_scheduled_by_audio_context = function(context, initial_interval) {
     return new Repetae((callback, interval_ms) => {
         var source = context.createBufferSource(),
             now = context.currentTime,
@@ -81,7 +81,7 @@ Repetae.create_scheduled_by_audio_context = function(context) {
         source.buffer = buffer;
         source.connect(context.destination);
         source.start(scheduled_at);
-    });
+    }, initial_interval);
 }
 
 module.exports = Repetae;
