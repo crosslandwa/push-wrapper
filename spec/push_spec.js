@@ -244,12 +244,13 @@ describe('Ableton Push wrapper', () => {
             );
         });
 
-        it('can be initialised so all LCDs are blank', () => {
+        it('can be cleared so all LCDs are blank', () => {
             var sent_bytes = [];
             push = new Push({ send: (bytes) => { sent_bytes = sent_bytes.concat(bytes) } });
 
             // on load Push initialises LCD with 'powered by node-push' text, so clear before test
             sent_bytes = [];
+
             push.lcd.clear();
 
             expect(sent_bytes).toEqual(
