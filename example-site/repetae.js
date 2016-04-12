@@ -29,7 +29,6 @@ function release(repetae) {
 
     repetae._time_changed = false;
     repetae._being_pressed = false;
-    repetae._is_scheduling = false;
 
     switch (true) {
         case (!started_active):
@@ -38,6 +37,7 @@ function release(repetae) {
             break;
         case (started_active && !time_changed):
             repetae._active = false;
+            repetae._is_scheduling = false;
             repetae.emit('off');
             break;
     }
