@@ -6,7 +6,7 @@ const Push = require('../push.js'),
     Repetae = require('./repetae.js'),
     samples = [
         'samples/Bonus_Kick27.mp3',
-        'samples/snare_ac2_r1.mp3',
+        'samples/snare_turnboot.mp3',
         'samples/HandClap.mp3',
         'samples/Beat07_Hat.mp3',
         'samples/HH_KIT09_100_TMB.mp3',
