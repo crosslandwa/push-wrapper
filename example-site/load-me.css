@@ -9,17 +9,15 @@ h4 {
 p {
     margin: 0 0 10px 0;
 }
-#content, #device_info {
+#content {
     max-width: 800px;
-    /*height: 125px;*/
+    height: 125px;
     margin: 0 auto;
     padding: 10px 0;
     font-family: sans-serif;
     font-size: 12px;
     line-height: 12px;
     letter-spacing: 1.5px;
-}
-#content, #key_data {
     margin-top: 0px;
     text-align: center;
 }
