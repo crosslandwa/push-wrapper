@@ -13,7 +13,7 @@ if not os.path.isfile(cert_file):
     output = process.communicate()[0]
     print 'Created certificate'
 
-print 'Starting HTTPS server. Connect at https://localhost:4443/load-me.html'
+print 'Starting HTTPS server. Connect at https://localhost:4443'
 httpd = BaseHTTPServer.HTTPServer(('localhost', 4443), SimpleHTTPServer.SimpleHTTPRequestHandler)
 httpd.socket = ssl.wrap_socket (httpd.socket, certfile=cert_file, server_side=True)
 httpd.serve_forever()
