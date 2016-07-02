@@ -79,6 +79,8 @@ function off_we_go(bound_push) {
     });
 
     bind_pitchbend(push, players);
+
+    bindQwertyuiToPlayback(players);
 }
 
 function create_players() {
@@ -110,6 +112,15 @@ function bind_column_to_player(push, player, x, repetae) {
         grid_button.on('released', () => {
             if (--pressed_pads_in_col == 0) repetae.stop();
         });
+    });
+}
+
+function bindQwertyuiToPlayback(players) {
+    let lookup = {113: 0, 119: 1, 101: 2, 114: 3, 116: 4, 121: 5, 117: 6, 105: 7};
+    window.addEventListener("keypress", (event) => {
+        if (event.charCode in lookup) {
+            players[lookup[event.charCode]].play(110, filter_frequencies[8]);    
+        }
     });
 }
 
