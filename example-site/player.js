@@ -1,12 +1,19 @@
 const EventEmitter = require('events'),
     util = require('util'),
-    foreach = require('lodash.foreach'),
-    partial = require('lodash.partial');
+    foreach = require('lodash.foreach');
 
 function Player(asset_url, audio_context) {
     EventEmitter.call(this);
-    this.play = partial(play, this, audio_context);
-    this.update_playback_rate = partial(update_playback_rate, this, audio_context);
+    let player = this;
+
+    this.play = function(velocity, cutoff_frequency) {
+        play(player, audio_context, velocity, cutoff_frequency);
+    }
+
+    this.update_playback_rate = function(rate) {
+        update_playback_rate(player, audio_context, rate);
+    }
+
     this._loaded = false;
     this._voices = [];
     this._playback_rate = 1;
@@ -30,7 +37,7 @@ function loadSample(asset_url, audio_context, done) {
 function play(player, audio_context, velocity, cutoff_frequency) {
     if (!player._loaded) return;
 
-    var now = audio_context.currentTime;
+    var now = time_now(audio_context);
 
     if (is_playing(player)) {
         foreach(player._voices, (voice) => {
