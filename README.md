@@ -4,7 +4,7 @@
 
 A javascript wrapper for using the Ableton Push as a MIDI controller via a simple event-driven API, encapsulating the generation and parsing of MIDI messages sent to/from the Ableton Push hardware. push-wrapper is written as a (node) npm module, and can be used in your application via a require statement (see API documentation below). It is assumed you have node/npm installed on your system.
 
-push-wrapper can be used as a MIDI controller in a Web MIDI/Audio API enabled web browser - this repo includes an [example application](example-site/) to demonstrate this.
+push-wrapper can be used as a MIDI controller in a Web MIDI/Audio API enabled web browser - I created a simple [example application](https://github.com/crosslandwa/push-wrapper-example-site) to demonstrate this.
 
 **Modification & Running tests**
 
