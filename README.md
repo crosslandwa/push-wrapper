@@ -31,7 +31,7 @@ Similarly, **feedback commands** can be sent to elements of the hardware (e.g. t
 ### Create new Push wrapper
 
 ```javascript
-const Push = require('./push.js');
+const Push = require('push-wrapper');
 var midi_out = {
     send: function(midi_bytes) {
         // implementation of sending MIDI messages to Push hardware
@@ -60,7 +60,7 @@ navigator.requestMIDIAccess({ sysex: true }).then((midiAccess) => {
 A static factory method is provided to encapsulate binding the Push wrapper to Web MIDI API input/output ports named "Ableton Push User Port"
 
 ```javascript
-const Push = require('./push.js');
+const Push = require('push-wrapper');
 navigator.requestMIDIAccess({ sysex: true })
     .then(Push.create_bound_to_web_midi_api)
     .then((push) => {
