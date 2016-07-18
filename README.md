@@ -1,10 +1,10 @@
-# node-push
+# push-wrapper
 
 ## What?
 
-A javascript wrapper for using the Ableton Push as a MIDI controller via a simple event-driven API, encapsulating the generation and parsing of MIDI messages sent to/from the Ableton Push hardware. node-push is written as a (node) npm module, and can be used in your application via a require statement (see API documentation below). It is assumed you have node/npm installed on your system.
+A javascript wrapper for using the Ableton Push as a MIDI controller via a simple event-driven API, encapsulating the generation and parsing of MIDI messages sent to/from the Ableton Push hardware. push-wrapper is written as a (node) npm module, and can be used in your application via a require statement (see API documentation below). It is assumed you have node/npm installed on your system.
 
-node-push can be used as a MIDI controller in a Web MIDI/Audio API enabled web browser - this repo includes an [example application](example-site/) to demonstrate this.
+push-wrapper can be used as a MIDI controller in a Web MIDI/Audio API enabled web browser - this repo includes an [example application](example-site/) to demonstrate this.
 
 **Modification & Running tests**
 
@@ -12,7 +12,7 @@ If you want to modify the wrapper, install its dependencies via:
  
     npm install
 
-To run the node-push test suite:
+To run the push-wrapper test suite:
 
     npm test
 
@@ -22,7 +22,7 @@ The code is written using javascript [ES2015/ES6](http://es6-features.org/) so e
 
 # API documentation
 
-The push wrapper presents each element of the Push hardware as a distinct object that emits **control events** (see [Event Emitter](https://nodejs.org/api/events.html)) in response to receiving MIDI messages from the Push hardware (via its `receive_midi` method). 
+push-wrapper presents each element of the Push hardware as a distinct object that emits **control events** (see [Event Emitter](https://nodejs.org/api/events.html)) in response to receiving MIDI messages from the Push hardware (via its `receive_midi` method). 
 
 Similarly, **feedback commands** can be sent to elements of the hardware (e.g. turning on button LEDs) by calling the appropriate method on the object in the push wrapper (causing the wrapper to output the corresponding MIDI command)
 

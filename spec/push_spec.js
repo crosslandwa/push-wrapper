@@ -36,7 +36,7 @@ describe('Ableton Push wrapper', () => {
                 expect(pressure).toEqual(100);
                 done();
             });
-            push.receive_midi([160, 37, 100]); 
+            push.receive_midi([160, 37, 100]);
         })
 
         it('pads can have LED turned on', () => {
@@ -248,7 +248,7 @@ describe('Ableton Push wrapper', () => {
             var sent_bytes = [];
             push = new Push({ send: (bytes) => { sent_bytes = sent_bytes.concat(bytes) } });
 
-            // on load Push initialises LCD with 'powered by node-push' text, so clear before test
+            // on load Push initialises LCD with 'powered by push-wrapper' text, so clear before test
             sent_bytes = [];
 
             push.lcd.clear();
@@ -265,7 +265,7 @@ describe('Ableton Push wrapper', () => {
             var sent_bytes = [];
             push = new Push({ send: (bytes) => { sent_bytes = sent_bytes.concat(bytes) } });
 
-            // on load Push initialises LCD with 'powered by node-push' text, so clear before test
+            // on load Push initialises LCD with 'powered by push-wrapper' text, so clear before test
             sent_bytes = [];
 
             push.lcd.y[4].x[8].clear();
@@ -379,7 +379,7 @@ describe('Ableton Push wrapper', () => {
             push.receive_midi([224, 2, 3]);
             push.receive_midi([224, 0, 64]); // hardware sends PB 64 (8192) before sending released event
             push.receive_midi([144, 12, 0]); // released
-            
+
             expect(emittedEvents.length).toEqual(5);
             expect(emittedEvents[0].event).toEqual('pressed');
 

@@ -30,8 +30,8 @@ function LCDs(send_sysex) {
 
     this.x[8].y[4].update(' powered');
     this.x[8].y[3].update('      by');
-    this.x[8].y[2].update('   node-');
-    this.x[8].y[1].update('    push');
+    this.x[8].y[2].update('   push-');
+    this.x[8].y[1].update(' wrapper');
 
     foreach(one_to_four, row => this.update_row(row));
 }
