@@ -50,9 +50,18 @@ const handled_ccs = Object.keys(ccToButtonMap);
 function Button(send_cc, cc) {
     EventEmitter.call(this);
     this.output = function (value) { send_cc(cc, value) };
-    this.led_on = partial(led_on, this);
-    this.led_dim = partial(led_dim, this);
-    this.led_off = partial(led_off, this);
+    return {
+        led_on: partial(led_on, this),
+        led_dim: partial(led_dim, this),
+        led_off: partial(led_off, this),
+        red: () => {},
+        orange: () => {},
+        yellow: () => {},
+        green: () => {},
+        on: this.on,
+        emit: this.emit,
+    }
+
 }
 util.inherits(Button, EventEmitter);
 
@@ -62,6 +71,8 @@ function led_off(button) { button.output(0) }
 
 function Buttons(send_cc) {
     foreach(ccToButtonMap, (value, key) => this[value] = new Button(send_cc, parseInt(key)));
+    this.button_names = [];
+    foreach(ccToButtonMap, (value, key) => this.button_names.push(value));
     this.receive_midi_cc = partial(receive_midi_cc, this);
     this.handled_ccs = handled_ccs;
 }

@@ -278,29 +278,29 @@ describe('Ableton Push wrapper', () => {
 
     describe('buttons', () => {
         it('emit pressed events in response to button MIDI CC messages', (done) => {
-            push.buttons.add_track.on('pressed', done);
+            push.button['add_track'].on('pressed', done);
             push.receive_midi([176, 53, 120]);
         });
 
         it('emit released events in response to button MIDI CC messages with velocity zero', () => {
             var called = false;
-            push.buttons.add_effect.on('released', () => { called = true });
+            push.button['add_effect'].on('released', () => { called = true });
             push.receive_midi([176, 52, 0]);
             expect(called).toEqual(true);
         });
 
         it('can have their LED turned on', () => {
-            push.buttons.add_effect.led_on();
+            push.button['add_effect'].led_on();
             expect(sent_bytes).toEqual([176, 52, 4]);
         })
 
         it('can have their LED turned off', () => {
-            push.buttons.add_effect.led_off();
+            push.button['add_effect'].led_off();
             expect(sent_bytes).toEqual([176, 52, 0]);
         })
 
         it('can have their LED turned on dimly', () => {
-            push.buttons.play.led_dim();
+            push.button['play'].led_dim();
             expect(sent_bytes).toEqual([176, 85, 1]);
         })
     })

@@ -98,8 +98,8 @@ push.grid.x[X].select.led_rgb(r, g, b); /* specify channel select button LED by 
 
 //-----BUTTONS-----
 
-push.button.[BUTTON_NAME].on('pressed', () => /* button pressed actions */);
-push.button.[BUTTON_NAME].on('released', () => /* button released actions */);
+push.button[BUTTON_NAME].on('pressed', () => /* button pressed actions */);
+push.button[BUTTON_NAME].on('released', () => /* button released actions */);
 
 push.button[BUTTON_NAME].led_on(); /* colour fixed per button */
 push.button[BUTTON_NAME].led_dim(); /* colour fixed per button */

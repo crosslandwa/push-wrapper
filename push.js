@@ -51,7 +51,6 @@ function Push(midi_out_port) {
         grid: { x: {}},
         touchstrip: this.touchstrip,
         lcd: this.lcd,
-        buttons: this.buttons,
         button: {
             '1/32t': this.control['1/32t'],
             '1/32': this.control['1/32'],
@@ -78,6 +77,10 @@ function Push(midi_out_port) {
             });
         }
     );
+    foreach(
+        this.buttons.button_names,
+        (button_name) => api.button[button_name] = this.buttons[button_name]
+    )
     return api;
 }
 util.inherits(Push, EventEmitter);
