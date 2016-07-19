@@ -156,10 +156,6 @@ push.lcd.x[X].y[Y].clear(); /* clears specific 8 character segment */
 
 // X values: 1 -> 8, Y values: 1 -> 4
 // where x[1].y[1] is the bottom left 8 character segment of the LCD, and x[8].y[4] is the top-right
-
-// note can reference LCD segments by x.y or y.x, i.e. these are equivalent
-push.lcd.x[1].y[4].update('bananas');
-push.lcd.y[4].x[1].update('bananas');
 ```
 
 ## Why?

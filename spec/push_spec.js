@@ -226,7 +226,7 @@ describe('Ableton Push wrapper', () => {
                 247]
             );
 
-            push.lcd.y[4].x[1].update('more-than-8');
+            push.lcd.x[1].y[4].update('more-than-8');
             expect(sent_bytes).toEqual([240, 71, 127, 21, 24, 0, 69, 0,
                 109, 111, 114, 101, 45, 116, 104, 97, // char codes for "m o r e - t h a"
                 32,
@@ -268,7 +268,7 @@ describe('Ableton Push wrapper', () => {
             // on load Push initialises LCD with 'powered by push-wrapper' text, so clear before test
             sent_bytes = [];
 
-            push.lcd.y[4].x[8].clear();
+            push.lcd.x[8].y[4].clear();
 
             expect(sent_bytes).toEqual(
                 [240, 71, 127, 21, 24, 0, 69, 0].concat(blank_line).concat([247])

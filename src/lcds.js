@@ -24,7 +24,6 @@ function LCDs(send_sysex) {
 
     this.send_sysex = send_sysex;
     this.x = {};
-    this.y = {};
 
     this.clear();
 
@@ -40,8 +39,7 @@ function clear(lcds) {
     foreach(one_to_eight, (x) => {
         lcds.x[x] = { y: {} };
         foreach(one_to_four, (y) => {
-            if (lcds.y[y] === undefined) lcds.y[y] = { x: {} };
-            lcds.y[y].x[x] = lcds.x[x].y[y] = new LCDSegment(lcds, y)
+            lcds.x[x].y[y] = new LCDSegment(lcds, y)
         })
     });
 
