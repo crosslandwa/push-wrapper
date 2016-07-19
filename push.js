@@ -9,7 +9,8 @@ const EventEmitter = require('events'),
     ControlButtons = require('./src/control-buttons.js'),
     LCDs = require('./src/lcds.js'),
     foreach = require('lodash.foreach'),
-    partial = require('lodash.partial');
+    partial = require('lodash.partial'),
+    one_to_eight = [1, 2, 3, 4, 5, 6, 7, 8];
 
 function Push(midi_out_port) {
     EventEmitter.call(this);
@@ -47,7 +48,7 @@ function Push(midi_out_port) {
             swing: this.knobs.swing,
             master: this.knobs.master,
         },
-        grid: this.grid,
+        grid: { x: {}},
         touchstrip: this.touchstrip,
         control: this.control,
         lcd: this.lcd,
@@ -56,8 +57,17 @@ function Push(midi_out_port) {
         receive_midi: partial(receive_midi, this),
     }
     foreach(
-        [1, 2, 3, 4, 5, 6, 7, 8],
+        one_to_eight,
         (number) => api.channel[number] = { knob: this.knobs[number]}
+    );
+    foreach(
+        one_to_eight,
+        (X) => {
+            api.grid.x[X] = { y: {}, select: this.grid.select[X], };
+            foreach(one_to_eight, (Y) => {
+                api.grid.x[X].y[Y] = this.grid.x[X].y[Y];
+            });
+        }
     );
     return api;
 }

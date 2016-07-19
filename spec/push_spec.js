@@ -22,12 +22,12 @@ describe('Ableton Push wrapper', () => {
         });
 
         it('emits pressed events in response to button row above grid pad MIDI note messages', (done) => {
-            push.grid.select[1].on('pressed', done)
+            push.grid.x[1].select.on('pressed', done)
             push.receive_midi([176, 102, 127]);
         });
 
         it('emits released events in response to button row above grid pad MIDI note messages', (done) => {
-            push.grid.select[1].on('released', done)
+            push.grid.x[1].select.on('released', done)
             push.receive_midi([176, 102, 0]);
         });
 
@@ -58,20 +58,20 @@ describe('Ableton Push wrapper', () => {
         });
 
         it('pads can have LED turned on', () => {
-            push.grid.select[2].led_on(101);
+            push.grid.x[2].select.led_on(101);
             expect(sent_bytes).toEqual([176, 103, 101]);
 
-            push.grid.select[2].led_on();
+            push.grid.x[2].select.led_on();
             expect(sent_bytes).toEqual([176, 103, 100]); // default colour of 100 if 'velocity' not provided
         })
 
         it('button row above pads can have LED turned off', () => {
-            push.grid.select[2].led_off();
+            push.grid.x[2].select.led_off();
             expect(sent_bytes).toEqual([176, 103, 0]);
         })
 
         it('button row above pads can have LEDs controlled by RGB values', () => {
-            push.grid.select[2].led_rgb(216, 80, 255);
+            push.grid.x[2].select.led_rgb(216, 80, 255);
             expect(sent_bytes).toEqual([240, 71, 127, 21, 4, 0, 8, 65, 0, 13, 8, 5, 0, 15, 15, 247]);
         });
     });

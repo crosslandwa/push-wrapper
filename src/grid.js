@@ -23,9 +23,14 @@ function GridButton(send_midi_message, send_sysex, note) {
     this.note_out = function(velocity) { send_midi_message(note, velocity) };
     this.sysex_out = function(data) { send_sysex(data) };
     this.index = note < 102 ? note - 36 : note - 38;
-    this.led_on = partial(led_on, this);
-    this.led_off = partial(led_off, this);
-    this.led_rgb = partial(led_rgb, this);
+
+    return {
+        led_on: partial(led_on, this),
+        led_off: partial(led_off, this),
+        led_rgb: partial(led_rgb, this),
+        on: this.on,
+        emit: this.emit,
+    }
 }
 util.inherits(GridButton, EventEmitter);
 
