@@ -307,7 +307,7 @@ describe('Ableton Push wrapper', () => {
 
     describe('knobs', () => {
         it('emit turned events with a positive delta in response to clockwise turns of the master knob', (done) => {
-            push.knobs.master.on('turned', (delta) => {
+            push.knobs['master'].on('turned', (delta) => {
                 expect(delta).toEqual(1);
                 done();
             });
@@ -315,7 +315,7 @@ describe('Ableton Push wrapper', () => {
         });
 
         it('emit turned events with a positive delta in response to clockwise turns of the tempo knob', (done) => {
-            push.knobs.tempo.on('turned', (delta) => {
+            push.knobs['tempo'].on('turned', (delta) => {
                 expect(delta).toEqual(2);
                 done();
             });
@@ -323,7 +323,7 @@ describe('Ableton Push wrapper', () => {
         });
 
         it('emit turned events with a negative delta in response to clockwise turns of the 1st knob', (done) => {
-            push.knobs[1].on('turned', (delta) => {
+            push.channel[1].knob.on('turned', (delta) => {
                 expect(delta).toEqual(-1);
                 done();
             });
@@ -331,7 +331,7 @@ describe('Ableton Push wrapper', () => {
         });
 
         it('emit turned events with a negative delta in response to clockwise turns of the swing knob', (done) => {
-            push.knobs.swing.on('turned', (delta) => {
+            push.knobs['swing'].on('turned', (delta) => {
                 expect(delta).toEqual(-2);
                 done();
             });
@@ -339,12 +339,12 @@ describe('Ableton Push wrapper', () => {
         });
 
         it('emit pressed events when pressed (receives knob MIDI note on)', (done) => {
-            push.knobs.one.on('pressed', done);
+            push.channel[1].knob.on('pressed', done);
             push.receive_midi([144, 0, 126]);
         });
 
         it('emit released events when touching stops (receives knob MIDI note off)', (done) => {
-            push.knobs.swing.on('released', done);
+            push.knobs['swing'].on('released', done);
             push.receive_midi([144, 9, 0]);
         });
     });

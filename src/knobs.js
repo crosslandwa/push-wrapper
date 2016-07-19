@@ -6,14 +6,14 @@ const EventEmitter = require('events'),
 var knobMap = {
     'tempo': { 'cc': 14, 'note': 10 },
     'swing': { 'cc': 15, 'note': 9 },
-    'one': { 'cc': 71, 'note': 0 },
-    'two': { 'cc': 72, 'note': 1 },
-    'three': { 'cc': 73, 'note': 2 },
-    'four': { 'cc': 74, 'note': 3 },
-    'five': { 'cc': 75, 'note': 4 },
-    'six': { 'cc': 76, 'note': 5 },
-    'seven': { 'cc': 77, 'note': 6 },
-    'eight': { 'cc': 78, 'note': 7 },
+    1: { 'cc': 71, 'note': 0 },
+    2: { 'cc': 72, 'note': 1 },
+    3: { 'cc': 73, 'note': 2 },
+    4: { 'cc': 74, 'note': 3 },
+    5: { 'cc': 75, 'note': 4 },
+    6: { 'cc': 76, 'note': 5 },
+    7: { 'cc': 77, 'note': 6 },
+    8: { 'cc': 78, 'note': 7 },
     'master': { 'cc': 79, 'note': 8 },
 }
 
@@ -33,11 +33,6 @@ util.inherits(Knob, EventEmitter);
 
 function Knobs() {
     foreach(knobMap, (value, key) => this[key] = new Knob());
-    var count = 1;
-    foreach(
-        ['one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight'],
-        (value, key) => this[count++] = this[value] // reference knobs numerically too
-    );
     this.handled_ccs = handled_ccs;
     this.receive_midi_cc = partial(receive_midi_cc, this);
     this.receive_midi_note = partial(receive_midi_note, this);

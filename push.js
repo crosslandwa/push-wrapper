@@ -40,7 +40,26 @@ function Push(midi_out_port) {
         (module) => foreach(module.handled_ccs, (value, key) => this.ccMap[value] = module)
     );
 
-    this.receive_midi = partial(receive_midi, this);
+    // Defines public API returned
+    var api = {
+        knobs: {
+            tempo: this.knobs.tempo,
+            swing: this.knobs.swing,
+            master: this.knobs.master,
+        },
+        grid: this.grid,
+        touchstrip: this.touchstrip,
+        control: this.control,
+        lcd: this.lcd,
+        buttons: this.buttons,
+        channel: {},
+        receive_midi: partial(receive_midi, this),
+    }
+    foreach(
+        [1, 2, 3, 4, 5, 6, 7, 8],
+        (number) => api.channel[number] = { knob: this.knobs[number]}
+    );
+    return api;
 }
 util.inherits(Push, EventEmitter);
 

@@ -130,18 +130,21 @@ push.control[BUTTON_NAME].green();
 // 1/4, 1/4t, 1/8, 1/8t, 1/16, 1/16t, 1/32, 1/32t, (time division control buttons)
 // 1, 2, 3, 4, 5, 6, 7, 8 (top row of buttons above grid)
 
+//-----CHANNEL-----
+// Use the knob and select button (buttons immediately below the LCD) for each of the eight channels
+push.channel[X].knob.on('pressed', () => /* knob touching start actions */);
+push.channel[X].knob.on('released', () => /* knob touching stop actions */);
+push.channel[X].knob.on('turned', (delta) => { /* delta = number of clicks. positive = clockwise, negative = anti-clockwise */});
+
+// X values: 1 -> 8
+
 //-----KNOBS-----
+// Use the remaining (non channel-specific) knobs
+push.knobs[KNOB_NAME].on('pressed', () => /* knob touching start actions */);
+push.knobs[KNOB_NAME].on('released', () => /* knob touching stop actions */);
+push.knobs[KNOB_NAME].on('turned', (delta) => { /* delta = number of clicks. positive = clockwise, negative = anti-clockwise */});
 
-push.knobs.KNOB_NAME.on('pressed', () => /* knob touching start actions */);
-push.knobs.KNOB_NAME.on('released', () => /* knob touching stop actions */);
-push.knobs.KNOB_NAME.on('turned', (delta) => { /* delta = number of clicks. positive = clockwise, negative = anti-clockwise */});
-
-// KNOB_NAME values:
-// tempo, swing, one, two, three, four, five, six, seven, eight, master
-
-// note the main eight encoders can also be referenced numerically. These are equivalent
-push.knobs.one.on('turned', () => /* knob 1 turned */);
-push.knobs[1].on('turned', () => /* knob one turned */);
+// KNOB_NAME values: tempo, swing, master
 
 //-----TOUCHSTRIP-----
 
@@ -150,7 +153,7 @@ push.touchstrip.on('released', () => /* touchstrip released actions */);
 push.touchstrip.on('pitchbend', (amount) => { /* amount = 14bit value (0 -> 16383) */});
 
 //-----LCDS-----
-push.lcd.clear() /* clears all LCD text */
+push.lcd.clear(); /* clears all LCD text */
 push.lcd.x[X].y[Y].update(text); /* text is a 1-8 character string */
 push.lcd.x[X].y[Y].clear(); /* clears specific 8 character segment */
 
