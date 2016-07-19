@@ -80,17 +80,17 @@ All interactions with the wrapper are documented in the [push_spec.js](spec/push
 push.grid.x[X].y[Y].on('pressed', (velocity) => { /* pad pressed actions. velocity = 1 -> 127 */});
 push.grid.x[X].y[Y].on('released', () => /* pad released actions */);
 push.grid.x[X].y[Y].on('aftertouch', (pressure) => /* pad aftertouch actions. pressure = 0 -> 127 */);
-push.grid.x[X].select.on('pressed', () => /* channel select button pressed actions */);
-push.grid.x[X].select.on('released', () => /* channel select button released actions */);
+push.grid.x[X].select.on('pressed', () => /* grid column select button pressed actions */);
+push.grid.x[X].select.on('released', () => /* grid column select button released actions */);
 
 push.grid.x[X].y[Y].led_on(value); /* value = 1 -> 127, giving various colours */
 push.grid.x[X].y[Y].led_on(); /* turns on LED, defaulting to orange (value = 100) */
 push.grid.x[X].y[Y].led_off(); /* turns LED off */
 push.grid.x[X].y[Y].led_rgb(r, g, b); /* specify LED by RGB values (0-255) */
-push.grid.x[X].select.led_on(value); /* channel select button LED, value = 1 -> 127, giving various colours */
-push.grid.x[X].select.led_on(); /* turns on channel select button LED, defaulting to orange (value = 100) */
-push.grid.x[X].select.led_off(); /* turns channel select button LED off */
-push.grid.x[X].select.led_rgb(r, g, b); /* specify channel select button LED by RGB values (0-255) */
+push.grid.x[X].select.led_on(value); /* grid column select button LED, value = 1 -> 127, giving various colours */
+push.grid.x[X].select.led_on(); /* turns on grid column select button LED, defaulting to orange (value = 100) */
+push.grid.x[X].select.led_off(); /* turns grid column select button LED off */
+push.grid.x[X].select.led_rgb(r, g, b); /* specify grid column select button LED by RGB values (0-255) */
 
 // X, Y values: 1 -> 8
 // where x[1].y[1] is the bottom left pad, and x[8].y[8] is the top-right
