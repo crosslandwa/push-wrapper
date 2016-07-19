@@ -39,13 +39,11 @@ function led_rgb(gridButton, r, g, b) {
 
 function Grid(send_note, send_cc, send_sysex) {
     this.x = {};
-    this.y = {};
     this.select = {};
     for (var x = 1; x <= 8; x++) {
         this.x[x] = { y: {} }
         for (var y = 1; y <= 8; y++) {
-            if (this.y[y] === undefined) this.y[y] = { x: {} };
-            this.y[y].x[x] = this.x[x].y[y] = new GridButton(send_note, send_sysex, (x - 1) + ((y - 1) * 8) + 36);
+            this.x[x].y[y] = new GridButton(send_note, send_sysex, (x - 1) + ((y - 1) * 8) + 36);
         }
     }
 

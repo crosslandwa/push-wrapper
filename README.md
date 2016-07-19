@@ -96,10 +96,6 @@ push.grid.select[X].led_rgb(r, g, b); /* specify channel select button LED by RG
 // where x[1].y[1] is the bottom left pad, and x[8].y[8] is the top-right
 // select[X] elements represent the row of buttons immediately above the grid pads
 
-// note can reference pads by x.y or y.x, i.e. these are equivalent
-push.grid.x[1].y[7].led_on();
-push.grid.y[7].x[1].led_on();
-
 //-----BUTTONS-----
 
 push.buttons.BUTTON_NAME.on('pressed', () => /* button pressed actions */);

@@ -17,7 +17,7 @@ describe('Ableton Push wrapper', () => {
         });
 
         it('emits released events in response to pad MIDI note-off messages', (done) => {
-            push.grid.y[1].x[2].on('released', done); // note can refer to grid locations x.y and y.x
+            push.grid.x[2].y[1].on('released', done); // note can refer to grid locations x.y and y.x
             push.receive_midi([144, 37, 0]);
         });
 
@@ -32,7 +32,7 @@ describe('Ableton Push wrapper', () => {
         });
 
         it('emits aftertouch events in response to grid pad poly key-pressure MIDI messages', (done) => {
-            push.grid.y[1].x[2].on('aftertouch', (pressure) => {
+            push.grid.x[2].y[1].on('aftertouch', (pressure) => {
                 expect(pressure).toEqual(100);
                 done();
             });
