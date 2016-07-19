@@ -118,16 +118,16 @@ push.button[BUTTON_NAME].green();
 // octave_down, octave_up, repeat, accent, scales, user, mute, solo, step_in, step_out,
 // play, rec, new, duplicate, automation, fixed_length, device, browse, track, clip,
 // volume, pan_&_send, quantize, double, delete, undo
-// 1/4, 1/4t, 1/8, 1/8t, 1/16, 1/16t, 1/32, 1/32t, (time division control buttons)
+// 1/4, 1/4t, 1/8, 1/8t, 1/16, 1/16t, 1/32, 1/32t (time division control buttons)
 
 //-----CHANNEL-----
-// Use the knob and select button (buttons immediately below the LCD) for each of the eight channels
+// Use the knob above and select button below the LCD for each of the eight channels
 push.channel[X].knob.on('pressed', () => /* knob touching start actions */);
 push.channel[X].knob.on('released', () => /* knob touching stop actions */);
 push.channel[X].knob.on('turned', (delta) => { /* delta = number of clicks. positive = clockwise, negative = anti-clockwise */});
 
-push.channel[X].select.on('pressed', () => /* control button pressed actions */);
-push.channel[X].select.on('released', () => /* control button released actions */);
+push.channel[X].select.on('pressed', () => /* select button pressed actions */);
+push.channel[X].select.on('released', () => /* select button released actions */);
 
 push.channel[X].select.led_on(); /* colour defaults to orange */
 push.channel[X].select.led_dim(); /* colour defaults to orange */
