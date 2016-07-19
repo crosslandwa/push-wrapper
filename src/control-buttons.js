@@ -27,13 +27,17 @@ function Pad(send_cc, cc) {
     EventEmitter.call(this);
     this.output = function(value) { send_cc(cc, value) };
     this.colours = [7, 10]; // dim, bright
-    this.led_on = partial(led_on, this);
-    this.led_dim = partial(led_dim, this);
-    this.led_off = partial(led_off, this);
-    this.red = partial(red, this);
-    this.orange = partial(orange, this);
-    this.yellow = partial(yellow, this);
-    this.green = partial(green, this);
+    return {
+        led_on: partial(led_on, this),
+        led_dim: partial(led_dim, this),
+        led_off: partial(led_off, this),
+        red: partial(red, this),
+        orange: partial(orange, this),
+        yellow: partial(yellow, this),
+        green: partial(green, this),
+        on: this.on,
+        emit: this.emit,
+    }
 }
 util.inherits(Pad, EventEmitter);
 
@@ -54,6 +58,6 @@ function ControlButtons(send_cc) {
 function receive_midi_cc(control_buttons, cc, value) {
     var pad_name = ccToPadMap[cc];
     control_buttons[pad_name].emit(value > 0 ? 'pressed' : 'released');
-} 
+}
 
 module.exports = ControlButtons;

@@ -98,12 +98,19 @@ push.grid.x[X].select.led_rgb(r, g, b); /* specify channel select button LED by 
 
 //-----BUTTONS-----
 
-push.buttons.BUTTON_NAME.on('pressed', () => /* button pressed actions */);
-push.buttons.BUTTON_NAME.on('released', () => /* button released actions */);
+push.button.[BUTTON_NAME].on('pressed', () => /* button pressed actions */);
+push.button.[BUTTON_NAME].on('released', () => /* button released actions */);
 
-push.buttons.BUTTON_NAME.led_on(); /* colour fixed per button */
-push.buttons.BUTTON_NAME.led_dim(); /* colour fixed per button */
-push.buttons.BUTTON_NAME.led_off();
+push.button[BUTTON_NAME].led_on(); /* colour fixed per button */
+push.button[BUTTON_NAME].led_dim(); /* colour fixed per button */
+push.button[BUTTON_NAME].led_off();
+
+// Note the time division buttons allow LED colour changes, honoured on the next led_on or led_dim call
+// Default colour is orange
+push.button[BUTTON_NAME].red();
+push.button[BUTTON_NAME].orange();
+push.button[BUTTON_NAME].yellow();
+push.button[BUTTON_NAME].green();
 
 // BUTTON_NAME values:
 // tap_tempo, metronome, master, stop, 
@@ -111,24 +118,7 @@ push.buttons.BUTTON_NAME.led_off();
 // octave_down, octave_up, repeat, accent, scales, user, mute, solo, step_in, step_out,
 // play, rec, new, duplicate, automation, fixed_length, device, browse, track, clip,
 // volume, pan_&_send, quantize, double, delete, undo
-
-//-----CONTROL BUTTONS-----
-push.control[BUTTON_NAME].on('pressed', () => /* control button pressed actions */);
-push.control[BUTTON_NAME].on('released', () => /* control button released actions */);
-
-push.control[BUTTON_NAME].led_on(); /* colour defaults to orange */
-push.control[BUTTON_NAME].led_dim(); /* colour defaults to orange */
-push.control[BUTTON_NAME].led_off();
-
-// LED colour changes, honoured on the next led_on or led_dim call
-push.control[BUTTON_NAME].red();
-push.control[BUTTON_NAME].orange();
-push.control[BUTTON_NAME].yellow();
-push.control[BUTTON_NAME].green();
-
-// BUTTON_NAME values:
 // 1/4, 1/4t, 1/8, 1/8t, 1/16, 1/16t, 1/32, 1/32t, (time division control buttons)
-// 1, 2, 3, 4, 5, 6, 7, 8 (top row of buttons above grid)
 
 //-----CHANNEL-----
 // Use the knob and select button (buttons immediately below the LCD) for each of the eight channels
@@ -153,9 +143,9 @@ push.channel[X].select.green();
 
 //-----KNOBS-----
 // Use the remaining (non channel-specific) knobs
-push.knobs[KNOB_NAME].on('pressed', () => /* knob touching start actions */);
-push.knobs[KNOB_NAME].on('released', () => /* knob touching stop actions */);
-push.knobs[KNOB_NAME].on('turned', (delta) => { /* delta = number of clicks. positive = clockwise, negative = anti-clockwise */});
+push.knob[KNOB_NAME].on('pressed', () => /* knob touching start actions */);
+push.knob[KNOB_NAME].on('released', () => /* knob touching stop actions */);
+push.knob[KNOB_NAME].on('turned', (delta) => { /* delta = number of clicks. positive = clockwise, negative = anti-clockwise */});
 
 // KNOB_NAME values: tempo, swing, master
 

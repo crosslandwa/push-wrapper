@@ -43,16 +43,25 @@ function Push(midi_out_port) {
 
     // Defines public API returned
     var api = {
-        knobs: {
+        knob: {
             tempo: this.knobs.tempo,
             swing: this.knobs.swing,
             master: this.knobs.master,
         },
         grid: { x: {}},
         touchstrip: this.touchstrip,
-        control: this.control,
         lcd: this.lcd,
         buttons: this.buttons,
+        button: {
+            '1/32t': this.control['1/32t'],
+            '1/32': this.control['1/32'],
+            '1/16t': this.control['1/16t'],
+            '1/16': this.control['1/16'],
+            '1/8t': this.control['1/8t'],
+            '1/8': this.control['1/8'],
+            '1/4t': this.control['1/4t'],
+            '1/4': this.control['1/4'],
+        },
         channel: {},
         receive_midi: partial(receive_midi, this),
     }

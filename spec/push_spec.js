@@ -78,12 +78,12 @@ describe('Ableton Push wrapper', () => {
 
     describe('top row of buttons above grid', () => {
         it('emit pressed events in response receiving top row pad MIDI CC messages', (done) => {
-            push.control[5].on('pressed', done);
+            push.channel[5].select.on('pressed', done);
             push.receive_midi([176, 24, 127]);
         });
 
         it('emit released events in response receiving top row pad MIDI CC messages', (done) => {
-            push.control[5].on('released', done);
+            push.channel[5].select.on('released', done);
             push.receive_midi([176, 24, 0]);
         });
 
@@ -131,53 +131,53 @@ describe('Ableton Push wrapper', () => {
 
     describe('time division control buttons', () => {
         it('emit pressed events in response receiving top row pad MIDI CC messages', (done) => {
-            push.control['1/32t'].on('pressed', done);
+            push.button['1/32t'].on('pressed', done);
             push.receive_midi([176, 43, 127]);
         });
 
         it('emit released events in response receiving top row pad MIDI CC messages', (done) => {
-            push.control['1/32t'].on('released', done);
+            push.button['1/32t'].on('released', done);
             push.receive_midi([176, 43, 0]);
         });
 
         it('can have LED turned on', () => {
-            push.control['1/4'].led_on();
+            push.button['1/4'].led_on();
             expect(sent_bytes).toEqual([176, 36, 10]);
         })
 
         it('can have LED turned on dimly', () => {
-            push.control['1/4'].led_dim();
+            push.button['1/4'].led_dim();
             expect(sent_bytes).toEqual([176, 36, 7]);
         })
 
         it('can have LED turned off', () => {
-            push.control['1/4'].led_off();
+            push.button['1/4'].led_off();
             expect(sent_bytes).toEqual([176, 36, 0]);
         })
 
         it('can have LEDs colour changed', () => {
-            push.control['1/16'].red();
-            push.control['1/16'].led_on();
+            push.button['1/16'].red();
+            push.button['1/16'].led_on();
             expect(sent_bytes).toEqual([176, 40, 4]);
-            push.control['1/16'].led_dim();
+            push.button['1/16'].led_dim();
             expect(sent_bytes).toEqual([176, 40, 1]);
 
-            push.control['1/16'].orange();
-            push.control['1/16'].led_on();
+            push.button['1/16'].orange();
+            push.button['1/16'].led_on();
             expect(sent_bytes).toEqual([176, 40, 10]);
-            push.control['1/16'].led_dim();
+            push.button['1/16'].led_dim();
             expect(sent_bytes).toEqual([176, 40, 7]);
 
-            push.control['1/16'].yellow();
-            push.control['1/16'].led_on();
+            push.button['1/16'].yellow();
+            push.button['1/16'].led_on();
             expect(sent_bytes).toEqual([176, 40, 16]);
-            push.control['1/16'].led_dim();
+            push.button['1/16'].led_dim();
             expect(sent_bytes).toEqual([176, 40, 13]);
 
-            push.control['1/16'].green();
-            push.control['1/16'].led_on();
+            push.button['1/16'].green();
+            push.button['1/16'].led_on();
             expect(sent_bytes).toEqual([176, 40, 22]);
-            push.control['1/16'].led_dim();
+            push.button['1/16'].led_dim();
             expect(sent_bytes).toEqual([176, 40, 19]);
         })
     });
@@ -307,7 +307,7 @@ describe('Ableton Push wrapper', () => {
 
     describe('knobs', () => {
         it('emit turned events with a positive delta in response to clockwise turns of the master knob', (done) => {
-            push.knobs['master'].on('turned', (delta) => {
+            push.knob['master'].on('turned', (delta) => {
                 expect(delta).toEqual(1);
                 done();
             });
@@ -315,7 +315,7 @@ describe('Ableton Push wrapper', () => {
         });
 
         it('emit turned events with a positive delta in response to clockwise turns of the tempo knob', (done) => {
-            push.knobs['tempo'].on('turned', (delta) => {
+            push.knob['tempo'].on('turned', (delta) => {
                 expect(delta).toEqual(2);
                 done();
             });
@@ -331,7 +331,7 @@ describe('Ableton Push wrapper', () => {
         });
 
         it('emit turned events with a negative delta in response to clockwise turns of the swing knob', (done) => {
-            push.knobs['swing'].on('turned', (delta) => {
+            push.knob['swing'].on('turned', (delta) => {
                 expect(delta).toEqual(-2);
                 done();
             });
@@ -344,7 +344,7 @@ describe('Ableton Push wrapper', () => {
         });
 
         it('emit released events when touching stops (receives knob MIDI note off)', (done) => {
-            push.knobs['swing'].on('released', done);
+            push.knob['swing'].on('released', done);
             push.receive_midi([144, 9, 0]);
         });
     });
