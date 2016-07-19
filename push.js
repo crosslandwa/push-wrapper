@@ -58,7 +58,7 @@ function Push(midi_out_port) {
     }
     foreach(
         one_to_eight,
-        (number) => api.channel[number] = { knob: this.knobs[number]}
+        (number) => api.channel[number] = { knob: this.knobs[number], select: this.control[number] }
     );
     foreach(
         one_to_eight,

@@ -136,6 +136,19 @@ push.channel[X].knob.on('pressed', () => /* knob touching start actions */);
 push.channel[X].knob.on('released', () => /* knob touching stop actions */);
 push.channel[X].knob.on('turned', (delta) => { /* delta = number of clicks. positive = clockwise, negative = anti-clockwise */});
 
+push.channel[X].select.on('pressed', () => /* control button pressed actions */);
+push.channel[X].select.on('released', () => /* control button released actions */);
+
+push.channel[X].select.led_on(); /* colour defaults to orange */
+push.channel[X].select.led_dim(); /* colour defaults to orange */
+push.channel[X].select.led_off();
+
+// LED colour changes, honoured on the next led_on or led_dim call
+push.channel[X].select.red();
+push.channel[X].select.orange();
+push.channel[X].select.yellow();
+push.channel[X].select.green();
+
 // X values: 1 -> 8
 
 //-----KNOBS-----

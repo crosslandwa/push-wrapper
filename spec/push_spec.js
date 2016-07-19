@@ -88,43 +88,43 @@ describe('Ableton Push wrapper', () => {
         });
 
         it('can have LED turned on', () => {
-            push.control[1].led_on();
+            push.channel[1].select.led_on();
             expect(sent_bytes).toEqual([176, 20, 10]);
         })
 
         it('can have LED turned on dimly', () => {
-            push.control[1].led_dim();
+            push.channel[1].select.led_dim();
             expect(sent_bytes).toEqual([176, 20, 7]);
         })
 
         it('can have LED turned off', () => {
-            push.control[1].led_off();
+            push.channel[1].select.led_off();
             expect(sent_bytes).toEqual([176, 20, 0]);
         })
 
         it('can have LEDs colour changed', () => {
-            push.control[1].red();
-            push.control[1].led_on();
+            push.channel[1].select.red();
+            push.channel[1].select.led_on();
             expect(sent_bytes).toEqual([176, 20, 4]);
-            push.control[1].led_dim();
+            push.channel[1].select.led_dim();
             expect(sent_bytes).toEqual([176, 20, 1]);
 
-            push.control[1].orange();
-            push.control[1].led_on();
+            push.channel[1].select.orange();
+            push.channel[1].select.led_on();
             expect(sent_bytes).toEqual([176, 20, 10]);
-            push.control[1].led_dim();
+            push.channel[1].select.led_dim();
             expect(sent_bytes).toEqual([176, 20, 7]);
 
-            push.control[1].yellow();
-            push.control[1].led_on();
+            push.channel[1].select.yellow();
+            push.channel[1].select.led_on();
             expect(sent_bytes).toEqual([176, 20, 16]);
-            push.control[1].led_dim();
+            push.channel[1].select.led_dim();
             expect(sent_bytes).toEqual([176, 20, 13]);
 
-            push.control[1].green();
-            push.control[1].led_on();
+            push.channel[1].select.green();
+            push.channel[1].select.led_on();
             expect(sent_bytes).toEqual([176, 20, 22]);
-            push.control[1].led_dim();
+            push.channel[1].select.led_dim();
             expect(sent_bytes).toEqual([176, 20, 19]);
         })
     });
