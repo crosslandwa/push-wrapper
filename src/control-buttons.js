@@ -1,7 +1,6 @@
 const EventEmitter = require('events'),
     util = require('util'),
-    foreach = require('lodash.foreach'),
-    partial = require('lodash.partial');
+    foreach = require('lodash.foreach');
 
 var ccToPadMap = {
     20: 1, // top row above grid
@@ -26,38 +25,30 @@ const handled_ccs = Object.keys(ccToPadMap);
 function Pad(send_cc, cc) {
     EventEmitter.call(this);
     this.output = function(value) { send_cc(cc, value) };
+    var colours = [7, 10]; // dim, bright
     this.colours = [7, 10]; // dim, bright
     return {
-        led_on: partial(led_on, this),
-        led_dim: partial(led_dim, this),
-        led_off: partial(led_off, this),
-        red: partial(red, this),
-        orange: partial(orange, this),
-        yellow: partial(yellow, this),
-        green: partial(green, this),
+        led_on: function() { send_cc(cc, colours[1]) },
+        led_dim: function() { send_cc(cc, colours[0]) },
+        led_off: function() { send_cc(cc, 0) },
+        red: function() { colours = [1, 4] },
+        orange: function() { colours = [7, 10] },
+        yellow: function() { colours = [13, 16] },
+        green: function() { colours = [19, 22] },
         on: this.on,
         emit: this.emit,
     }
 }
 util.inherits(Pad, EventEmitter);
 
-function led_on(pad) { pad.output(pad.colours[1]) }
-function led_dim(pad) { pad.output(pad.colours[0]) }
-function led_off(pad) { pad.output(0) }
-function red(pad) { pad.colours = [1, 4] }
-function orange(pad) { pad.colours = [7, 10] }
-function yellow(pad) { pad.colours = [13, 16] }
-function green(pad) { pad.colours = [19, 22] }
-
 function ControlButtons(send_cc) {
+    const control_buttons = this;
     foreach(ccToPadMap, (value, key) => this[value] = new Pad(send_cc, parseInt(key)));
     this.handled_ccs = handled_ccs;
-    this.receive_midi_cc = partial(receive_midi_cc, this);
-}
-
-function receive_midi_cc(control_buttons, cc, value) {
-    var pad_name = ccToPadMap[cc];
-    control_buttons[pad_name].emit(value > 0 ? 'pressed' : 'released');
+    this.receive_midi_cc = function(cc, value) {
+        var pad_name = ccToPadMap[cc];
+        control_buttons[pad_name].emit(value > 0 ? 'pressed' : 'released');
+    }
 }
 
 module.exports = ControlButtons;
