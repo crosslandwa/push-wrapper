@@ -26,24 +26,8 @@ function lcd_data(text) {
 }
 
 function LCDs(send_sysex) {
-    var lcds = this;
-
-    this.clear = function() {
-        foreach(
-            one_to_eight,
-            (x) => {
-                lcds.x[x] = { y: {} };
-                foreach(
-                    one_to_four,
-                    (y) => { lcds.x[x].y[y] = new LCDSegment(lcds, () => lcds.update_row(y)) }
-                )
-            }
-        );
-
-        foreach(one_to_four, row => lcds.update_row(row));
-    };
-
-    this.update_row = function (row_number) {
+    const lcds = this;
+    const update_row = function (row_number) {
         var display_data = [];
         foreach(one_to_eight, (channel) => {
             display_data = display_data.concat(lcds.x[channel].y[row_number].lcd_data);
@@ -56,6 +40,21 @@ function LCDs(send_sysex) {
         );
     }
 
+    this.clear = function() {
+        foreach(
+            one_to_eight,
+            (x) => {
+                lcds.x[x] = { y: {} };
+                foreach(
+                    one_to_four,
+                    (y) => { lcds.x[x].y[y] = new LCDSegment(lcds, () => update_row(y)) }
+                )
+            }
+        );
+
+        foreach(one_to_four, row => update_row(row));
+    };
+
     this.x = {};
 
     this.clear();
@@ -65,7 +64,7 @@ function LCDs(send_sysex) {
     this.x[8].y[2].update('   push-');
     this.x[8].y[1].update(' wrapper');
 
-    foreach(one_to_four, row => this.update_row(row));
+    foreach(one_to_four, row => update_row(row));
 }
 
 module.exports = LCDs;
