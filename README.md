@@ -2,25 +2,24 @@
 
 ## What?
 
-A javascript wrapper for using the Ableton Push as a MIDI controller via a simple event-driven API, encapsulating the generation and parsing of MIDI messages sent to/from the hardware.  push-wrapper's primary use case is to easily enable the use of the Ableton Push as a MIDI controller in a Web MIDI/Audio API enabled web browser - I created a simple [example application](https://github.com/crosslandwa/push-wrapper-example-site) to demonstrate this.
+A javascript wrapper primarily enabling the use of the Ableton Push hardware as a MIDI controller in a Web MIDI/Audio API enabled web browser - I created a simple [example application](https://github.com/crosslandwa/push-wrapper-example-site) to demonstrate this.
 
-push-wrapper is written as a [requirejs](http://requirejs.org/) compatible js module, and is distributed vi [npm](https://www.npmjs.com/). The code is written using javascript [ES2015/ES6](http://es6-features.org/) so expects native Promises and other language features to be available.
+The wrapper presents a simple event-driven [API](api), encapsulating the generation and parsing of MIDI messages sent to/from the hardware.
+
+push-wrapper is written as a [requirejs](http://requirejs.org/) compatible module, and is distributed via [npm](https://www.npmjs.com/). The code is written using javascript [ES2015/ES6](http://es6-features.org/) so expects native Promises and other newer language features to be available.
 
 ###Modification & Running tests
 
-If you want to modify the wrapper, install its dependencies via:
+If you want to modify the wrapper, install its dependencies and run its test suite by:
  
     npm install
-
-To run the push-wrapper test suite:
-
     npm test
 
 # API
 
-push-wrapper presents each element of the Push hardware as a distinct object that emits **control events** (see [Event Emitter](https://nodejs.org/api/events.html)) in response to receiving MIDI messages from the Push hardware (via its `receive_midi` method). 
+push-wrapper presents each element of the Push hardware as a distinct object that emits **control events** (see [Event Emitter](https://nodejs.org/api/events.html)) in response to receiving MIDI messages from the Push hardware.
 
-Similarly, **feedback commands** can be sent to elements of the hardware (e.g. turning on button LEDs) by calling the appropriate method on the object in the push wrapper (causing the wrapper to output the corresponding MIDI command)
+Similarly, **feedback commands** can be sent to elements of the hardware (e.g. turning on button LEDs) by calling the appropriate methods on each element (causing the wrapper to output a corresponding MIDI command).
 
 ## Instantiation and MIDI IO
 
@@ -178,7 +177,7 @@ I posed myself a couple of front-end/musical-tool development questions and used
 
 ### Can i write a *reasonable looking* and *useful* app in a web browser (in a timeframe comparable to MaxMSP development)?
 - Yes and no
-- The push-wrapper code made hooking up the controller to application code trivial
+- The push-wrapper code makes hooking up the controller to application code trivial
 - Writing audio applications *from scratch* using the Web Audio API proved to be slower than anticipated
   - The Web Audio API offers a fairly low level building blocks
   - Suggest I look at libraries such as [Tonejs](https://github.com/Tonejs/Tone.js) that provide higher level functionality in the future
