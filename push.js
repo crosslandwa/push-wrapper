@@ -21,7 +21,6 @@ function Push(midi_out_port) {
         send_sysex: function(data) { midi_out_port.send([240, 71, 127, 21].concat(data).concat([247])) }
     }
 
-    this.output_port = midi_out;
     this.buttons = new Buttons(midi_out.send_cc);
     this.knobs = new Knobs();
     this.grid = new Grid(midi_out.send_note, midi_out.send_cc, midi_out.send_sysex);
@@ -41,7 +40,7 @@ function Push(midi_out_port) {
     );
 
     // Defines public API returned
-    var api = {
+    const api = {
         knob: {
             tempo: this.knobs.tempo,
             swing: this.knobs.swing,
