@@ -2,11 +2,11 @@
 
 ## What?
 
-A javascript wrapper for using the Ableton Push as a MIDI controller via a simple event-driven API, encapsulating the generation and parsing of MIDI messages sent to/from the Ableton Push hardware. push-wrapper is written as a (node) npm module, and can be used in your application via a require statement (see API documentation below). It is assumed you have node/npm installed on your system.
+A javascript wrapper for using the Ableton Push as a MIDI controller via a simple event-driven API, encapsulating the generation and parsing of MIDI messages sent to/from the hardware.  push-wrapper's primary use case is to easily enable the use of the Ableton Push as a MIDI controller in a Web MIDI/Audio API enabled web browser - I created a simple [example application](https://github.com/crosslandwa/push-wrapper-example-site) to demonstrate this.
 
-push-wrapper can be used as a MIDI controller in a Web MIDI/Audio API enabled web browser - I created a simple [example application](https://github.com/crosslandwa/push-wrapper-example-site) to demonstrate this.
+push-wrapper is written as a [requirejs](http://requirejs.org/) compatible js module, and is distributed vi [npm](https://www.npmjs.com/). The code is written using javascript [ES2015/ES6](http://es6-features.org/) so expects native Promises and other language features to be available.
 
-**Modification & Running tests**
+###Modification & Running tests
 
 If you want to modify the wrapper, install its dependencies via:
  
@@ -16,11 +16,7 @@ To run the push-wrapper test suite:
 
     npm test
 
-### Disclaimer
-
-The code is written using javascript [ES2015/ES6](http://es6-features.org/) so expects native Promises and other language features to be available. It is only **known** to work in Google Chrome/OS X...
-
-# API documentation
+# API
 
 push-wrapper presents each element of the Push hardware as a distinct object that emits **control events** (see [Event Emitter](https://nodejs.org/api/events.html)) in response to receiving MIDI messages from the Push hardware (via its `receive_midi` method). 
 
@@ -38,10 +34,9 @@ var midi_out = {
         // expects midi_bytes to be an array
     }
 }
-var push = new Push(midi_out);
+var push = new Push(midi_out); // MIDI messages sent to midi_out in response to issuing feedback commands to push
 
-var midi_bytes = [144, 100, 127];
-push.receive_midi(midi_bytes); // wrapper expects midi_bytes to be an array
+push.receive_midi([144, 100, 127]); // push emits events in response to receiving MIDI bytes from hardware
 ```
 
 ### Web MIDI API integration
@@ -68,7 +63,7 @@ navigator.requestMIDIAccess({ sysex: true })
     });
 ```
 
-This convenience method works nicely on OS X, but on Windows the Push likely reports itself as "USB AudioDevice 1" or similar (MIDI devices did last time I checked in) - you may have to roll your own binding if using this under Windows...
+*This convenience method works nicely on OS X, but on Windows the Push likely reports itself as "USB AudioDevice 1" or similar (MIDI devices did last time I checked in) - you may have to roll your own binding if using this under Windows...*
 
 ## Control events and feedback commands
 
@@ -122,6 +117,7 @@ push.button[BUTTON_NAME].green();
 
 //-----CHANNEL-----
 // Use the knob above and select button below the LCD for each of the eight channels
+
 push.channel[X].knob.on('pressed', () => /* knob touching start actions */);
 push.channel[X].knob.on('released', () => /* knob touching stop actions */);
 push.channel[X].knob.on('turned', (delta) => { /* delta = number of clicks. positive = clockwise, negative = anti-clockwise */});
@@ -143,6 +139,7 @@ push.channel[X].select.green();
 
 //-----KNOBS-----
 // Use the remaining (non channel-specific) knobs
+
 push.knob[KNOB_NAME].on('pressed', () => /* knob touching start actions */);
 push.knob[KNOB_NAME].on('released', () => /* knob touching stop actions */);
 push.knob[KNOB_NAME].on('turned', (delta) => { /* delta = number of clicks. positive = clockwise, negative = anti-clockwise */});
@@ -156,6 +153,7 @@ push.touchstrip.on('released', () => /* touchstrip released actions */);
 push.touchstrip.on('pitchbend', (amount) => { /* amount = 14bit value (0 -> 16383) */});
 
 //-----LCDS-----
+
 push.lcd.clear(); /* clears all LCD text */
 push.lcd.x[X].y[Y].update(text); /* text is a 1-8 character string */
 push.lcd.x[X].y[Y].clear(); /* clears specific 8 character segment */
