@@ -71,8 +71,7 @@ function led_off(button) { button.output(0) }
 
 function Buttons(send_cc) {
     foreach(ccToButtonMap, (value, key) => this[value] = new Button(send_cc, parseInt(key)));
-    this.button_names = [];
-    foreach(ccToButtonMap, (value, key) => this.button_names.push(value));
+    this.names = Object.keys(ccToButtonMap).map((key) => { return ccToButtonMap[key] });
     this.receive_midi_cc = partial(receive_midi_cc, this);
     this.handled_ccs = handled_ccs;
 }

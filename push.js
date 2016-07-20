@@ -21,7 +21,7 @@ function Push(midi_out_port) {
         send_sysex: function(data) { midi_out_port.send([240, 71, 127, 21].concat(data).concat([247])) }
     }
 
-    this.buttons = new Buttons(midi_out.send_cc);
+    const buttons = new Buttons(midi_out.send_cc);
     this.knobs = new Knobs();
     this.grid = new Grid(midi_out.send_note, midi_out.send_cc, midi_out.send_sysex);
     this.touchstrip = new Touchstrip();
@@ -35,7 +35,7 @@ function Push(midi_out_port) {
     );
 
     foreach(
-        [this.knobs, this.control, this.buttons, this.grid],
+        [this.knobs, this.control, buttons, this.grid],
         (module) => foreach(module.handled_ccs, (value, key) => this.ccMap[value] = module)
     );
 
@@ -76,8 +76,8 @@ function Push(midi_out_port) {
         }
     );
     foreach(
-        this.buttons.button_names,
-        (button_name) => api.button[button_name] = this.buttons[button_name]
+        buttons.names,
+        (button_name) => api.button[button_name] = buttons[button_name]
     )
     return api;
 }
