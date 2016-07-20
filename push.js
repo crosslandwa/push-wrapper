@@ -27,7 +27,6 @@ function Push(midi_out_port) {
     this.grid = new Grid(midi_out.send_note, midi_out.send_cc, midi_out.send_sysex);
     this.touchstrip = new Touchstrip();
     this.control = new ControlButtons(midi_out.send_cc);
-    this.lcd = new LCDs(midi_out.send_sysex);
     this.ccMap = [];
     this.noteMap = [];
 
@@ -50,10 +49,7 @@ function Push(midi_out_port) {
         },
         grid: { x: {}},
         touchstrip: this.touchstrip,
-        lcd: {
-            clear: this.lcd.clear,
-            x: this.lcd.x,
-        },
+        lcd: new LCDs(midi_out.send_sysex),
         button: {
             '1/32t': this.control['1/32t'],
             '1/32': this.control['1/32'],
