@@ -1,7 +1,6 @@
 const EventEmitter = require('events'),
     util = require('util'),
-    foreach = require('lodash.foreach'),
-    partial = require('lodash.partial');
+    foreach = require('lodash.foreach');
 
 var ccToButtonMap = {
     3: 'tap_tempo',
@@ -49,11 +48,10 @@ const handled_ccs = Object.keys(ccToButtonMap);
 
 function Button(send_cc, cc) {
     EventEmitter.call(this);
-    this.output = function (value) { send_cc(cc, value) };
     return {
-        led_on: partial(led_on, this),
-        led_dim: partial(led_dim, this),
-        led_off: partial(led_off, this),
+        led_on: function() { send_cc(cc, 4) },
+        led_dim: function() { send_cc(cc, 1) },
+        led_off: function() { send_cc(cc, 0) },
         red: () => {},
         orange: () => {},
         yellow: () => {},
@@ -61,23 +59,17 @@ function Button(send_cc, cc) {
         on: this.on,
         emit: this.emit,
     }
-
 }
 util.inherits(Button, EventEmitter);
 
-function led_on(button) { button.output(4) }
-function led_dim(button) { button.output(1) }
-function led_off(button) { button.output(0) }
-
 function Buttons(send_cc) {
+    const buttons = this;
     foreach(ccToButtonMap, (value, key) => this[value] = new Button(send_cc, parseInt(key)));
     this.names = Object.keys(ccToButtonMap).map((key) => { return ccToButtonMap[key] });
-    this.receive_midi_cc = partial(receive_midi_cc, this);
+    this.receive_midi_cc = function(index, value) {
+        buttons[ccToButtonMap[index]].emit(pressed_or_released(value));
+    };
     this.handled_ccs = handled_ccs;
-}
-
-function receive_midi_cc (buttons, index, value) {
-    buttons[ccToButtonMap[index]].emit(pressed_or_released(value));
 }
 
 function pressed_or_released(velocity) {
