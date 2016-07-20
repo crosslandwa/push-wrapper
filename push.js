@@ -50,7 +50,10 @@ function Push(midi_out_port) {
         },
         grid: { x: {}},
         touchstrip: this.touchstrip,
-        lcd: this.lcd,
+        lcd: {
+            clear: this.lcd.clear,
+            x: this.lcd.x,
+        },
         button: {
             '1/32t': this.control['1/32t'],
             '1/32': this.control['1/32'],
