@@ -171,11 +171,16 @@ I posed myself a couple of front-end/musical-tool development questions and used
 ### Can I write/test code in node and deploy for use in the browser?
 - Node/npm provides a fast feedback environment for rapid test driven development
 - Utilising [ports & adaptors](http://alistair.cockburn.us/Hexagonal+architecture) design pattern enables testing of Push wrapper code in isolation from the Web MIDI API used when deployed in the browser
-- [Browserify](http://browserify.org/) integrated into an npm workflow to bundle all the node application code into a single JS file for use in the web browser application
+- npm modules can be used to *require* the push-wrapper code into an arbitrary JS/node application
+- [Browserify](http://browserify.org/) integrates into an npm workflow to bundle application code into a single JS file for use in a HTML page
 
 ### Can I use the web browser as a *fast-booting* and *performant* environment (compared to e.g. MaxMSP, Ableton Live + Max4Live)?
 - Fast booting? Yeah! 
-- Performant? TBD
+- Performant? I've not built anything complex enough yet to indicate this could be an issue
 
 ### Can i write a *reasonable looking* and *useful* app in a web browser (in a timeframe comparable to MaxMSP development)?
-- TBD
+- Yes and no
+- The push-wrapper code made hooking up the controller to application code trivial
+- Writing audio applications *from scratch* using the Web Audio API proved to be slower than anticipated
+  - The Web Audio API offers a fairly low level building blocks
+  - Suggest I look at libraries such as [Tonejs](https://github.com/Tonejs/Tone.js) that provide higher level functionality in the future
