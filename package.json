@@ -1,6 +1,6 @@
 {
   "name": "push-wrapper",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "main": "push.js",
   "description": "A wrapper for the Ableton Push to give easy to use APIs for controlling/being controlled by the Push",
   "keywords": [
