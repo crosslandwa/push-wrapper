@@ -1,6 +1,6 @@
 const foreach = require('lodash.foreach'),
     one_to_eight = [1, 2, 3, 4, 5, 6, 7, 8],
-    one_to_four = [1, 2, 3, 4]
+    one_to_four = [1, 2, 3, 4],
     zero_to_seven = [0, 1, 2, 3, 4, 5, 6, 7],
     blank = 32;
 
