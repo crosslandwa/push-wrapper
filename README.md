@@ -2,7 +2,7 @@
 
 ## What?
 
-A javascript wrapper primarily enabling the use of the Ableton Push hardware as a MIDI controller in a Web MIDI/Audio API enabled web browser - I created a simple example application([hosted version](https://chippanfire.com/push-wrapper-example.html)/[code](https://github.com/crosslandwa/push-wrapper-example-site)) to demonstrate this.
+A javascript wrapper primarily enabling the use of the Ableton Push hardware as a MIDI controller in a Web MIDI/Audio API enabled web browser - I created a simple [example application](https://chippanfire.com/push-wrapper-example.html)/ ([source code](https://github.com/crosslandwa/push-wrapper-example-site)) to demonstrate this.
 
 The wrapper presents a simple event-driven [API](#control-events-and-feedback-commands), encapsulating the generation and parsing of MIDI messages sent to/from the hardware.
 
