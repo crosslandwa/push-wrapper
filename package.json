@@ -1,6 +1,6 @@
 {
   "name": "push-wrapper",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "main": "push.js",
   "description": "A wrapper for the Ableton Push to give easy to use APIs for controlling/being controlled by the Push",
   "keywords": [
@@ -23,6 +23,15 @@
   "author": "https://github.com/crosslandwa",
   "license": "MIT",
   "browserify": {
-    "transform": [["babelify", { "presets": ["es2015"] }]]
+    "transform": [
+      [
+        "babelify",
+        {
+          "presets": [
+            "es2015"
+          ]
+        }
+      ]
+    ]
   }
 }
