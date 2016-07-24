@@ -21,5 +21,8 @@
     "start": "node app.js"
   },
   "author": "https://github.com/crosslandwa",
-  "license": "MIT"
+  "license": "MIT",
+  "browserify": {
+    "transform": [["babelify", { "presets": ["es2015"] }]]
+  }
 }
