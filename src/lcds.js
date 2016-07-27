@@ -60,7 +60,7 @@ function LCDs(send_sysex) {
             }
         );
 
-        foreach(one_to_four, row => update_row(row));
+        foreach(one_to_four, update_row);
     };
 
     this.x = {};
