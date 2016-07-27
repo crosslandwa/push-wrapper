@@ -71,8 +71,6 @@ function LCDs(send_sysex) {
     this.x[8].y[3].update('      by');
     this.x[8].y[2].update('   push-');
     this.x[8].y[1].update(' wrapper');
-
-    foreach(one_to_four, row => update_row(row));
 }
 
 module.exports = LCDs;
