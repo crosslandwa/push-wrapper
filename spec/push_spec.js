@@ -189,59 +189,24 @@ describe('Ableton Push wrapper', () => {
                 .concat(blank_segment).concat([32]).concat(blank_segment)
                 .concat(blank_segment).concat([32]).concat(blank_segment);
 
-        it('can be updated with 8 chars of text across four rows per channel', () => {
-            push.lcd.clear();
-
+        it('displays 8 chars of text on four rows per channel', () => {
             push.lcd.x[1].y[1].update('more-than-8');
-            expect(sent_bytes).toEqual([240, 71, 127, 21, 27, 0, 69, 0,
-                109, 111, 114, 101, 45, 116, 104, 97, // char codes for "m o r e - t h a"
-                32,
-                32, 32, 32, 32, 32, 32, 32, 32,
-                32, 32, 32, 32, 32, 32, 32, 32,
-                32,
-                32, 32, 32, 32, 32, 32, 32, 32,
-                32, 32, 32, 32, 32, 32, 32, 32,
-                32,
-                32, 32, 32, 32, 32, 32, 32, 32,
-                32, 32, 32, 32, 32, 32, 32, 32,
-                32,
-                32, 32, 32, 32, 32, 32, 32, 32,
-                247]
-            );
+            var text_bytes = 'more-tha'.split('').map((letter) => letter.charCodeAt(0)),
+                length = 9,
+                offset = 0;
+            expect(sent_bytes).toEqual([240, 71, 127, 21, 27, 0, length, offset].concat(text_bytes).concat([247]));
 
             push.lcd.x[4].y[1].update(123);
-            expect(sent_bytes).toEqual([240, 71, 127, 21, 27, 0, 69, 0,
-                109, 111, 114, 101, 45, 116, 104, 97, // char codes for "m o r e - t h a"
-                32,
-                32, 32, 32, 32, 32, 32, 32, 32,
-                32, 32, 32, 32, 32, 32, 32, 32,
-                32,
-                49, 50, 51, 32, 32, 32, 32, 32, // char codes for "1 2 3" padded
-                32, 32, 32, 32, 32, 32, 32, 32,
-                32,
-                32, 32, 32, 32, 32, 32, 32, 32,
-                32, 32, 32, 32, 32, 32, 32, 32,
-                32,
-                32, 32, 32, 32, 32, 32, 32, 32,
-                247]
-            );
+            var text_bytes = '123     '.split('').map((letter) => letter.charCodeAt(0)),
+                length = 9,
+                offset = 26;
+            expect(sent_bytes).toEqual([240, 71, 127, 21, 27, 0, length, offset].concat(text_bytes).concat([247]));
 
             push.lcd.x[1].y[4].update('more-than-8');
-            expect(sent_bytes).toEqual([240, 71, 127, 21, 24, 0, 69, 0,
-                109, 111, 114, 101, 45, 116, 104, 97, // char codes for "m o r e - t h a"
-                32,
-                32, 32, 32, 32, 32, 32, 32, 32,
-                32, 32, 32, 32, 32, 32, 32, 32,
-                32,
-                32, 32, 32, 32, 32, 32, 32, 32,
-                32, 32, 32, 32, 32, 32, 32, 32,
-                32,
-                32, 32, 32, 32, 32, 32, 32, 32,
-                32, 32, 32, 32, 32, 32, 32, 32,
-                32,
-                32, 32, 32, 32, 32, 32, 32, 32,
-                247]
-            );
+            var text_bytes = 'more-tha'.split('').map((letter) => letter.charCodeAt(0)),
+                length = 9,
+                offset = 0;
+            expect(sent_bytes).toEqual([240, 71, 127, 21, 24, 0, length, offset].concat(text_bytes).concat([247]));
         });
 
         it('can be cleared so all LCDs are blank', () => {
@@ -262,17 +227,11 @@ describe('Ableton Push wrapper', () => {
         });
 
         it('can have individual elements cleared', () => {
-            var sent_bytes = [];
-            push = new Push({ send: (bytes) => { sent_bytes = sent_bytes.concat(bytes) } });
-
-            // on load Push initialises LCD with 'powered by push-wrapper' text, so clear before test
-            sent_bytes = [];
-
             push.lcd.x[8].y[4].clear();
-
-            expect(sent_bytes).toEqual(
-                [240, 71, 127, 21, 24, 0, 69, 0].concat(blank_line).concat([247])
-            );
+            var text_bytes = '        '.split('').map((letter) => letter.charCodeAt(0)),
+                length = 9,
+                offset = 60;
+            expect(sent_bytes).toEqual([240, 71, 127, 21, 24, 0, length, offset].concat(text_bytes).concat([247]));
         });
     });
 

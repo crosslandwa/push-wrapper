@@ -2,20 +2,21 @@ const foreach = require('lodash.foreach'),
     one_to_eight = [1, 2, 3, 4, 5, 6, 7, 8],
     one_to_four = [1, 2, 3, 4],
     zero_to_seven = [0, 1, 2, 3, 4, 5, 6, 7],
-    blank = 32;
+    blank = 32,
+    offsets = [0, 9, 17, 26, 34, 43, 51, 60];
 
-function LCDSegment(lcds, update_row) {
+function LCDSegment(offset, update) {
     var lcd_segment = this;
     this.lcd_data = [blank, blank, blank, blank, blank, blank, blank, blank];
 
     this.update = function(text) {
         lcd_segment.lcd_data = lcd_data(String(text));
-        update_row();
+        update(offset, lcd_segment.lcd_data);
     };
 
     this.clear = function() {
         lcd_segment.lcd_data = lcd_data(String(''));
-        update_row();
+        update(offset, lcd_segment.lcd_data);
     };
 }
 
@@ -39,6 +40,13 @@ function LCDs(send_sysex) {
             .concat(display_data)
         );
     }
+    const update_segment = function (row_number, offset, display_data) {
+        send_sysex(
+            [28 - row_number]
+            .concat([0, 9, offset])
+            .concat(display_data)
+        );
+    }
 
     this.clear = function() {
         foreach(
@@ -47,7 +55,7 @@ function LCDs(send_sysex) {
                 lcds.x[x] = { y: {} };
                 foreach(
                     one_to_four,
-                    (y) => { lcds.x[x].y[y] = new LCDSegment(lcds, () => update_row(y)) }
+                    (y) => { lcds.x[x].y[y] = new LCDSegment(offsets[x - 1], (offset, display_data) => update_segment(y, offset, display_data)) }
                 )
             }
         );

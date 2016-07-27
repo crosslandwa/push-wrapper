@@ -14,7 +14,8 @@
     "lodash.partial": "^3.1.0"
   },
   "devDependencies": {
-    "jasmine": "~2.3.1"
+    "jasmine": "~2.3.1",
+    "babel-preset-es2015": "6.9.0"
   },
   "scripts": {
     "test": "jasmine",
