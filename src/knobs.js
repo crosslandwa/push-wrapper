@@ -1,6 +1,5 @@
 const EventEmitter = require('events'),
     util = require('util'),
-    foreach = require('lodash.foreach'),
     partial = require('lodash.partial');
 
 var knobMap = {
@@ -17,14 +16,15 @@ var knobMap = {
     'master': { 'cc': 79, 'note': 8 },
 }
 
-var ccToKnobMap = {};
-var noteToKnobMap = {};
-foreach(knobMap, (value, key) => {
-    ccToKnobMap[value.cc] = key;
-    noteToKnobMap[value.note] = key;
-});
-const handled_ccs = Object.keys(ccToKnobMap),
-    handled_notes = Object.keys(noteToKnobMap);
+const ccToKnobMap = {};
+const noteToKnobMap = {};
+const knobNames = Object.keys(knobMap);
+knobNames.forEach(name => {
+    ccToKnobMap[knobMap[name].cc] = name;
+    noteToKnobMap[knobMap[name].note] = name;
+})
+const handledCCs = Object.keys(ccToKnobMap);
+const handledNotes = Object.keys(noteToKnobMap);
 
 function Knob() {
     EventEmitter.call(this);
@@ -32,11 +32,11 @@ function Knob() {
 util.inherits(Knob, EventEmitter);
 
 function Knobs() {
-    foreach(knobMap, (value, key) => this[key] = new Knob());
-    this.handled_ccs = handled_ccs;
+    knobNames.forEach(name => { this[name] = new Knob() });
+    this.handled_ccs = handledCCs;
     this.receive_midi_cc = partial(receive_midi_cc, this);
     this.receive_midi_note = partial(receive_midi_note, this);
-    this.handled_notes = handled_notes;
+    this.handled_notes = handledNotes;
 }
 
 function receive_midi_cc(knobs, index, value) {
