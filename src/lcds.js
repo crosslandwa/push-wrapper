@@ -3,10 +3,8 @@ const foreach = require('lodash.foreach'),
     one_to_four = [1, 2, 3, 4],
     zero_to_seven = [0, 1, 2, 3, 4, 5, 6, 7],
     blank = 32,
-    blank_line = [] // 68 character array filled with 'blank character'
+    blank_line = new Array(68).fill(blank),
     offsets = [0, 9, 17, 26, 34, 43, 51, 60];
-
-for (let i = 0; i < 68; i++) blank_line.push(blank)
 
 function LCDSegment(update) {
     this.update = function(text) {
