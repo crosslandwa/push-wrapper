@@ -1,6 +1,5 @@
-const EventEmitter = require('events'),
-    util = require('util'),
-    partial = require('lodash.partial');
+const EventEmitter = require('events');
+const util = require('util');
 
 const controlButtons = {
     102: 1,
@@ -19,27 +18,21 @@ for (var i = 36; i <= 99; i++) handledNotes.push(i);
 
 function GridButton(send_midi_message, send_sysex, note) {
     EventEmitter.call(this);
-    this.note_out = function(velocity) { send_midi_message(note, velocity) };
-    this.sysex_out = function(data) { send_sysex(data) };
-    this.index = note < 102 ? note - 36 : note - 38;
+    let index = note < 102 ? note - 36 : note - 38;
 
     return {
-        led_on: partial(led_on, this),
-        led_off: partial(led_off, this),
-        led_rgb: partial(led_rgb, this),
+        led_on: (value) => { send_midi_message(note, value ? value : 100) },
+        led_off: () => { send_midi_message(note, 0) },
+        led_rgb: (r, g, b) => {
+            var msb = [r, g, b].map((x) => (x & 240) >> 4),
+                lsb = [r, g, b].map((x) => x & 15);
+            send_sysex([4, 0, 8, index, 0, msb[0], lsb[0], msb[1], lsb[1], msb[2], lsb[2]]);
+        },
         on: this.on,
         emit: this.emit,
     }
 }
 util.inherits(GridButton, EventEmitter);
-
-function led_on(gridButton, value) { gridButton.note_out(value ? value : 100) }
-function led_off(gridButton) { gridButton.note_out(0) }
-function led_rgb(gridButton, r, g, b) {
-    var msb = [r, g, b].map((x) => (x & 240) >> 4),
-        lsb = [r, g, b].map((x) => x & 15);
-    gridButton.sysex_out([4, 0, 8, gridButton.index, 0, msb[0], lsb[0], msb[1], lsb[1], msb[2], lsb[2]]);
-}
 
 function Grid(send_note, send_cc, send_sysex) {
     this.x = {};
@@ -54,9 +47,9 @@ function Grid(send_note, send_cc, send_sysex) {
     handledCCs.forEach(cc => { this.select[controlButtons[cc]] = new GridButton(send_cc, send_sysex, cc) });
     this.handled_ccs = handledCCs;
     this.handled_notes = handledNotes;
-    this.receive_midi_note = partial(receive_midi_note, this);
-    this.receive_midi_cc = partial(receive_midi_cc, this);
-    this.receive_midi_poly_pressure = partial(receive_midi_poly_pressure, this);
+    this.receive_midi_note = receive_midi_note.bind(null, this);
+    this.receive_midi_cc = receive_midi_cc.bind(null, this);
+    this.receive_midi_poly_pressure = receive_midi_poly_pressure.bind(null, this);
 }
 
 function receive_midi_note(grid, note, velocity) {
