@@ -1,7 +1,6 @@
-const foreach = require('lodash.foreach'),
-    one_to_eight = [1, 2, 3, 4, 5, 6, 7, 8],
-    one_to_four = [1, 2, 3, 4],
-    zero_to_seven = [0, 1, 2, 3, 4, 5, 6, 7],
+const oneToEight = [1, 2, 3, 4, 5, 6, 7, 8],
+    oneToFour = [1, 2, 3, 4],
+    zeroToSeven = [0, 1, 2, 3, 4, 5, 6, 7],
     blank = 32,
     blank_line = new Array(68).fill(blank),
     offsets = [0, 9, 17, 26, 34, 43, 51, 60];
@@ -18,7 +17,7 @@ function LCDSegment(update) {
 
 function lcd_data(text) {
     const text_string = String(text);
-    return zero_to_seven.map((index) => {
+    return zeroToSeven.map((index) => {
         return text_string.length > index ? text_string.charCodeAt(index) : blank;
     });
 }
@@ -27,22 +26,15 @@ function LCDs(send_sysex) {
     const lcds = this;
 
     this.clear = function() {
-        foreach(
-            one_to_eight,
-            (x) => {
-                lcds.x[x] = { y: {} };
-                foreach(
-                    one_to_four,
-                    (y) => {
-                        lcds.x[x].y[y] = new LCDSegment((display_data) => {
-                            send_sysex([28 - y].concat([0, 9, offsets[x - 1]]).concat(display_data));
-                        })
-                    }
-                )
-            }
-        );
-
-        foreach(one_to_four, (row) => send_sysex([28 - row].concat([0, 69, 0]).concat(blank_line)));
+        oneToEight.forEach(x => {
+            lcds.x[x] = { y: {} };
+            oneToFour.forEach(y => {
+                lcds.x[x].y[y] = new LCDSegment((display_data) => {
+                    send_sysex([28 - y].concat([0, 9, offsets[x - 1]]).concat(display_data));
+                })
+            })
+        });
+        oneToFour.forEach(row => { send_sysex([28 - row].concat([0, 69, 0]).concat(blank_line)) });
     };
 
     this.x = {};
