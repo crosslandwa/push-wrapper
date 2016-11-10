@@ -1,6 +1,5 @@
-const EventEmitter = require('events'),
-    util = require('util'),
-    partial = require('lodash.partial');
+const EventEmitter = require('events');
+const util = require('util');
 
 var knobMap = {
     'tempo': { 'cc': 14, 'note': 10 },
@@ -34,8 +33,8 @@ util.inherits(Knob, EventEmitter);
 function Knobs() {
     knobNames.forEach(name => { this[name] = new Knob() });
     this.handled_ccs = handledCCs;
-    this.receive_midi_cc = partial(receive_midi_cc, this);
-    this.receive_midi_note = partial(receive_midi_note, this);
+    this.receive_midi_cc = receive_midi_cc.bind(null, this);
+    this.receive_midi_note = receive_midi_note.bind(null, this);
     this.handled_notes = handledNotes;
 }
 
