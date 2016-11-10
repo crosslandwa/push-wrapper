@@ -1,6 +1,5 @@
 const EventEmitter = require('events'),
-    util = require('util'),
-    foreach = require('lodash.foreach');
+    util = require('util');
 
 var ccToButtonMap = {
     3: 'tap_tempo',
@@ -64,7 +63,9 @@ util.inherits(Button, EventEmitter);
 
 function Buttons(send_cc) {
     const buttons = this;
-    foreach(ccToButtonMap, (value, key) => this[value] = new Button(send_cc, parseInt(key)));
+    Object.keys(ccToButtonMap).map(Number).forEach(cc => {
+      this[ccToButtonMap[cc]] = new Button(send_cc, cc)
+    })
     this.names = Object.keys(ccToButtonMap).map((key) => { return ccToButtonMap[key] });
     this.receive_midi_cc = function(index, value) {
         buttons[ccToButtonMap[index]].emit(pressed_or_released(value));
