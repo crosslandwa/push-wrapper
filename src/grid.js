@@ -1,9 +1,8 @@
 const EventEmitter = require('events'),
     util = require('util'),
-    foreach = require('lodash.foreach'),
     partial = require('lodash.partial');
 
-const control_buttons = {
+const controlButtons = {
     102: 1,
     103: 2,
     104: 3,
@@ -13,10 +12,10 @@ const control_buttons = {
     108: 7,
     109: 8
 };
-const handled_ccs = Object.keys(control_buttons);
+const handledCCs = Object.keys(controlButtons).map(Number);
 
-var handled_notes = [];
-for (var i = 36; i <= 99; i++) handled_notes.push(i);
+var handledNotes = [];
+for (var i = 36; i <= 99; i++) handledNotes.push(i);
 
 function GridButton(send_midi_message, send_sysex, note) {
     EventEmitter.call(this);
@@ -52,9 +51,9 @@ function Grid(send_note, send_cc, send_sysex) {
         }
     }
 
-    foreach(control_buttons, (value, key) => this.select[value] = new GridButton(send_cc, send_sysex, parseInt(key)));
-    this.handled_ccs = handled_ccs;
-    this.handled_notes = handled_notes;
+    handledCCs.forEach(cc => { this.select[controlButtons[cc]] = new GridButton(send_cc, send_sysex, cc) });
+    this.handled_ccs = handledCCs;
+    this.handled_notes = handledNotes;
     this.receive_midi_note = partial(receive_midi_note, this);
     this.receive_midi_cc = partial(receive_midi_cc, this);
     this.receive_midi_poly_pressure = partial(receive_midi_poly_pressure, this);
@@ -67,7 +66,7 @@ function receive_midi_note(grid, note, velocity) {
 }
 
 function receive_midi_cc(grid, index, value) {
-    grid.select[control_buttons[index]].emit(value > 0 ? 'pressed' : 'released');
+    grid.select[controlButtons[index]].emit(value > 0 ? 'pressed' : 'released');
 }
 
 function receive_midi_poly_pressure(grid, note, pressure) {
