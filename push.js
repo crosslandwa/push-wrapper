@@ -8,7 +8,6 @@ const EventEmitter = require('events'),
     Touchstrip = require('./src/touchstrip.js'),
     ControlButtons = require('./src/control-buttons.js'),
     LCDs = require('./src/lcds.js'),
-    partial = require('lodash.partial'),
     oneToEight = [1, 2, 3, 4, 5, 6, 7, 8];
 
 function Push(midi_out_port) {
@@ -57,7 +56,7 @@ function Push(midi_out_port) {
             '1/4': this.control['1/4'],
         },
         channel: {},
-        receive_midi: partial(receive_midi, this),
+        receive_midi: receive_midi.bind(null, this),
     }
     oneToEight.forEach(
         (number) => api.channel[number] = { knob: this.knobs[number], select: this.control[number] }
