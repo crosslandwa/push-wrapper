@@ -10,7 +10,6 @@
     "webmidi api"
   ],
   "dependencies": {
-    "lodash.foreach": "^3.0.0",
     "lodash.partial": "^3.1.0"
   },
   "devDependencies": {
