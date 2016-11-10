@@ -1,6 +1,5 @@
 const EventEmitter = require('events'),
-    util = require('util'),
-    foreach = require('lodash.foreach');
+    util = require('util');
 
 var ccToPadMap = {
     20: 1, // top row above grid
@@ -43,7 +42,9 @@ util.inherits(Pad, EventEmitter);
 
 function ControlButtons(send_cc) {
     const control_buttons = this;
-    foreach(ccToPadMap, (value, key) => this[value] = new Pad(send_cc, parseInt(key)));
+    Object.keys(ccToPadMap).map(Number).forEach(cc => {
+      this[ccToPadMap[cc]] = new Pad(send_cc, cc)
+    })
     this.handled_ccs = handled_ccs;
     this.receive_midi_cc = function(cc, value) {
         var pad_name = ccToPadMap[cc];

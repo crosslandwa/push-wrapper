@@ -65,7 +65,7 @@ function Buttons(send_cc) {
     const buttons = this;
     Object.keys(ccToButtonMap).map(Number).forEach(cc => {
       this[ccToButtonMap[cc]] = new Button(send_cc, cc)
-    })
+    });
     this.names = Object.keys(ccToButtonMap).map((key) => { return ccToButtonMap[key] });
     this.receive_midi_cc = function(index, value) {
         buttons[ccToButtonMap[index]].emit(pressed_or_released(value));
