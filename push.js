@@ -8,9 +8,8 @@ const EventEmitter = require('events'),
     Touchstrip = require('./src/touchstrip.js'),
     ControlButtons = require('./src/control-buttons.js'),
     LCDs = require('./src/lcds.js'),
-    foreach = require('lodash.foreach'),
     partial = require('lodash.partial'),
-    one_to_eight = [1, 2, 3, 4, 5, 6, 7, 8];
+    oneToEight = [1, 2, 3, 4, 5, 6, 7, 8];
 
 function Push(midi_out_port) {
     EventEmitter.call(this);
@@ -29,14 +28,12 @@ function Push(midi_out_port) {
     this.ccMap = [];
     this.noteMap = [];
 
-    foreach(
-        [this.knobs, this.touchstrip, this.grid],
-        (module) => foreach(module.handled_notes, (value, key) => this.noteMap[value] = module)
+    [this.knobs, this.touchstrip, this.grid].forEach(
+        (module) => module.handled_notes.forEach(note => this.noteMap[note] = module)
     );
 
-    foreach(
-        [this.knobs, this.control, buttons, this.grid],
-        (module) => foreach(module.handled_ccs, (value, key) => this.ccMap[value] = module)
+    [this.knobs, this.control, buttons, this.grid].forEach(
+        (module) => module.handled_ccs.forEach(cc => this.ccMap[cc] = module)
     );
 
     // Defines public API returned
@@ -62,23 +59,16 @@ function Push(midi_out_port) {
         channel: {},
         receive_midi: partial(receive_midi, this),
     }
-    foreach(
-        one_to_eight,
+    oneToEight.forEach(
         (number) => api.channel[number] = { knob: this.knobs[number], select: this.control[number] }
     );
-    foreach(
-        one_to_eight,
+    oneToEight.forEach(
         (X) => {
             api.grid.x[X] = { y: {}, select: this.grid.select[X], };
-            foreach(one_to_eight, (Y) => {
-                api.grid.x[X].y[Y] = this.grid.x[X].y[Y];
-            });
+            oneToEight.forEach(Y => { api.grid.x[X].y[Y] = this.grid.x[X].y[Y] });
         }
     );
-    foreach(
-        buttons.names,
-        (button_name) => api.button[button_name] = buttons[button_name]
-    )
+    buttons.names.forEach((name) => api.button[name] = buttons[name]);
     return api;
 }
 util.inherits(Push, EventEmitter);
