@@ -11,7 +11,7 @@ push-wrapper is written as a [requirejs](http://requirejs.org/) compatible modul
 ###Modification & Running tests
 
 If you want to modify the wrapper, install its dependencies and run its test suite by:
- 
+
     npm install
     npm test
 
@@ -77,6 +77,10 @@ push.grid.x[X].y[Y].on('aftertouch', (pressure) => /* pad aftertouch actions. pr
 push.grid.x[X].select.on('pressed', () => /* grid column select button pressed actions */);
 push.grid.x[X].select.on('released', () => /* grid column select button released actions */);
 
+// removal of listeners
+push.grid.x[X].y[Y].removeListener('pressed', callback); // or 'released', 'aftertouch'
+push.grid.x[X].select.removeListener('released', callback); // or 'released'
+
 push.grid.x[X].y[Y].led_on(value); /* value = 1 -> 127, giving various colours */
 push.grid.x[X].y[Y].led_on(); /* turns on LED, defaulting to orange (value = 100) */
 push.grid.x[X].y[Y].led_off(); /* turns LED off */
@@ -92,8 +96,9 @@ push.grid.x[X].select.led_rgb(r, g, b); /* specify grid column select button LED
 
 //-----BUTTONS-----
 
-push.button[BUTTON_NAME].on('pressed', () => /* button pressed actions */);
-push.button[BUTTON_NAME].on('released', () => /* button released actions */);
+push.button[BUTTON_NAME].on('pressed', callback); // button pressed actions
+push.button[BUTTON_NAME].on('released', callback); // button released actions
+push.button[BUTTON_NAME].removeListener('pressed', callback); // or 'released'
 
 push.button[BUTTON_NAME].led_on(); /* colour fixed per button */
 push.button[BUTTON_NAME].led_dim(); /* colour fixed per button */
@@ -107,7 +112,7 @@ push.button[BUTTON_NAME].yellow();
 push.button[BUTTON_NAME].green();
 
 // BUTTON_NAME values:
-// tap_tempo, metronome, master, stop, 
+// tap_tempo, metronome, master, stop,
 // left, right, up, down, select, shift, note, session, add_effect, add_track,
 // octave_down, octave_up, repeat, accent, scales, user, mute, solo, step_in, step_out,
 // play, rec, new, duplicate, automation, fixed_length, device, browse, track, clip,
@@ -172,7 +177,7 @@ I posed myself a couple of front-end/musical-tool development questions and used
 - [Browserify](http://browserify.org/) integrates into an npm workflow to bundle application code into a single JS file for use in a HTML page
 
 ### Can I use the web browser as a *fast-booting* and *performant* environment (compared to e.g. MaxMSP, Ableton Live + Max4Live)?
-- Fast booting? Yeah! 
+- Fast booting? Yeah!
 - Performant? I've not built anything complex enough yet to indicate this could be an issue
 
 ### Can i write a *reasonable looking* and *useful* app in a web browser (in a timeframe comparable to MaxMSP development)?

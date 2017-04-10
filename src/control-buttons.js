@@ -36,6 +36,7 @@ function Pad(send_cc, cc) {
         green: function() { colours = [19, 22] },
         on: this.on,
         emit: this.emit,
+        removeListener: this.removeListener
     }
 }
 util.inherits(Pad, EventEmitter);

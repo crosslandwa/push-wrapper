@@ -39,6 +39,16 @@ describe('Ableton Push wrapper', () => {
             push.receive_midi([160, 37, 100]);
         })
 
+        it('can have event listeners removed', () => {
+            var pressure = 0;
+            var listener = (p) => { pressure = p }
+            push.grid.x[2].y[1].on('aftertouch', listener);
+            push.receive_midi([160, 37, 100]);
+            push.grid.x[2].y[1].removeListener('aftertouch', listener);
+            push.receive_midi([160, 37, 101]);
+            expect(pressure).toEqual(100);
+        });
+
         it('pads can have LED turned on', () => {
             push.grid.x[8].y[8].led_on(101);
             expect(sent_bytes).toEqual([144, 99, 101]);
@@ -85,6 +95,16 @@ describe('Ableton Push wrapper', () => {
         it('emit released events in response receiving top row pad MIDI CC messages', (done) => {
             push.channel[5].select.on('released', done);
             push.receive_midi([176, 24, 0]);
+        });
+
+        it('can have event listeners removed', () => {
+            var called = 0;
+            var listener = () => { called++ }
+            push.channel[5].select.on('pressed', listener);
+            push.receive_midi([176, 24, 127]);
+            push.channel[5].select.removeListener('pressed', listener);
+            push.receive_midi([176, 24, 127]);
+            expect(called).toEqual(1);
         });
 
         it('can have LED turned on', () => {
@@ -246,6 +266,15 @@ describe('Ableton Push wrapper', () => {
             push.button['add_effect'].on('released', () => { called = true });
             push.receive_midi([176, 52, 0]);
             expect(called).toEqual(true);
+        });
+
+        it('can have event listeners removed', () => {
+            var called = false;
+            var listener = () => { called = true }
+            push.button['add_effect'].on('released', listener);
+            push.button['add_effect'].removeListener('released', listener);
+            push.receive_midi([176, 52, 0]);
+            expect(called).toEqual(false);
         });
 
         it('can have their LED turned on', () => {

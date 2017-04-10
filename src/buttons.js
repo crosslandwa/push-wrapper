@@ -57,6 +57,7 @@ function Button(send_cc, cc) {
         green: () => {},
         on: this.on,
         emit: this.emit,
+        removeListener: this.removeListener
     }
 }
 util.inherits(Button, EventEmitter);
