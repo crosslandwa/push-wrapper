@@ -30,7 +30,7 @@ function GridButton(send_midi_message, send_sysex, note) {
         },
         on: this.on,
         emit: this.emit,
-        removeListener: this.removeListener
+        removeListener: this.removeListener.bind(this)
     }
 }
 util.inherits(GridButton, EventEmitter);
