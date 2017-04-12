@@ -34,5 +34,13 @@ fdescribe('Ableton Push wrapper', () => {
       gridCol(1)[0].onReleased(done)
       midiIn([144, 37, 0])
     })
+
+    it('can register a listener that is passed pressure in response to pad poly key-pressure MIDI messages', (done) => {
+      gridCol(1)[0].onAftertouch(pressure => {
+        expect(pressure).toEqual(100)
+        done()
+      })
+      midiIn([160, 37, 100]);
+    })
   })
 })

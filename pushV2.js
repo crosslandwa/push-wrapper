@@ -7,6 +7,7 @@ const oneToEight = [1, 2, 3, 4, 5, 6, 7, 8]
 const listener = (elem, event, cb) => { elem.on(event, cb); return () => elem.removeListener(event, cb) }
 const onPressed = elem => cb => listener(elem, 'pressed', cb)
 const onReleased = elem => cb => listener(elem, 'released', cb)
+const onAftertouch = elem => cb => listener(elem, 'aftertouch', cb)
 
 module.exports = (midiOutCallBacks = []) => {
   let push = new Push({ send: bytes => { midiOutCallBacks.forEach(callback => callback(bytes)) }})
@@ -16,6 +17,7 @@ module.exports = (midiOutCallBacks = []) => {
       ledOn: pad.led_on.bind(pad),
       ledOff: pad.led_off.bind(pad),
       ledRGB: pad.led_rgb.bind(pad),
+      onAftertouch: onAftertouch(pad),
       onPressed: onPressed(pad),
       onReleased: onReleased(pad)
     }
