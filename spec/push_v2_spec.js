@@ -12,8 +12,18 @@ fdescribe('Ableton Push wrapper', () => {
     expect(sentBytes).toEqual(expectedMIDI)
   }
 
+  function testLedDim(element, expectedMIDI) {
+    element.ledDim()
+    expect(sentBytes).toEqual(expectedMIDI)
+  }
+
   function testLedOff(element, expectedMIDI) {
     element.ledOff()
+    expect(sentBytes).toEqual(expectedMIDI)
+  }
+
+  function testLedRGB(element, rgb, expectedMIDI) {
+    element.ledRGB(...rgb)
     expect(sentBytes).toEqual(expectedMIDI)
   }
 
@@ -72,8 +82,7 @@ fdescribe('Ableton Push wrapper', () => {
     })
 
     it('can have LED turned on with RGB values', () => {
-        gridRow(0)[6].ledRGB(216, 80, 255)
-        expect(sentBytes).toEqual([240, 71, 127, 21, 4, 0, 8, 6, 0, 13, 8, 5, 0, 15, 15, 247])
+      testLedRGB(gridRow(0)[6], [216, 80, 255], [240, 71, 127, 21, 4, 0, 8, 6, 0, 13, 8, 5, 0, 15, 15, 247])
     })
   })
 
@@ -98,8 +107,7 @@ fdescribe('Ableton Push wrapper', () => {
     })
 
     it('can have LED turned on with RGB values', () => {
-      gridSelectButtons()[1].ledRGB(216, 80, 255)
-      expect(sentBytes).toEqual([240, 71, 127, 21, 4, 0, 8, 65, 0, 13, 8, 5, 0, 15, 15, 247])
+      testLedRGB(gridSelectButtons()[1], [216, 80, 255], [240, 71, 127, 21, 4, 0, 8, 65, 0, 13, 8, 5, 0, 15, 15, 247])
     })
   })
 
@@ -119,8 +127,7 @@ fdescribe('Ableton Push wrapper', () => {
     })
 
     it('can have LED turned on dimly', () => {
-      button('Play').ledDim()
-      expect(sentBytes).toEqual([176, 85, 1])
+      testLedDim(button('Play'), [176, 85, 1])
     })
 
     it('can have LED turned off', () => {
