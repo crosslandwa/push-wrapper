@@ -15,7 +15,9 @@ pad.onAftertouch(pressure => { /* aftertouch actions. pressure = 0 -> 127 */ })
 
 
 //-----ROW OF SELECT BUTTONS ABOVE GRID-----
-let gridSelectButton = push.gridSelectButton(X)
+push.gridSelectButton() // returns array (row) of buttons
+
+let gridSelectButton = push.gridSelectButtons()[0]
 gridSelectButton.ledOn(value = 100) // turn on LED, value = 1 -> 127, giving various colours, defaults to 100 (orange)
 gridSelectButton.ledOff() // turn off LED
 gridSelectButton.ledRGB(r, g, b) // turn on LED specifying RGB values (0-255)
@@ -53,11 +55,12 @@ timeDivisionButton.green()
 
 //-----CHANNEL SELECT BUTTONS-----
 // The row of buttons immediately below the LCD
-let channelSelectButton = push.channelSelectButton(X) // exposes same methods as TIME DIVISION BUTTONS
+push.channelSelectButtons() // returns array (row) of buttons
+let channelSelectButton = push.channelSelectButtons()[0] // exposes same methods as TIME DIVISION BUTTONS
 
 
 //-----KNOBS-----
-let knob = push.channelKnob(X) || push.tempo() || push.swing() || push.master()
+let knob = push.channelKnobs()[X] || push.tempo() || push.swing() || push.master()
 
 knob.onPressed(() => { /* knob touching start actions */ })
 knob.onReleased(() => { /* knob touching end actions */ })
@@ -90,8 +93,9 @@ push.gridRow(0)[7] // also the bottom right grid pad!
 push.gridCol(7)[7] // the top right grid pad
 push.gridRow(7)[7] // also the top right grid pad!
 
-push.channelKnob(0) // the leftmost channel knob
-push.channelSelectButton(7) // the right most channel select button
+push.gridSelectButtons()[0] // the leftmost button above the grid
+push.channelKnobs()[0] // the leftmost channel knob
+push.channelSelectButtons()[7] // the right most channel select button
 
 lcd.updateSegment(0, 0, 'muzaaaak') // the bottom left LCD segment
 lcd.clearRow(3) // clear top row of LCD segments
