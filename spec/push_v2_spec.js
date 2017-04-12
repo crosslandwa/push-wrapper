@@ -2,16 +2,16 @@
 
 fdescribe('Ableton Push wrapper', () => {
   let sentBytes = []
-  const { onPadPressed, midiIn } = require('../pushV2.js')([bytes => { sentBytes = bytes }])
+  let onPadPressed, midiIn
 
   beforeEach(() => {
+    ({onPadPressed, midiIn} = require('../pushV2.js')([bytes => { sentBytes = bytes }]))
     sentBytes = []
   })
 
   describe('grid', () => {
     it('emits pressed events with velocity in response to pad MIDI note messages', (done) => {
-      const unsubscribe = onPadPressed(0, 1, velocity => {
-        unsubscribe()
+      onPadPressed(0, 1, velocity => {
         expect(velocity).toEqual(123)
         done()
       })
