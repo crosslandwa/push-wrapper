@@ -10,12 +10,11 @@ module.exports = (midiOutCallBacks = []) => {
   let push = new Push({ send: bytes => { midiOutCallBacks.forEach(callback => callback(bytes)) }})
   let pads = oneToEight.map(x => oneToEight.map(y => {
     let pad = push.grid.x[x].y[y]
-    pad.onPressed = onPressed(pad)
     return {
       ledOn: pad.led_on.bind(pad),
       ledOff: pad.led_off.bind(pad),
       ledRGB: pad.led_rgb.bind(pad),
-      onPressed: pad.onPressed.bind(pad)
+      onPressed: onPressed(pad)
     }
   }))
 
