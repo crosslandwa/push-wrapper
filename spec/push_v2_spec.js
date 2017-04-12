@@ -10,7 +10,7 @@ fdescribe('Ableton Push wrapper', () => {
   })
 
   describe('grid', () => {
-    it('emits pressed events with velocity in response to pad MIDI note messages', (done) => {
+    it('can register a listener that is passed velocity in response to pad MIDI note-on messages', done => {
       gridRow(1)[0].onPressed(velocity => {
         expect(velocity).toEqual(123)
         done()
@@ -28,6 +28,11 @@ fdescribe('Ableton Push wrapper', () => {
       midiIn([144, 44, 101])
 
       expect(captured).toEqual(124)
+    })
+
+    it('can register a listener that is invoked in response to pad MIDI note-off messages', done => {
+      gridCol(1)[0].onReleased(done)
+      midiIn([144, 37, 0])
     })
   })
 })
