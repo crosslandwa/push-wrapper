@@ -2,30 +2,14 @@ fdescribe('Ableton Push wrapper', () => {
   let sentBytes = []
   let button, gridRow, gridCol, gridSelectButtons, midiFromHardware
 
-  function testLedOn(element, expectedMIDI) {
-    element.ledOn()
-    expect(sentBytes).toEqual(expectedMIDI)
-  }
+  const executeAndCheckSentMIDI = (call, expectedMIDI) => { call(); expect(sentBytes).toEqual(expectedMIDI) }
+  const testLedOn = (elem, expected) => executeAndCheckSentMIDI(() => elem.ledOn(), expected)
+  const testLedOnWithValue = (elem, velocity, expected) => executeAndCheckSentMIDI(() => elem.ledOn(velocity), expected)
+  const testLedDim = (elem, expected) => executeAndCheckSentMIDI(() => elem.ledDim(), expected)
+  const testLedOff = (elem, expected) => executeAndCheckSentMIDI(() => elem.ledOff(), expected)
+  const testLedRGB = (elem, rgb, expected) => executeAndCheckSentMIDI(() => elem.ledRGB(...rgb), expected)
 
-  function testLedOnWithValue(element, velocity, expectedMIDI) {
-    element.ledOn(velocity)
-    expect(sentBytes).toEqual(expectedMIDI)
-  }
-
-  function testLedDim(element, expectedMIDI) {
-    element.ledDim()
-    expect(sentBytes).toEqual(expectedMIDI)
-  }
-
-  function testLedOff(element, expectedMIDI) {
-    element.ledOff()
-    expect(sentBytes).toEqual(expectedMIDI)
-  }
-
-  function testLedRGB(element, rgb, expectedMIDI) {
-    element.ledRGB(...rgb)
-    expect(sentBytes).toEqual(expectedMIDI)
-  }
+  const testOnPressed = (elem, done, midi) => { elem.onPressed(done); midiFromHardware(midi) }
 
   beforeEach(() => {
     ({
@@ -88,8 +72,7 @@ fdescribe('Ableton Push wrapper', () => {
 
   describe('grid select buttons', () => {
     it('can have listeners subscribed that are invoked when the button is pressed', done => {
-      gridSelectButtons()[0].onPressed(done)
-      midiFromHardware([176, 102, 127]) // MIDI cc
+      testOnPressed(gridSelectButtons()[0], done, [176, 102, 127]) // MIDI cc
     })
 
     it('can have listeners subscribed that are invoked when the button is released', done => {
@@ -113,8 +96,7 @@ fdescribe('Ableton Push wrapper', () => {
 
   describe('buttons', () => {
     it('can have listeners subscribed that are invoked when the button is pressed', done => {
-      button('AddTrack').onPressed(done)
-      midiFromHardware([176, 53, 120]) // MIDI cc
+      testOnPressed(button('AddTrack'), done, [176, 53, 120]) // MIDI cc
     })
 
     it('can have listeners subscribed that are invoked when the button is released', done => {
