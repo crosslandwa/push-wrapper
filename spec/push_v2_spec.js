@@ -21,7 +21,7 @@ fdescribe('Ableton Push wrapper', () => {
       midiFromHardware([144, 44, 123]) // MIDI note on
     })
 
-    it('can have listeners subscribed and unsubscibes (for presses)', () => {
+    it('can have listeners subscribed and unsubscibed (for presses)', () => {
       let captured = 0
 
       let unsubscribe = gridCol(0)[1].onPressed(velocity => { captured = velocity })
@@ -68,7 +68,12 @@ fdescribe('Ableton Push wrapper', () => {
   describe('grid select buttons', () => {
     it('can have listeners subscribed that are invoked when the button is pressed', done => {
       gridSelectButtons()[0].onPressed(done)
-      midiFromHardware([176, 102, 127])
+      midiFromHardware([176, 102, 127]) // MIDI cc
+    })
+
+    it('can have listeners subscribed that are invoked when the button is released', done => {
+      gridSelectButtons()[2].onReleased(done)
+      midiFromHardware([176, 104, 0])
     })
   })
 })
