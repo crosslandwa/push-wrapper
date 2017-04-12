@@ -8,16 +8,9 @@ const onPressed = (elem) => cb => { elem.on('pressed', cb); return () => elem.re
 
 module.exports = (midiOutCallBacks = []) => {
   let push = new Push({ send: bytes => { midiOutCallBacks.forEach(callback => callback(bytes)) }})
-
-  oneToEight.forEach(x => {
-    oneToEight.forEach(y => {
-      let pad = push.grid.x[x].y[y]
-      pad.onPressed = onPressed(pad)
-    })
-  })
-
   let pads = oneToEight.map(x => oneToEight.map(y => {
     let pad = push.grid.x[x].y[y]
+    pad.onPressed = onPressed(pad)
     return {
       ledOn: pad.led_on.bind(pad),
       ledOff: pad.led_off.bind(pad),
