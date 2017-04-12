@@ -2,6 +2,21 @@ fdescribe('Ableton Push wrapper', () => {
   let sentBytes = []
   let button, gridRow, gridCol, gridSelectButtons, midiFromHardware
 
+  function testLedOn(element, expectedMIDI) {
+    element.ledOn()
+    expect(sentBytes).toEqual(expectedMIDI)
+  }
+
+  function testLedOnWithValue(element, velocity, expectedMIDI) {
+    element.ledOn(velocity)
+    expect(sentBytes).toEqual(expectedMIDI)
+  }
+
+  function testLedOff(element, expectedMIDI) {
+    element.ledOff()
+    expect(sentBytes).toEqual(expectedMIDI)
+  }
+
   beforeEach(() => {
     ({
       button,
@@ -48,16 +63,12 @@ fdescribe('Ableton Push wrapper', () => {
     })
 
     it('can have LED turned on', () => {
-        gridCol(7)[7].ledOn()
-        expect(sentBytes).toEqual([144, 99, 100]) // default colour of 100 if 'velocity' not provided
-
-        gridCol(7)[6].ledOn(101)
-        expect(sentBytes).toEqual([144, 91, 101])
+      testLedOn(gridCol(7)[7], [144, 99, 100]) // default colour of 100 if 'velocity' not provided
+      testLedOnWithValue(gridCol(7)[6], 101, [144, 91, 101])
     })
 
     it('can have LED turned off', () => {
-        gridRow(7)[6].ledOff()
-        expect(sentBytes).toEqual([144, 98, 0])
+      testLedOff(gridRow(7)[6], [144, 98, 0])
     })
 
     it('can have LED turned on with RGB values', () => {
@@ -78,16 +89,12 @@ fdescribe('Ableton Push wrapper', () => {
     })
 
     it('can have LED turned on', () => {
-      gridSelectButtons()[1].ledOn()
-      expect(sentBytes).toEqual([176, 103, 100]) // default colour of 100 if 'velocity' not provided
-
-      gridSelectButtons()[1].ledOn(101)
-      expect(sentBytes).toEqual([176, 103, 101])
+      testLedOn(gridSelectButtons()[1], [176, 103, 100]) // default colour of 100 if 'velocity' not provided
+      testLedOnWithValue(gridSelectButtons()[1], 101, [176, 103, 101])
     })
 
     it('can have LED turned off', () => {
-      gridSelectButtons()[1].ledOff()
-      expect(sentBytes).toEqual([176, 103, 0])
+      testLedOff(gridSelectButtons()[1], [176, 103, 0])
     })
 
     it('can have LED turned on with RGB values', () => {
@@ -108,8 +115,7 @@ fdescribe('Ableton Push wrapper', () => {
     })
 
     it('can have LED turned on', () => {
-      button('AddEffect').ledOn()
-      expect(sentBytes).toEqual([176, 52, 4])
+      testLedOn(button('AddEffect'), [176, 52, 4])
     })
 
     it('can have LED turned on dimly', () => {
@@ -118,8 +124,7 @@ fdescribe('Ableton Push wrapper', () => {
     })
 
     it('can have LED turned off', () => {
-      button('AddEffect').ledOff()
-      expect(sentBytes).toEqual([176, 52, 0])
+      testLedOff(button('AddEffect'), [176, 52, 0])
     })
   })
 })
