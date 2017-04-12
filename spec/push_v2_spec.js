@@ -10,6 +10,7 @@ fdescribe('Ableton Push wrapper', () => {
   const testLedRGB = (elem, rgb, expected) => executeAndCheckSentMIDI(() => elem.ledRGB(...rgb), expected)
 
   const testOnPressed = (elem, done, midi) => { elem.onPressed(done); midiFromHardware(midi) }
+  const testOnReleased = (elem, done, midi) => { elem.onReleased(done); midiFromHardware(midi) }
 
   beforeEach(() => {
     ({
@@ -44,8 +45,7 @@ fdescribe('Ableton Push wrapper', () => {
     })
 
     it('can have listeners subscribed that are invoked when the pad is released', done => {
-      gridCol(1)[0].onReleased(done)
-      midiFromHardware([144, 37, 0]) // MIDI note off (well, a note on with velocity 0)
+      testOnReleased(gridCol(1)[0], done, [144, 37, 0]) // MIDI note off (well, a note on with velocity 0)
     })
 
     it('can have listeners subscribed that are passed pressure for pad aftertouch', (done) => {
@@ -76,8 +76,7 @@ fdescribe('Ableton Push wrapper', () => {
     })
 
     it('can have listeners subscribed that are invoked when the button is released', done => {
-      gridSelectButtons()[2].onReleased(done)
-      midiFromHardware([176, 104, 0])
+      testOnReleased(gridSelectButtons()[2], done, [176, 104, 0])
     })
 
     it('can have LED turned on', () => {
@@ -100,8 +99,7 @@ fdescribe('Ableton Push wrapper', () => {
     })
 
     it('can have listeners subscribed that are invoked when the button is released', done => {
-      button('AddEffect').onReleased(done)
-      midiFromHardware([176, 52, 0]) // MIDI cc
+      testOnReleased(button('AddEffect'), done, [176, 52, 0]) // MIDI cc
     })
 
     it('can have LED turned on', () => {
