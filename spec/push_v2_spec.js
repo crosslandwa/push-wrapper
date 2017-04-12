@@ -2,16 +2,16 @@
 
 fdescribe('Ableton Push wrapper', () => {
   let sentBytes = []
-  let onPadPressed, midiIn
+  let gridRow, gridCol, midiIn
 
   beforeEach(() => {
-    ({onPadPressed, midiIn} = require('../pushV2.js')([bytes => { sentBytes = bytes }]))
+    ({gridRow, gridCol, midiIn} = require('../pushV2.js')([bytes => { sentBytes = bytes }]))
     sentBytes = []
   })
 
   describe('grid', () => {
     it('emits pressed events with velocity in response to pad MIDI note messages', (done) => {
-      onPadPressed(0, 1, velocity => {
+      gridRow(1)[0].onPressed(velocity => {
         expect(velocity).toEqual(123)
         done()
       })
@@ -20,9 +20,8 @@ fdescribe('Ableton Push wrapper', () => {
 
     it('can have callbacks registered and removed for pad presses', () => {
       let captured = 0
-      let callback = velocity => { captured = velocity }
 
-      let unsubscribe = onPadPressed(0, 1, callback)
+      let unsubscribe = gridCol(0)[1].onPressed(velocity => { captured = velocity })
       midiIn([144, 44, 124])
 
       unsubscribe()
