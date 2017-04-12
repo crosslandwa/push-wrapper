@@ -39,12 +39,36 @@ function createGridSelectButtons (push) {
   })
 }
 
+function createButtons (push) {
+  const capitalize = name => name
+    .replace(/_(\w|&)/g, (a, x) => a.replace(`_${x}`, x.toUpperCase()))
+    .replace(/^(\w)/g, (a, x) => a.replace(x, x.toUpperCase()))
+  const names = ['tap_tempo', 'metronome', 'master', 'stop', 'left', 'right', 'up', 'down',
+    'select', 'shift', 'note', 'session', 'add_effect', 'add_track', 'octave_down', 'octave_up',
+    'repeat', 'accent', 'scales', 'user', 'mute', 'solo', 'step_in', 'step_out', 'play', 'rec',
+    'new', 'duplicate', 'automation', 'fixed_length', 'device', 'browse', 'track', 'clip',
+    'volume', 'pan_&_send', 'quantize', 'double', 'delete', 'undo']
+  return names.reduce((acc, it) => {
+    let button = push.button[it]
+    acc[capitalize(it)] = {
+      ledOn: button.led_on.bind(button),
+      ledDim: button.led_dim.bind(button),
+      ledOff: button.led_off.bind(button),
+      onPressed: listener(button, 'pressed'),
+      onReleased: listener(button, 'released')
+    }
+    return acc
+  }, {})
+}
+
 module.exports = (midiOutCallBacks = []) => {
   let push = new Push({ send: bytes => { midiOutCallBacks.forEach(callback => callback(bytes)) }})
+  let buttons = createButtons(push)
   let pads = createPads(push)
   let gridSelectButtons = createGridSelectButtons(push)
 
   return {
+    button: name => buttons[name],
     gridRow: y => zeroToSeven.map(x => pads[x][y]),
     gridCol: x => zeroToSeven.map(y => pads[x][y]),
     gridSelectButtons: () => gridSelectButtons,

@@ -1,9 +1,10 @@
 fdescribe('Ableton Push wrapper', () => {
   let sentBytes = []
-  let gridRow, gridCol, gridSelectButtons, midiFromHardware
+  let button, gridRow, gridCol, gridSelectButtons, midiFromHardware
 
   beforeEach(() => {
     ({
+      button,
       gridRow,
       gridCol,
       gridSelectButtons,
@@ -92,6 +93,33 @@ fdescribe('Ableton Push wrapper', () => {
     it('can have LED turned on with RGB values', () => {
         gridSelectButtons()[1].ledRGB(216, 80, 255)
         expect(sentBytes).toEqual([240, 71, 127, 21, 4, 0, 8, 65, 0, 13, 8, 5, 0, 15, 15, 247])
+    })
+  })
+
+  describe('buttons', () => {
+    it('can have listeners subscribed that are invoked when the button is pressed', done => {
+      button('AddTrack').onPressed(done)
+      midiFromHardware([176, 53, 120]) // MIDI cc
+    })
+
+    it('can have listeners subscribed that are invoked when the button is released', done => {
+      button('AddEffect').onReleased(done)
+      midiFromHardware([176, 52, 0]) // MIDI cc
+    })
+
+    it('can have LED turned on', () => {
+        button('AddEffect').ledOn()
+        expect(sentBytes).toEqual([176, 52, 4])
+    })
+
+    it('can have LED turned on dimly', () => {
+        button('Play').ledDim()
+        expect(sentBytes).toEqual([176, 85, 1])
+    })
+
+    it('can have LED turned off', () => {
+        button('AddEffect').ledOff()
+        expect(sentBytes).toEqual([176, 52, 0])
     })
   })
 })
