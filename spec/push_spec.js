@@ -67,7 +67,7 @@ describe('Ableton Push wrapper', () => {
             expect(sent_bytes).toEqual([240, 71, 127, 21, 4, 0, 8, 6, 0, 13, 8, 5, 0, 15, 15, 247]);
         });
 
-        it('pads can have LED turned on', () => {
+        it('button row above pads can have LED turned on', () => {
             push.grid.x[2].select.led_on(101);
             expect(sent_bytes).toEqual([176, 103, 101]);
 
