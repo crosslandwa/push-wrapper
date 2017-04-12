@@ -6,8 +6,9 @@ module.exports = (midiOutCallBacks = []) => {
   let push = new Push({ send: bytes => { midiOutCallBacks.forEach(callback => callback(bytes)) }})
   return {
     onPadPressed: (x, y, callback) => {
-      push.grid.x[x + 1].y[y + 1].on('pressed', callback)
-      return () => { push.grid.x[x + 1].y[y + 1].removeListener('pressed', callback) }
+      let pad = push.grid.x[x + 1].y[y + 1]
+      pad.on('pressed', callback)
+      return () => { pad.removeListener('pressed', callback) }
     },
     midiIn: bytes => push.receive_midi(bytes)
   }

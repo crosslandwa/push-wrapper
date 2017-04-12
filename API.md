@@ -103,8 +103,8 @@ lcd.clearRow(3) // clear top row of LCD segments
 
 //-----CALLBACKS-----
 const callback = () => {}
-onX(callback)
-onX({remove: callback})
+const unsubscribe = onX(callback) // returns a function...
+unsubscribe() // ...that will unsubscribe the passed callback
 
 // addition and removal of callbacks works consistently for all the 'onX' methods
 ```
