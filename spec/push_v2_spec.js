@@ -3,10 +3,10 @@ fdescribe('Ableton Push wrapper', () => {
   let button, gridRow, gridCol, gridSelectButtons, midiFromHardware
 
   const executeAndCheckSentMIDI = (call, expectedMIDI) => { call(); expect(sentBytes).toEqual(expectedMIDI) }
-  const testLedOn = (elem, expected) => executeAndCheckSentMIDI(() => elem.ledOn(), expected)
+  const testLedOn = (elem, expected) => () => executeAndCheckSentMIDI(() => elem().ledOn(), expected)
   const testLedOnWithValue = (elem, velocity, expected) => executeAndCheckSentMIDI(() => elem.ledOn(velocity), expected)
-  const testLedDim = (elem, expected) => executeAndCheckSentMIDI(() => elem.ledDim(), expected)
-  const testLedOff = (elem, expected) => executeAndCheckSentMIDI(() => elem.ledOff(), expected)
+  const testLedDim = (elem, expected) => () => executeAndCheckSentMIDI(() => elem().ledDim(), expected)
+  const testLedOff = (elem, expected) => () => executeAndCheckSentMIDI(() => elem().ledOff(), expected)
   const testLedRGB = (elem, rgb, expected) => executeAndCheckSentMIDI(() => elem.ledRGB(...rgb), expected)
 
   const testOnPressed = (elem, done, midi) => { elem.onPressed(done); midiFromHardware(midi) }
@@ -56,15 +56,11 @@ fdescribe('Ableton Push wrapper', () => {
       midiFromHardware([160, 37, 100]); // MIDI poly key-pressure
     })
 
-    it('can have LED turned on', () => {
-      testLedOn(gridCol(7)[7], [144, 99, 100]) // default colour of 100 if 'velocity' not provided
+    it('can have LED turned on', testLedOn(() => gridCol(7)[7], [144, 99, 100])) // default colour of 100 if 'velocity' not provided
+    it('can have LED turned on specifying velocity', () => {
       testLedOnWithValue(gridCol(7)[6], 101, [144, 91, 101])
     })
-
-    it('can have LED turned off', () => {
-      testLedOff(gridRow(7)[6], [144, 98, 0])
-    })
-
+    it('can have LED turned off', testLedOff(() => gridRow(7)[6], [144, 98, 0]))
     it('can have LED turned on with RGB values', () => {
       testLedRGB(gridRow(0)[6], [216, 80, 255], [240, 71, 127, 21, 4, 0, 8, 6, 0, 13, 8, 5, 0, 15, 15, 247])
     })
@@ -78,16 +74,11 @@ fdescribe('Ableton Push wrapper', () => {
     it('can have listeners subscribed that are invoked when the button is released', done => {
       testOnReleased(gridSelectButtons()[2], done, [176, 104, 0])
     })
-
+    it('can have LED turned on', testLedOn(() => gridSelectButtons()[1], [176, 103, 100])) // default colour of 100 if 'velocity' not provided
     it('can have LED turned on', () => {
-      testLedOn(gridSelectButtons()[1], [176, 103, 100]) // default colour of 100 if 'velocity' not provided
       testLedOnWithValue(gridSelectButtons()[1], 101, [176, 103, 101])
     })
-
-    it('can have LED turned off', () => {
-      testLedOff(gridSelectButtons()[1], [176, 103, 0])
-    })
-
+    it('can have LED turned off', testLedOff(() => gridSelectButtons()[1], [176, 103, 0]))
     it('can have LED turned on with RGB values', () => {
       testLedRGB(gridSelectButtons()[1], [216, 80, 255], [240, 71, 127, 21, 4, 0, 8, 65, 0, 13, 8, 5, 0, 15, 15, 247])
     })
@@ -97,21 +88,11 @@ fdescribe('Ableton Push wrapper', () => {
     it('can have listeners subscribed that are invoked when the button is pressed', done => {
       testOnPressed(button('AddTrack'), done, [176, 53, 120]) // MIDI cc
     })
-
     it('can have listeners subscribed that are invoked when the button is released', done => {
       testOnReleased(button('AddEffect'), done, [176, 52, 0]) // MIDI cc
     })
-
-    it('can have LED turned on', () => {
-      testLedOn(button('AddEffect'), [176, 52, 4])
-    })
-
-    it('can have LED turned on dimly', () => {
-      testLedDim(button('Play'), [176, 85, 1])
-    })
-
-    it('can have LED turned off', () => {
-      testLedOff(button('AddEffect'), [176, 52, 0])
-    })
+    it('can have LED turned on', testLedOn(() => button('AddEffect'), [176, 52, 4]))
+    it('can have LED turned on dimly', testLedDim(() => button('Play'), [176, 85, 1]))
+    it('can have LED turned off', testLedOff(() => button('AddEffect'), [176, 52, 0]))
   })
 })
