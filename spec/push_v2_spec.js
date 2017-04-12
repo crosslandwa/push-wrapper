@@ -13,15 +13,15 @@ fdescribe('Ableton Push wrapper', () => {
   })
 
   describe('grid pads', () => {
-    it('can register a listener that is passed velocity in response to MIDI note-on messages', done => {
+    it('can have listeners subscribed that are passed velocity when the pad is pressed', done => {
       gridRow(1)[0].onPressed(velocity => {
         expect(velocity).toEqual(123)
         done()
       })
-      midiFromHardware([144, 44, 123])
+      midiFromHardware([144, 44, 123]) // MIDI note on
     })
 
-    it('can register and remove listeners (for presses)', () => {
+    it('can have listeners subscribed and unsubscibes (for presses)', () => {
       let captured = 0
 
       let unsubscribe = gridCol(0)[1].onPressed(velocity => { captured = velocity })
@@ -33,17 +33,17 @@ fdescribe('Ableton Push wrapper', () => {
       expect(captured).toEqual(124)
     })
 
-    it('can register a listener that is invoked in response to MIDI note-off messages', done => {
+    it('can have listeners subscribed that are invoked when the pad is released', done => {
       gridCol(1)[0].onReleased(done)
-      midiFromHardware([144, 37, 0])
+      midiFromHardware([144, 37, 0]) // MIDI note off (well, a note on with velocity 0)
     })
 
-    it('can register a listener that is passed pressure in response to poly key-pressure MIDI messages', (done) => {
+    it('can have listeners subscribed that are passed pressure for pad aftertouch', (done) => {
       gridCol(1)[0].onAftertouch(pressure => {
         expect(pressure).toEqual(100)
         done()
       })
-      midiFromHardware([160, 37, 100]);
+      midiFromHardware([160, 37, 100]); // MIDI poly key-pressure
     })
 
     it('can have LED turned on', () => {
