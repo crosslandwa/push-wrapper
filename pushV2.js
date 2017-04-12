@@ -4,8 +4,9 @@ const log = console.log
 const zeroToSeven = [0, 1, 2, 3, 4, 5, 6, 7]
 const oneToEight = [1, 2, 3, 4, 5, 6, 7, 8]
 
-const onPressed = elem => cb => { elem.on('pressed', cb); return () => elem.removeListener('pressed', cb) }
-const onReleased = elem => cb => { elem.on('released', cb); return () => elem.removeListener('released', cb) }
+const listener = (elem, event, cb) => { elem.on(event, cb); return () => elem.removeListener(event, cb) }
+const onPressed = elem => cb => listener(elem, 'pressed', cb)
+const onReleased = elem => cb => listener(elem, 'released', cb)
 
 module.exports = (midiOutCallBacks = []) => {
   let push = new Push({ send: bytes => { midiOutCallBacks.forEach(callback => callback(bytes)) }})
