@@ -50,5 +50,15 @@ fdescribe('Ableton Push wrapper', () => {
         gridCol(7)[6].ledOn(101)
         expect(sentBytes).toEqual([144, 91, 101])
     })
+
+    it('can have LED turned off', () => {
+        gridRow(7)[6].ledOff()
+        expect(sentBytes).toEqual([144, 98, 0])
+    })
+
+    it('can have LED turned on with RGB values', () => {
+        gridRow(0)[6].ledRGB(216, 80, 255)
+        expect(sentBytes).toEqual([240, 71, 127, 21, 4, 0, 8, 6, 0, 13, 8, 5, 0, 15, 15, 247])
+    })
   })
 })
