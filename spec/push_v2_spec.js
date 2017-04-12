@@ -75,5 +75,23 @@ fdescribe('Ableton Push wrapper', () => {
       gridSelectButtons()[2].onReleased(done)
       midiFromHardware([176, 104, 0])
     })
+
+    it('can have LED turned on', () => {
+        gridSelectButtons()[1].ledOn()
+        expect(sentBytes).toEqual([176, 103, 100]) // default colour of 100 if 'velocity' not provided
+
+        gridSelectButtons()[1].ledOn(101)
+        expect(sentBytes).toEqual([176, 103, 101])
+    })
+
+    it('can have LED turned off', () => {
+        gridSelectButtons()[1].ledOff()
+        expect(sentBytes).toEqual([176, 103, 0])
+    })
+
+    it('can have LED turned on with RGB values', () => {
+        gridSelectButtons()[1].ledRGB(216, 80, 255)
+        expect(sentBytes).toEqual([240, 71, 127, 21, 4, 0, 8, 65, 0, 13, 8, 5, 0, 15, 15, 247])
+    })
   })
 })
