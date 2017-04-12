@@ -101,10 +101,9 @@ lcd.updateSegment(0, 0, 'muzaaaak') // the bottom left LCD segment
 lcd.clearRow(3) // clear top row of LCD segments
 
 
-//-----CALLBACKS-----
-const callback = () => {}
-const unsubscribe = onX(callback) // returns a function...
-unsubscribe() // ...that will unsubscribe the passed callback
+//-----LISTENERS-----
+const unsubscribe = element.onX(() => { /* listener code */ }) // returns a function...
+unsubscribe() // ...that will unsubscribe the passed listener
 
-// addition and removal of callbacks works consistently for all the 'onX' methods
+// addition and removal of listeners works consistently for all the 'onX' methods
 ```

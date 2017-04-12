@@ -4,7 +4,7 @@ const log = console.log
 const zeroToSeven = [0, 1, 2, 3, 4, 5, 6, 7]
 const oneToEight = [1, 2, 3, 4, 5, 6, 7, 8]
 
-const listener = (elem, event) => cb => { elem.on(event, cb); return () => elem.removeListener(event, cb) }
+const listener = (elem, event) => listener => { elem.on(event, listener); return () => elem.removeListener(event, listener) }
 
 function createPads (push) {
   return oneToEight.map(x => oneToEight.map(y => {

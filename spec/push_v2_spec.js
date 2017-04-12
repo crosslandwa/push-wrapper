@@ -9,8 +9,8 @@ fdescribe('Ableton Push wrapper', () => {
     sentBytes = []
   })
 
-  describe('grid', () => {
-    it('can register a listener that is passed velocity in response to pad MIDI note-on messages', done => {
+  describe('grid pads', () => {
+    it('can register a listener that is passed velocity in response to MIDI note-on messages', done => {
       gridRow(1)[0].onPressed(velocity => {
         expect(velocity).toEqual(123)
         done()
@@ -18,7 +18,7 @@ fdescribe('Ableton Push wrapper', () => {
       midiIn([144, 44, 123])
     })
 
-    it('can have callbacks registered and removed for pad presses', () => {
+    it('can register and remove listeners (for presses)', () => {
       let captured = 0
 
       let unsubscribe = gridCol(0)[1].onPressed(velocity => { captured = velocity })
@@ -30,17 +30,25 @@ fdescribe('Ableton Push wrapper', () => {
       expect(captured).toEqual(124)
     })
 
-    it('can register a listener that is invoked in response to pad MIDI note-off messages', done => {
+    it('can register a listener that is invoked in response to MIDI note-off messages', done => {
       gridCol(1)[0].onReleased(done)
       midiIn([144, 37, 0])
     })
 
-    it('can register a listener that is passed pressure in response to pad poly key-pressure MIDI messages', (done) => {
+    it('can register a listener that is passed pressure in response to poly key-pressure MIDI messages', (done) => {
       gridCol(1)[0].onAftertouch(pressure => {
         expect(pressure).toEqual(100)
         done()
       })
       midiIn([160, 37, 100]);
+    })
+
+    it('can have LED turned on', () => {
+        gridCol(7)[7].ledOn()
+        expect(sentBytes).toEqual([144, 99, 100]) // default colour of 100 if 'velocity' not provided
+
+        gridCol(7)[6].ledOn(101)
+        expect(sentBytes).toEqual([144, 91, 101])
     })
   })
 })
