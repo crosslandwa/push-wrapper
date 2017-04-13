@@ -62,7 +62,7 @@ channelSelectButton.ledDim(colour = 'orange') // colour = 'orange', 'red', 'gree
 
 
 //-----KNOBS-----
-let knob = push.channelKnobs()[X] || push.tempo() || push.swing() || push.master()
+let knob = push.channelKnobs()[X] || push.tempoKnob() || push.swingKnob() || push.masterKnob()
 
 knob.onPressed(() => { /* knob touching start actions */ })
 knob.onReleased(() => { /* knob touching end actions */ })
