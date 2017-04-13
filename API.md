@@ -17,7 +17,7 @@ pad.onAftertouch(pressure => { /* aftertouch actions. pressure = 0 -> 127 */ })
 //-----ROW OF SELECT BUTTONS ABOVE GRID-----
 push.gridSelectButton() // returns array (row) of buttons
 
-let gridSelectButton = push.gridSelectButtons()[0]
+let gridSelectButton = push.gridSelectButtons()[X]
 gridSelectButton.ledOn(value = 100) // turn on LED, value = 1 -> 127, giving various colours, defaults to 100 (orange)
 gridSelectButton.ledOff() // turn off LED
 gridSelectButton.ledRGB(r, g, b) // turn on LED specifying RGB values (0-255)
@@ -40,23 +40,25 @@ button.ledOff() // turn off LED
 // Device, Browse, Track, Clip, Volume, Pan&Send, Quantize, Double, Delete, Undo
 
 
-//-----TIME DIVISION BUTTONS-----
+//-----TIME DIVISION & CHANNEL SELECT BUTTONS-----
 let timeDivisionButton = push.button(NAME)
 
 // As BUTTONS but with additional parameter to ledOn() and ledDim() to specify colour
-timeDivisionButton.ledOn(colour = 'orange')
-timeDivisionButton.ledDim(colour = 'orange')
+timeDivisionButton.ledOn(colour = 'orange') // colour = 'orange', 'red', 'green', 'yellow'
+timeDivisionButton.ledDim(colour = 'orange') // colour = 'orange', 'red', 'green', 'yellow'
 
 // NAME values:
 // 1/4, 1/4t, 1/8, 1/8t, 1/16, 1/16t, 1/32, 1/32t
-// colour values:
-// 'orange', 'red', 'green', 'yellow'
 
 
 //-----CHANNEL SELECT BUTTONS-----
-// The row of buttons immediately below the LCD
+// The row of buttons immediately below the LCD.
 push.channelSelectButtons() // returns array (row) of buttons
-let channelSelectButton = push.channelSelectButtons()[0] // exposes same methods as TIME DIVISION BUTTONS
+let channelSelectButton = push.channelSelectButtons()[X]
+
+// As BUTTONS but with additional parameter to ledOn() and ledDim() to specify colour
+channelSelectButton.ledOn(colour = 'orange') // colour = 'orange', 'red', 'green', 'yellow'
+channelSelectButton.ledDim(colour = 'orange') // colour = 'orange', 'red', 'green', 'yellow'
 
 
 //-----KNOBS-----
