@@ -39,6 +39,8 @@ function createGridSelectButtons (push) {
   })
 }
 
+// function baseButton
+
 function createButtons (push) {
   const capitalize = name => name
     .replace(/_(\w|&)/g, (a, x) => a.replace(`_${x}`, x.toUpperCase()))
@@ -61,17 +63,34 @@ function createButtons (push) {
   }, {})
 }
 
+function createTimeDivisionButtons (push) {
+  const names = ['1/4', '1/4t', '1/8', '1/8t', '1/16', '1/16t', '1/32', '1/32t']
+  return names.reduce((acc, it) => {
+    let button = push.button[it]
+    acc[it] = {
+      ledOn: button.led_on.bind(button),
+      ledDim: button.led_dim.bind(button),
+      ledOff: button.led_off.bind(button),
+      onPressed: listener(button, 'pressed'),
+      onReleased: listener(button, 'released')
+    }
+    return acc
+  }, {})
+}
+
 module.exports = (midiOutCallBacks = []) => {
   let push = new Push({ send: bytes => { midiOutCallBacks.forEach(callback => callback(bytes)) }})
   let buttons = createButtons(push)
   let pads = createPads(push)
   let gridSelectButtons = createGridSelectButtons(push)
+  let timeDivisionButtons = createTimeDivisionButtons(push)
 
   return {
     button: name => buttons[name],
     gridRow: y => zeroToSeven.map(x => pads[x][y]),
     gridCol: x => zeroToSeven.map(y => pads[x][y]),
     gridSelectButtons: () => gridSelectButtons,
-    midiIn: bytes => push.receive_midi(bytes)
+    midiIn: bytes => push.receive_midi(bytes),
+    timeDivisionButtons: name => timeDivisionButtons[name]
   }
 }

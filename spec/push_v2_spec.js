@@ -1,6 +1,6 @@
 fdescribe('Ableton Push wrapper', () => {
   let sentBytes = []
-  let button, gridRow, gridCol, gridSelectButtons, midiFromHardware
+  let button, gridRow, gridCol, gridSelectButtons, midiFromHardware, timeDivisionButtons
 
   const midiCC = (cc, value) => [176, cc, value]
   const midiNote = (note, velocity) => [144, note, velocity]
@@ -14,7 +14,8 @@ fdescribe('Ableton Push wrapper', () => {
       gridRow,
       gridCol,
       gridSelectButtons,
-      midiIn: midiFromHardware
+      midiIn: midiFromHardware,
+      timeDivisionButtons
     } = require('../pushV2.js')([bytes => { sentBytes = bytes }]))
     sentBytes = []
   })
@@ -94,5 +95,20 @@ fdescribe('Ableton Push wrapper', () => {
     it('can have LED turned on', testSendsMidi({ call: () => button('AddEffect').ledOn(), expect: midiCC(52, 4) }))
     it('can have LED turned on dimly', testSendsMidi({ call: () => button('Play').ledDim(), expect: midiCC(85, 1) }))
     it('can have LED turned off', testSendsMidi({ call: () => button('AddEffect').ledOff(), expect: midiCC(52, 0) }))
+  })
+
+  describe('time division buttons', () => {
+    it('invoke subscribed listeners when released', testListenerInvoked({
+      receive: midiCC(43, 127),
+      invoke: done => timeDivisionButtons('1/32t').onPressed(done)
+    }))
+    it('invoke subscribed listeners when released', testListenerInvoked({
+      receive: midiCC(43, 0),
+      invoke: done => timeDivisionButtons('1/32t').onReleased(done)
+    }))
+
+    it('can have LED turned on', testSendsMidi({ call: () => timeDivisionButtons('1/4').ledOn(), expect: midiCC(36, 10) }))
+    it('can have LED turned on dimly', testSendsMidi({ call: () => timeDivisionButtons('1/4').ledDim(), expect: midiCC(36, 7) }))
+    it('can have LED turned off', testSendsMidi({ call: () => timeDivisionButtons('1/4').ledOff(), expect: midiCC(36, 0) }))
   })
 })
