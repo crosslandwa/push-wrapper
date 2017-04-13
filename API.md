@@ -43,14 +43,14 @@ button.ledOff() // turn off LED
 //-----TIME DIVISION BUTTONS-----
 let timeDivisionButton = push.button(NAME)
 
-// As BUTTONS but with additional methods to set LED colour, honoured on next ledOn() or ledDim() call
-timeDivisionButton.red()
-timeDivisionButton.orange()
-timeDivisionButton.yellow()
-timeDivisionButton.green()
+// As BUTTONS but with additional parameter to ledOn() and ledDim() to specify colour
+timeDivisionButton.ledOn(colour = 'orange')
+timeDivisionButton.ledDim(colour = 'orange')
 
 // NAME values:
 // 1/4, 1/4t, 1/8, 1/8t, 1/16, 1/16t, 1/32, 1/32t
+// colour values:
+// 'orange', 'red', 'green', 'yellow'
 
 
 //-----CHANNEL SELECT BUTTONS-----

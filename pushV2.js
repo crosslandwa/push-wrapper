@@ -65,11 +65,13 @@ function createButtons (push) {
 
 function createTimeDivisionButtons (push) {
   const names = ['1/4', '1/4t', '1/8', '1/8t', '1/16', '1/16t', '1/32', '1/32t']
+  const colours = {'orange': 'orange', 'green': 'green', 'red': 'red', 'yellow': 'yellow'}
+  const applyColour = (button, col) => button[colours[col] || 'orange']()
   return names.reduce((acc, it) => {
     let button = push.button[it]
     acc[it] = {
-      ledOn: button.led_on.bind(button),
-      ledDim: button.led_dim.bind(button),
+      ledOn: (colour = 'orange') => { applyColour(button, colour); button.led_on() },
+      ledDim: (colour = 'orange') => { applyColour(button, colour); button.led_dim() },
       ledOff: button.led_off.bind(button),
       onPressed: listener(button, 'pressed'),
       onReleased: listener(button, 'released')
