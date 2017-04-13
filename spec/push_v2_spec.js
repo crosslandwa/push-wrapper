@@ -6,8 +6,7 @@ fdescribe('Ableton Push wrapper', () => {
   const midiNote = (note, velocity) => [144, note, velocity]
 
   const testSendsMidi = ({ call: c, expect: e }) => () => { c(); expect(sentBytes).toEqual(e) }
-  const testOnPressed = (elem, midi) => done => { elem().onPressed(done); midiFromHardware(midi) }
-  const testOnReleased = (elem, midi) => done => { elem().onReleased(done); midiFromHardware(midi) }
+  const testListenerInvoked = ({ receive: r, invoke: i }) => done => { i(done); midiFromHardware(r) }
 
   beforeEach(() => {
     ({
@@ -29,7 +28,7 @@ fdescribe('Ableton Push wrapper', () => {
       midiFromHardware(midiNote(44, 123))
     })
 
-    it('can have listeners subscribed and unsubscibed (for presses)', () => {
+    it('can have listeners subscribed and unsubscribed (for presses)', () => {
       let captured = 0
 
       let unsubscribe = gridCol(0)[1].onPressed(velocity => { captured = velocity })
@@ -41,7 +40,10 @@ fdescribe('Ableton Push wrapper', () => {
       expect(captured).toEqual(124)
     })
 
-    it('invoke subscribed listeners when released', testOnReleased(() => gridCol(1)[0], midiNote(37, 0)))
+    it('invoke subscribed listeners when released', testListenerInvoked({
+      receive: midiNote(37, 0),
+      invoke: done => gridCol(1)[0].onReleased(done)
+    }))
 
     it('can have listeners subscribed that are passed pressure for pad aftertouch', (done) => {
       gridCol(1)[0].onAftertouch(pressure => {
@@ -61,8 +63,14 @@ fdescribe('Ableton Push wrapper', () => {
   })
 
   describe('grid select buttons', () => {
-    it('invoke subscribed listeners when pressed', testOnPressed(() => gridSelectButtons()[0], midiCC(102, 127)))
-    it('invoke subscribed listeners when released', testOnReleased(() => gridSelectButtons()[2], midiCC(104, 0)))
+    it('invoke subscribed listeners when pressed', testListenerInvoked({
+      receive: midiCC(102, 127),
+      invoke: done => gridSelectButtons()[0].onPressed(done)
+    }))
+    it('invoke subscribed listeners when released', testListenerInvoked({
+      receive: midiCC(104, 0),
+      invoke: done => gridSelectButtons()[2].onReleased(done)
+    }))
 
     it('can have LED turned on', testSendsMidi({ call: () => gridSelectButtons()[1].ledOn(), expect: midiCC(103, 100) }))
     it('can have LED turned on specifying velocity', testSendsMidi({ call: () => gridSelectButtons()[1].ledOn(101), expect: midiCC(103, 101) }))
@@ -74,8 +82,14 @@ fdescribe('Ableton Push wrapper', () => {
   })
 
   describe('buttons', () => {
-    it('invoke subscribed listeners when pressed', testOnPressed(() => button('AddTrack'), midiCC(53, 120)))
-    it('invoke subscribed listeners when released', testOnReleased(() => button('AddEffect'), midiCC(52, 0)))
+    it('invoke subscribed listeners when released', testListenerInvoked({
+      receive: midiCC(53, 120),
+      invoke: done => button('AddTrack').onPressed(done)
+    }))
+    it('invoke subscribed listeners when released', testListenerInvoked({
+      receive: midiCC(52, 0),
+      invoke: done => button('AddEffect').onReleased(done)
+    }))
 
     it('can have LED turned on', testSendsMidi({ call: () => button('AddEffect').ledOn(), expect: midiCC(52, 4) }))
     it('can have LED turned on dimly', testSendsMidi({ call: () => button('Play').ledDim(), expect: midiCC(85, 1) }))
