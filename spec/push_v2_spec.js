@@ -17,7 +17,7 @@ describe('Ableton Push wrapper', () => {
       gridSelectButtons,
       midiIn: midiFromHardware,
       timeDivisionButtons
-    } = require('../pushV2.js')([bytes => { sentBytes = bytes }]))
+    } = require('../pushV2.js')([bytes => { sentBytes = sentBytes.concat(bytes) }]))
     sentBytes = []
   })
 
