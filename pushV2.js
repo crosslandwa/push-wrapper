@@ -12,34 +12,32 @@ const oneToEight = [1, 2, 3, 4, 5, 6, 7, 8]
 
 const listener = (elem, event) => listener => { elem.on(event, listener); return () => elem.removeListener(event, listener) }
 
+const rgbButton = button => ({
+  ledOn: button.led_on.bind(button),
+  ledOff: button.led_off.bind(button),
+  ledRGB: button.led_rgb.bind(button),
+  onPressed: listener(button, 'pressed'),
+  onReleased: listener(button, 'released')
+})
+
+function roygButton (button) {
+  const colours = {'orange': 'orange', 'green': 'green', 'red': 'red', 'yellow': 'yellow'}
+  const applyColour = (button, col) => button[colours[col] || 'orange']()
+  return {
+    ledOn: (colour = 'orange') => { applyColour(button, colour); button.led_on() },
+    ledDim: (colour = 'orange') => { applyColour(button, colour); button.led_dim() },
+    ledOff: button.led_off.bind(button),
+    onPressed: listener(button, 'pressed'),
+    onReleased: listener(button, 'released')
+  }
+}
+
 function createPads (push) {
   return oneToEight.map(x => oneToEight.map(y => {
     let pad = push.grid.x[x].y[y]
-    return {
-      ledOn: pad.led_on.bind(pad),
-      ledOff: pad.led_off.bind(pad),
-      ledRGB: pad.led_rgb.bind(pad),
-      onAftertouch: listener(pad, 'aftertouch'),
-      onPressed: listener(pad, 'pressed'),
-      onReleased: listener(pad, 'released')
-    }
+    return Object.assign({}, rgbButton(pad), { onAftertouch: listener(pad, 'aftertouch') })
   }))
 }
-
-function createGridSelectButtons (push) {
-  return oneToEight.map(x => {
-    let button = push.grid.x[x].select
-    return {
-      ledOn: button.led_on.bind(button),
-      ledOff: button.led_off.bind(button),
-      ledRGB: button.led_rgb.bind(button),
-      onPressed: listener(button, 'pressed'),
-      onReleased: listener(button, 'released')
-    }
-  })
-}
-
-// function baseButton
 
 function createButtons (push) {
   const capitalize = name => name
@@ -51,55 +49,28 @@ function createButtons (push) {
     'new', 'duplicate', 'automation', 'fixed_length', 'device', 'browse', 'track', 'clip',
     'volume', 'pan_&_send', 'quantize', 'double', 'delete', 'undo']
   return names.reduce((acc, it) => {
-    let button = push.button[it]
-    acc[capitalize(it)] = {
-      ledOn: button.led_on.bind(button),
-      ledDim: button.led_dim.bind(button),
-      ledOff: button.led_off.bind(button),
-      onPressed: listener(button, 'pressed'),
-      onReleased: listener(button, 'released')
-    }
+    acc[capitalize(it)] = roygButton(push.button[it])
     return acc
   }, {})
 }
 
 function createTimeDivisionButtons (push) {
   const names = ['1/4', '1/4t', '1/8', '1/8t', '1/16', '1/16t', '1/32', '1/32t']
-  const colours = {'orange': 'orange', 'green': 'green', 'red': 'red', 'yellow': 'yellow'}
-  const applyColour = (button, col) => button[colours[col] || 'orange']()
   return names.reduce((acc, it) => {
-    let button = push.button[it]
-    acc[it] = {
-      ledOn: (colour = 'orange') => { applyColour(button, colour); button.led_on() },
-      ledDim: (colour = 'orange') => { applyColour(button, colour); button.led_dim() },
-      ledOff: button.led_off.bind(button),
-      onPressed: listener(button, 'pressed'),
-      onReleased: listener(button, 'released')
-    }
+    acc[it] = roygButton(push.button[it])
     return acc
   }, {})
 }
 
 function createChannelSelectButtons (push) {
-  const colours = {'orange': 'orange', 'green': 'green', 'red': 'red', 'yellow': 'yellow'}
-  const applyColour = (button, col) => button[colours[col] || 'orange']()
-  return oneToEight.map(x => {
-    let button = push.channel[x].select
-    return {
-      ledOn: (colour = 'orange') => { applyColour(button, colour); button.led_on() },
-      ledDim: (colour = 'orange') => { applyColour(button, colour); button.led_dim() },
-      ledOff: button.led_off.bind(button),
-      onPressed: listener(button, 'pressed'),
-      onReleased: listener(button, 'released')
-    }
-  })
+  return oneToEight.map(x => roygButton(push.channel[x].select))
 }
 
 module.exports = (midiOutCallBacks = []) => {
   let push = new Push({ send: bytes => { midiOutCallBacks.forEach(callback => callback(bytes)) }})
   let buttons = createButtons(push)
   let pads = createPads(push)
-  let gridSelectButtons = createGridSelectButtons(push)
+  let gridSelectButtons = oneToEight.map(x => rgbButton(push.grid.x[x].select))
   let timeDivisionButtons = createTimeDivisionButtons(push)
   let channelSelectButtons = createChannelSelectButtons(push)
 
