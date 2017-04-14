@@ -1,6 +1,6 @@
 fdescribe('Ableton Push wrapper', () => {
   let sentBytes = []
-  let button, gridRow, gridCol, gridSelectButtons, midiFromHardware, timeDivisionButtons
+  let button, channelSelectButtons, gridRow, gridCol, gridSelectButtons, midiFromHardware, timeDivisionButtons
 
   const midiCC = (cc, value) => [176, cc, value]
   const midiNote = (note, velocity) => [144, note, velocity]
@@ -11,6 +11,7 @@ fdescribe('Ableton Push wrapper', () => {
   beforeEach(() => {
     ({
       button,
+      channelSelectButtons,
       gridRow,
       gridCol,
       gridSelectButtons,
@@ -118,5 +119,28 @@ fdescribe('Ableton Push wrapper', () => {
     it('can have LED turned on dimly yellow', testSendsMidi({ call: () => timeDivisionButtons('1/16').ledDim('yellow'), expect: midiCC(40, 13) }))
     it('can have LED turned on dimly green', testSendsMidi({ call: () => timeDivisionButtons('1/16').ledDim('green'), expect: midiCC(40, 19) }))
     it('can have LED turned off', testSendsMidi({ call: () => timeDivisionButtons('1/4').ledOff(), expect: midiCC(36, 0) }))
+  })
+
+  describe('channel select buttons', () => {
+    it('invoke subscribed listeners when released', testListenerInvoked({
+      receive: midiCC(24, 127),
+      invoke: done => channelSelectButtons()[4].onPressed(done)
+    }))
+    it('invoke subscribed listeners when released', testListenerInvoked({
+      receive: midiCC(24, 0),
+      invoke: done => channelSelectButtons()[4].onReleased(done)
+    }))
+
+    it('can have LED turned on (defaults to orange)', testSendsMidi({ call: () => channelSelectButtons()[0].ledOn(), expect: midiCC(20, 10) }))
+    it('can have LED turned on red', testSendsMidi({ call: () => channelSelectButtons()[0].ledOn('red'), expect: midiCC(20, 4) }))
+    it('can have LED turned on orange', testSendsMidi({ call: () => channelSelectButtons()[0].ledOn('orange'), expect: midiCC(20, 10) }))
+    it('can have LED turned on yellow', testSendsMidi({ call: () => channelSelectButtons()[0].ledOn('yellow'), expect: midiCC(20, 16) }))
+    it('can have LED turned on green', testSendsMidi({ call: () => channelSelectButtons()[0].ledOn('green'), expect: midiCC(20, 22) }))
+    it('can have LED turned on dimly (defaults to orange)', testSendsMidi({ call: () => channelSelectButtons()[0].ledDim(), expect: midiCC(20, 7) }))
+    it('can have LED turned on dimly red', testSendsMidi({ call: () => channelSelectButtons()[0].ledDim('red'), expect: midiCC(20, 1) }))
+    it('can have LED turned on dimly orange', testSendsMidi({ call: () => channelSelectButtons()[0].ledDim('orange'), expect: midiCC(20, 7) }))
+    it('can have LED turned on dimly yellow', testSendsMidi({ call: () => channelSelectButtons()[0].ledDim('yellow'), expect: midiCC(20, 13) }))
+    it('can have LED turned on dimly green', testSendsMidi({ call: () => channelSelectButtons()[0].ledDim('green'), expect: midiCC(20, 19) }))
+    it('can have LED turned off', testSendsMidi({ call: () => channelSelectButtons()[0].ledOff(), expect: midiCC(20, 0) }))
   })
 })

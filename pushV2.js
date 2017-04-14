@@ -80,15 +80,32 @@ function createTimeDivisionButtons (push) {
   }, {})
 }
 
+function createChannelSelectButtons (push) {
+  const colours = {'orange': 'orange', 'green': 'green', 'red': 'red', 'yellow': 'yellow'}
+  const applyColour = (button, col) => button[colours[col] || 'orange']()
+  return oneToEight.map(x => {
+    let button = push.channel[x].select
+    return {
+      ledOn: (colour = 'orange') => { applyColour(button, colour); button.led_on() },
+      ledDim: (colour = 'orange') => { applyColour(button, colour); button.led_dim() },
+      ledOff: button.led_off.bind(button),
+      onPressed: listener(button, 'pressed'),
+      onReleased: listener(button, 'released')
+    }
+  })
+}
+
 module.exports = (midiOutCallBacks = []) => {
   let push = new Push({ send: bytes => { midiOutCallBacks.forEach(callback => callback(bytes)) }})
   let buttons = createButtons(push)
   let pads = createPads(push)
   let gridSelectButtons = createGridSelectButtons(push)
   let timeDivisionButtons = createTimeDivisionButtons(push)
+  let channelSelectButtons = createChannelSelectButtons(push)
 
   return {
     button: name => buttons[name],
+    channelSelectButtons: () => channelSelectButtons,
     gridRow: y => zeroToSeven.map(x => pads[x][y]),
     gridCol: x => zeroToSeven.map(y => pads[x][y]),
     gridSelectButtons: () => gridSelectButtons,
