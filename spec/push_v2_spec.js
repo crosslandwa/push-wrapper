@@ -1,4 +1,4 @@
-fdescribe('Ableton Push wrapper', () => {
+describe('Ableton Push wrapper', () => {
   let sentBytes = []
   let button, channelSelectButtons, gridRow, gridCol, gridSelectButtons, midiFromHardware, timeDivisionButtons
 

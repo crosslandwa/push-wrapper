@@ -203,11 +203,8 @@ describe('Ableton Push wrapper', () => {
     });
 
     describe('lcd strips', () => {
-        var blank_segment = [32, 32, 32, 32, 32, 32, 32, 32],
-            blank_line = blank_segment.concat([32]).concat(blank_segment)
-                .concat(blank_segment).concat([32]).concat(blank_segment)
-                .concat(blank_segment).concat([32]).concat(blank_segment)
-                .concat(blank_segment).concat([32]).concat(blank_segment);
+        var segment = [32, 32, 32, 32, 32, 32, 32, 32]
+        var blank_line = [...segment, 32, ...segment, ...segment, 32, ...segment, ...segment, 32, ...segment, ...segment, 32, ...segment]
 
         it('displays 8 chars of text on four rows per channel', () => {
             push.lcd.x[1].y[1].update('more-than-8');
