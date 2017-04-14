@@ -211,19 +211,19 @@ describe('Ableton Push wrapper', () => {
             var text_bytes = 'more-tha'.split('').map((letter) => letter.charCodeAt(0)),
                 length = 9,
                 offset = 0;
-            expect(sent_bytes).toEqual([240, 71, 127, 21, 27, 0, length, offset].concat(text_bytes).concat([247]));
+            expect(sent_bytes).toEqual([240, 71, 127, 21, 27, 0, length, offset, ...text_bytes, 247]);
 
             push.lcd.x[4].y[1].update(123);
             var text_bytes = '123     '.split('').map((letter) => letter.charCodeAt(0)),
                 length = 9,
                 offset = 26;
-            expect(sent_bytes).toEqual([240, 71, 127, 21, 27, 0, length, offset].concat(text_bytes).concat([247]));
+            expect(sent_bytes).toEqual([240, 71, 127, 21, 27, 0, length, offset, ...text_bytes, 247]);
 
             push.lcd.x[1].y[4].update('more-than-8');
             var text_bytes = 'more-tha'.split('').map((letter) => letter.charCodeAt(0)),
                 length = 9,
                 offset = 0;
-            expect(sent_bytes).toEqual([240, 71, 127, 21, 24, 0, length, offset].concat(text_bytes).concat([247]));
+            expect(sent_bytes).toEqual([240, 71, 127, 21, 24, 0, length, offset, ...text_bytes, 247]);
         });
 
         it('can be cleared so all LCDs are blank', () => {
@@ -235,12 +235,12 @@ describe('Ableton Push wrapper', () => {
 
             push.lcd.clear();
 
-            expect(sent_bytes).toEqual(
-                [240, 71, 127, 21, 27, 0, 69, 0].concat(blank_line).concat([247])
-                .concat([240, 71, 127, 21, 26, 0, 69, 0].concat(blank_line).concat([247]))
-                .concat([240, 71, 127, 21, 25, 0, 69, 0].concat(blank_line).concat([247]))
-                .concat([240, 71, 127, 21, 24, 0, 69, 0].concat(blank_line).concat([247]))
-            );
+            expect(sent_bytes).toEqual([
+                240, 71, 127, 21, 27, 0, 69, 0, ...blank_line, 247,
+                240, 71, 127, 21, 26, 0, 69, 0, ...blank_line, 247,
+                240, 71, 127, 21, 25, 0, 69, 0, ...blank_line, 247,
+                240, 71, 127, 21, 24, 0, 69, 0, ...blank_line, 247,
+            ]);
         });
 
         it('can have individual elements cleared', () => {
@@ -248,7 +248,7 @@ describe('Ableton Push wrapper', () => {
             var text_bytes = '        '.split('').map((letter) => letter.charCodeAt(0)),
                 length = 9,
                 offset = 60;
-            expect(sent_bytes).toEqual([240, 71, 127, 21, 24, 0, length, offset].concat(text_bytes).concat([247]));
+            expect(sent_bytes).toEqual([240, 71, 127, 21, 24, 0, length, offset, ...text_bytes, 247]);
         });
     });
 
