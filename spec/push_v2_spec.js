@@ -1,6 +1,8 @@
 describe('Ableton Push wrapper', () => {
   let sentBytes = []
-  let button, channelKnobs, channelSelectButtons, gridRow, gridCol, gridSelectButtons, midiFromHardware, timeDivisionButtons, masterKnob, swingKnob, tempoKnob, touchstrip
+  let button, channelKnobs, channelSelectButtons, clearLCD,
+    gridRow, gridCol, gridSelectButtons, midiFromHardware, timeDivisionButtons,
+    masterKnob, swingKnob, tempoKnob, touchstrip
 
   const midiCC = (cc, value) => [176, cc, value]
   const midiNote = (note, velocity) => [144, note, velocity]
@@ -14,6 +16,7 @@ describe('Ableton Push wrapper', () => {
       button,
       channelKnobs,
       channelSelectButtons,
+      clearLCD,
       gridRow,
       gridCol,
       gridSelectButtons,
@@ -206,6 +209,22 @@ describe('Ableton Push wrapper', () => {
         midiFromHardware(midiNote(12, 0)) // released
 
         expect(emitted).toEqual(['pressed', 'pitchbend-385', 'pitchbend-386', 'released', 'pitchbend-8192'])
+    })
+  })
+
+  describe('LCD', () => {
+    const segment = [32, 32, 32, 32, 32, 32, 32, 32]
+    const blankLine = [...segment, 32, ...segment, ...segment, 32, ...segment, ...segment, 32, ...segment, ...segment, 32, ...segment]
+
+    it('can be cleared in one go', () => {
+      clearLCD();
+
+      expect(sentBytes).toEqual([
+          240, 71, 127, 21, 27, 0, 69, 0, ...blankLine, 247,
+          240, 71, 127, 21, 26, 0, 69, 0, ...blankLine, 247,
+          240, 71, 127, 21, 25, 0, 69, 0, ...blankLine, 247,
+          240, 71, 127, 21, 24, 0, 69, 0, ...blankLine, 247,
+      ]);
     })
   })
 })

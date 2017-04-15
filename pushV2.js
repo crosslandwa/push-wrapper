@@ -73,6 +73,7 @@ module.exports = (midiOutCallBacks = []) => {
     button: name => buttons[name],
     channelKnobs: () => channelKnobs.slice(),
     channelSelectButtons: () => channelSelectButtons.slice(),
+    clearLCD: () => { push.lcd.clear() },
     gridRow: y => zeroToSeven.map(x => pads[x][y]),
     gridCol: x => zeroToSeven.map(y => pads[x][y]),
     gridSelectButtons: () => gridSelectButtons.slice(),

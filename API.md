@@ -76,15 +76,16 @@ touchstrip.onReleased(() => { /* touchstrip released actions */ })
 touchstrip.onPitchBend(amount => { /* amount = 14bit value (0 -> 16383) */ })
 
 
-//-----LCDS-----
-let lcd = push.lcd()
-lcd.clear() // clear all LCD text
-lcd.updateRow(Y, [text1, text2], offset = 0) // display text in row of subsequent segments starting from offset
-lcd.updateCol(X, [text1, text2], offset = 0) // display text in col of subsequent segments starting from offset
-lcd.updateSegment(X, Y, text = '') // display text (1-8 character string) in specific segment
-lcd.clearRow(Y)
-lcd.clearCol(X)
-lcd.clearSegment(X, Y)
+//-----LCDs-----
+push.lcdRowSegments(Y) // returns array (row) of LCD segments
+push.lcdColSegments(X) // returns array (column) of LCD segments
+
+let lcdSegment = push.lcdColSegments(X)[Y] || push.lcdRowSegments(Y)[X]
+
+lcdSegment.display(text) // display text in LCD segment (automatically truncates/pads to 8 chars)
+lcdSegment.clear() // clear text in LCD segment
+
+push.clearLCD() // clear all LCD text
 
 
 //-----X & Y-----
@@ -99,8 +100,8 @@ push.gridSelectButtons()[0] // the leftmost button above the grid
 push.channelKnobs()[0] // the leftmost channel knob
 push.channelSelectButtons()[7] // the right most channel select button
 
-lcd.updateSegment(0, 0, 'muzaaaak') // the bottom left LCD segment
-lcd.clearRow(3) // clear top row of LCD segments
+lcd.lcdRowSegments(0)[0].display('muzaaaak') // the bottom left LCD segment
+lcd.lcdRowSegments(3).map(seg => {segment.clear()}) // clear top row of LCD segments
 
 
 //-----LISTENERS-----
