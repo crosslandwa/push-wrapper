@@ -20,6 +20,13 @@ const rgbButton = button => ({
   onReleased: listener(button, 'released')
 })
 
+const knob = knob => Object.assign({}, touchable(knob), { onTurned: listener(knob, 'turned') })
+
+const touchable = elem => ({
+  onPressed: listener(elem, 'pressed'),
+  onReleased: listener(elem, 'released')
+})
+
 function roygButton (button) {
   const colours = {'orange': 'orange', 'green': 'green', 'red': 'red', 'yellow': 'yellow'}
   const applyColour = (button, col) => button[colours[col] || 'orange']()
@@ -66,6 +73,10 @@ function createChannelSelectButtons (push) {
   return oneToEight.map(x => roygButton(push.channel[x].select))
 }
 
+function createChannelKnobs (push) {
+  return oneToEight.map(x => knob(push.channel[x].knob))
+}
+
 module.exports = (midiOutCallBacks = []) => {
   let push = new Push({ send: bytes => { midiOutCallBacks.forEach(callback => callback(bytes)) }})
   let buttons = createButtons(push)
@@ -73,14 +84,20 @@ module.exports = (midiOutCallBacks = []) => {
   let gridSelectButtons = oneToEight.map(x => rgbButton(push.grid.x[x].select))
   let timeDivisionButtons = createTimeDivisionButtons(push)
   let channelSelectButtons = createChannelSelectButtons(push)
+  let channelKnobs = createChannelKnobs(push)
+  let specialKnobs = ['master', 'swing', 'tempo'].map(name => knob(push.knob[name]))
 
   return {
     button: name => buttons[name],
-    channelSelectButtons: () => channelSelectButtons,
+    channelKnobs: () => channelKnobs.slice(),
+    channelSelectButtons: () => channelSelectButtons.slice(),
     gridRow: y => zeroToSeven.map(x => pads[x][y]),
     gridCol: x => zeroToSeven.map(y => pads[x][y]),
-    gridSelectButtons: () => gridSelectButtons,
+    gridSelectButtons: () => gridSelectButtons.slice(),
     midiIn: bytes => push.receive_midi(bytes),
-    timeDivisionButtons: name => timeDivisionButtons[name]
+    timeDivisionButtons: name => timeDivisionButtons[name],
+    masterKnob: () => specialKnobs[0],
+    swingKnob: () => specialKnobs[1],
+    tempoKnob: () => specialKnobs[2]
   }
 }

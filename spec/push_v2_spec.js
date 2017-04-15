@@ -1,6 +1,6 @@
 describe('Ableton Push wrapper', () => {
   let sentBytes = []
-  let button, channelSelectButtons, gridRow, gridCol, gridSelectButtons, midiFromHardware, timeDivisionButtons
+  let button, channelKnobs, channelSelectButtons, gridRow, gridCol, gridSelectButtons, midiFromHardware, timeDivisionButtons, masterKnob, swingKnob, tempoKnob
 
   const midiCC = (cc, value) => [176, cc, value]
   const midiNote = (note, velocity) => [144, note, velocity]
@@ -11,12 +11,16 @@ describe('Ableton Push wrapper', () => {
   beforeEach(() => {
     ({
       button,
+      channelKnobs,
       channelSelectButtons,
       gridRow,
       gridCol,
       gridSelectButtons,
       midiIn: midiFromHardware,
-      timeDivisionButtons
+      timeDivisionButtons,
+      masterKnob,
+      swingKnob,
+      tempoKnob
     } = require('../pushV2.js')([bytes => { sentBytes = sentBytes.concat(bytes) }]))
     sentBytes = []
   })
@@ -143,4 +147,31 @@ describe('Ableton Push wrapper', () => {
     it('can have LED turned on dimly green', testSendsMidi({ call: () => channelSelectButtons()[0].ledDim('green'), expect: midiCC(20, 19) }))
     it('can have LED turned off', testSendsMidi({ call: () => channelSelectButtons()[0].ledOff(), expect: midiCC(20, 0) }))
   })
+
+  describe('knobs', () => {
+    it('invoke subscribed listeners when released', testListenerInvoked({
+      receive: midiNote(0, 126),
+      invoke: done => channelKnobs()[0].onPressed(done)
+    }))
+    it('invoke subscribed listeners when released', testListenerInvoked({
+      receive: midiNote(9, 0),
+      invoke: done => swingKnob().onReleased(done)
+    }))
+    it('pass positive delta to subscribed listeners when turned clockwise', done => {
+      tempoKnob().onTurned(delta => {
+        expect(delta).toEqual(2)
+        done()
+      })
+      midiFromHardware(midiCC(14, 2))
+    })
+
+    it('pass negative delta to subscribed listeners when turned anti-clockwise', done => {
+      masterKnob().onTurned(delta => {
+        expect(delta).toEqual(-1)
+        done()
+      })
+      midiFromHardware(midiCC(79, 127))
+    })
+  })
+
 })
