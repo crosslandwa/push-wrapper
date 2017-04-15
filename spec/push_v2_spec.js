@@ -204,42 +204,31 @@ describe('Ableton Push wrapper', () => {
   describe('LCD', () => {
     const blankSegment = [32, 32, 32, 32, 32, 32, 32, 32]
     const blankLine = [...blankSegment, 32, ...blankSegment, ...blankSegment, 32, ...blankSegment, ...blankSegment, 32, ...blankSegment, ...blankSegment, 32, ...blankSegment]
+    const toBytes = text => text.split('').map(letter => letter.charCodeAt(0))
 
-    it('can be cleared in one go', () => {
-      clearLCD()
-
-      expect(sentBytes).toEqual([
+    it('can be cleared in one go', testSendsMidi({
+      call: () => clearLCD(),
+      expect: [
         240, 71, 127, 21, 27, 0, 69/* length */, 0/* offset */, ...blankLine, 247,
         240, 71, 127, 21, 26, 0, 69/* length */, 0/* offset */, ...blankLine, 247,
         240, 71, 127, 21, 25, 0, 69/* length */, 0/* offset */, ...blankLine, 247,
         240, 71, 127, 21, 24, 0, 69/* length */, 0/* offset */, ...blankLine, 247,
-      ])
-    })
+      ]
+    }))
 
-    it('segments can be cleared individually', () => {
-      lcdSegmentsRow(3)[7].clear()
+    it('segments can cleared individually', testSendsMidi({
+      call: () => lcdSegmentsRow(3)[7].clear(),
+      expect: [240, 71, 127, 21, 24, 0, 9/* length */, 60/* offset */, ...blankSegment, 247]
+    }))
 
-      expect(sentBytes).toEqual([
-        240, 71, 127, 21, 24, 0, 9/* length */, 60/* offset */, ...blankSegment, 247
-      ])
-    })
+    it('segments can display text, truncating to 8 chars', testSendsMidi({
+      call: () => lcdSegmentsRow(0)[0].display('more-than-8'),
+      expect: [240, 71, 127, 21, 27, 0, 9/* length */, 0/* offset */, ...toBytes('more-tha'), 247]
+    }))
 
-    it('segments can display text, truncating to 8 chars', () => {
-      lcdSegmentsRow(0)[0].display('more-than-8')
-      let textBytes = 'more-tha'.split('').map(letter => letter.charCodeAt(0))
-
-      expect(sentBytes).toEqual([
-        240, 71, 127, 21, 27, 0, 9/* length */, 0/* offset */, ...textBytes, 247
-      ])
-    })
-
-    it('segments can display text, padding to 8 chars', () => {
-      lcdSegmentsCol(3)[1].display('few')
-      let textBytes = 'few     '.split('').map(letter => letter.charCodeAt(0))
-
-      expect(sentBytes).toEqual([
-        240, 71, 127, 21, 26, 0, 9/* length */, 26/* offset */, ...textBytes, 247
-      ])
-    })
+    it('segments can display text, padding to 8 chars', testSendsMidi({
+      call: () => lcdSegmentsCol(3)[1].display('few'),
+      expect: [240, 71, 127, 21, 26, 0, 9/* length */, 26/* offset */, ...toBytes('few     '), 247]
+    }))
   })
 })
