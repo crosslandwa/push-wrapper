@@ -2,9 +2,9 @@
 
 ## What?
 
-A javascript wrapper primarily enabling the use of the Ableton Push hardware as a MIDI controller in a Web MIDI/Audio API enabled web browser - I created a simple [example application](https://chippanfire.com/push-wrapper-example.html) ([source code](https://github.com/crosslandwa/push-wrapper-example-site)) to demonstrate this.
+A javascript wrapper enabling use of the [Ableton Push](https://www.ableton.com/en/push/) (mk1) hardware as a MIDI controller in a Web MIDI/Audio API enabled web browser - I created a simple [example application](https://chippanfire.com/push-wrapper-example.html) ([source code](https://github.com/crosslandwa/push-wrapper-example-site)) to demonstrate this.
 
-The wrapper presents a simple event-driven [API](#control-events-and-feedback-commands), encapsulating the generation and parsing of MIDI messages sent to/from the hardware.
+The wrapper presents a simple [API](./API.md) that abstracts the generation and parsing of MIDI messages sent to/from the hardware.
 
 push-wrapper is written as a [requirejs](http://requirejs.org/) compatible module, and is distributed via [npm](https://www.npmjs.com/package/push-wrapper). The code is written using javascript [ES2015/ES6](http://es6-features.org/) so expects native Promises and other newer language features to be available.
 
@@ -17,9 +17,79 @@ If you want to modify the wrapper, install its dependencies and run its test sui
 
 # API
 
-push-wrapper presents each element of the Push hardware as a distinct object that emits **control events** (see [Event Emitter](https://nodejs.org/api/events.html)) in response to receiving MIDI messages from the Push hardware.
+push-wrapper presents each element of the Push hardware such that a you can:
+- subscribe listeners that are called in response to user interaction with the hardware (e.g. `push.swingKnob().onTurned(myCallback)`)
+- provide feedback on the hardware by controlling button/pad LEDs and the LCD screen (e.g. `push.button['TapTempo'].ledOn()`)
 
-Similarly, **feedback commands** can be sent to elements of the hardware (e.g. turning on button LEDs) by calling the appropriate methods on each element (causing the wrapper to output a corresponding MIDI command).
+[Read the full API here](https://github.com/crosslandwa/push-wrapper/API.md)
+
+## Quick Start
+
+## V1 -> V2
+
+I made some breaking API changes. Sorry, but I felt I made some improvements...
+
+### Purer Functions
+
+```javascript
+/* In V1, state made presented functions behave differently at different times */
+push.grid.x[1].y[1].led_on() // makes LED orange
+push.grid.x[1].y[1].red()
+push.grid.x[1].y[1].led_on() // makes LED red
+
+/* In V2, pure functions are favoured, i.e. calling them produces consistent results */
+push.gridRow(0)[0].ledOn() // makes LED orange
+push.gridRow(0)[0].ledOn('red') // makes LED red
+push.gridRow(0)[0].ledOn() // makes LED orange
+```
+
+### Zero-indexing
+```javascript
+/*
+  In V1, I decided to access the grid using one-indexing, in line with thinking about
+  a mixing console, where you'd have an instrument presented on channel 1 (rather than channel 0)
+*/
+push.grid.x[1].y[1].on('pressed', doSomething)
+
+/*
+  Not surprisingly, one-indexing adds mental overhead if you want to do anything with loops...
+*/
+[1, 2, 3].forEach((channel, index) => push.grid.x[channel].y[1].led_on()) // why aren't channel and index the same?
+
+/* In V2, everything is zero-indexed */
+push.gridRow(0)[0].ledOn() // turn on bottom left pad LED
+```
+
+### Consistent array access
+```javascript
+/* In V1 I presented elements in an 'array like' manner, but these where really just maps with numeric keys... */
+push.grid.x.forEach(columnOfPads => { /* do something */}) // TypeError: push.grid.x.forEach is not a function
+
+/* In V2 I consistently present arrays of elements, allowing you to leverage javascript's native array APIs */
+push.gridRow(0).forEach(pad => pad.ledOn()) // turn on all pads in bottom row of grid
+```
+
+### No magic strings for events
+```javascript
+/* In V1, callbacks are registered via magic strings for event names */
+push.grid.x[1].y[1].on('presssed', nothingsHappening) // what was that event called again?
+
+/* In V2, listeners can be subscribed for specific actions only */
+push.gridRow(1)[0].onPresssed(pleaseDoSomething) // TypeError: gridRow(...)[0].onPresssed is not a function
+push.gridRow(1)[0].onPressed(youCanDoIt) // Fixed the typo, youCanDoIt!
+```
+
+### Camel casing
+```javascript
+/* When I wrote V1 the project I was working on at the time had_all_its_functions_named_in_snake_case */
+push.grid.x[1].y[1].led_on()
+
+/* In V2 everything is camelCase */
+push.gridRow(0)[0].ledOn()
+```
+
+
+# Old API
 
 ## Instantiation and MIDI IO
 
@@ -165,24 +235,3 @@ push.lcd.x[X].y[Y].clear(); /* clears specific 8 character segment */
 // X values: 1 -> 8, Y values: 1 -> 4
 // where x[1].y[1] is the bottom left 8 character segment of the LCD, and x[8].y[4] is the top-right
 ```
-
-## Why?
-
-I posed myself a couple of front-end/musical-tool development questions and used this project to answer them.
-
-### Can I write/test code in node and deploy for use in the browser?
-- Node/npm provides a fast feedback environment for rapid test driven development
-- Utilising [ports & adaptors](http://alistair.cockburn.us/Hexagonal+architecture) design pattern enables testing of Push wrapper code in isolation from the Web MIDI API used when deployed in the browser
-- npm modules can be used to *require* the push-wrapper code into an arbitrary JS/node application
-- [Browserify](http://browserify.org/) integrates into an npm workflow to bundle application code into a single JS file for use in a HTML page
-
-### Can I use the web browser as a *fast-booting* and *performant* environment (compared to e.g. MaxMSP, Ableton Live + Max4Live)?
-- Fast booting? Yeah!
-- Performant? I've not built anything complex enough yet to indicate this could be an issue
-
-### Can i write a *reasonable looking* and *useful* app in a web browser (in a timeframe comparable to MaxMSP development)?
-- Yes and no
-- The push-wrapper code makes hooking up the controller to application code trivial
-- Writing audio applications *from scratch* using the Web Audio API proved to be slower than anticipated
-  - The Web Audio API offers a fairly low level building blocks
-  - Suggest I look at libraries such as [Tonejs](https://github.com/Tonejs/Tone.js) that provide higher level functionality in the future
