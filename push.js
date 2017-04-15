@@ -85,7 +85,7 @@ module.exports = (midiOutCallBacks = []) => {
     gridSelectButtons: () => gridSelectButtons.slice(),
     lcdSegmentsCol: x => zeroToSeven.map(y => lcdSegments[x][y]),
     lcdSegmentsRow: y => zeroToSeven.map(x => lcdSegments[x][y]),
-    midiIn: bytes => push.receive_midi(bytes),
+    midiFromHardware: bytes => push.receive_midi(bytes),
     timeDivisionButtons: name => timeDivisionButtons[name],
     masterKnob: () => specialKnobs[0],
     swingKnob: () => specialKnobs[1],

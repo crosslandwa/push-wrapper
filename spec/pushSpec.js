@@ -13,7 +13,7 @@ describe('Ableton Push wrapper', () => {
 
   beforeEach(() => {
     ({ button, channelKnobs, channelSelectButtons, clearLCD, gridRow, gridCol,
-      gridSelectButtons, lcdSegmentsCol, lcdSegmentsRow, midiIn: midiFromHardware,
+      gridSelectButtons, lcdSegmentsCol, lcdSegmentsRow, midiFromHardware,
       timeDivisionButtons, masterKnob, swingKnob, tempoKnob, touchstrip
     } = require('../push')([bytes => { sentBytes = sentBytes.concat(bytes) }]))
     sentBytes = []

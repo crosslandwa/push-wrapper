@@ -24,6 +24,17 @@ push-wrapper presents each element of the Push hardware such that a you can:
 [Read the full API here](https://github.com/crosslandwa/push-wrapper/API.md)
 
 ## Quick Start
+```javascript
+const pushWrapper = require('push-wrapper')
+pushWrapper.midiIO()
+  .then(({ midiFromHardware, midiToHardware}) => {
+    const push = pushWrapper.push([midiToHardware.send])
+    midiFromHardware.onmidimessage = push.midiFromHardware
+    return push
+  })
+  .catch(err => { console.error(err); return Promise.resolve(pushWrapper.push())) // Logs "No MIDI ports found with name matching 'x' and 'y'" error, returns unbound push
+  .then(push => { /* do stuff with push */ })
+```
 
 ## V1 -> V2
 
@@ -37,7 +48,7 @@ push.grid.x[1].y[1].led_on() // makes LED orange
 push.grid.x[1].y[1].red()
 push.grid.x[1].y[1].led_on() // makes LED red
 
-/* In V2, pure functions are favoured, i.e. calling them produces consistent results */
+/* In V2, pure functions are favoured, i.e. calling them ALWAYS produces the same results */
 push.gridRow(0)[0].ledOn() // makes LED orange
 push.gridRow(0)[0].ledOn('red') // makes LED red
 push.gridRow(0)[0].ledOn() // makes LED orange
