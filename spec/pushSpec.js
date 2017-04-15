@@ -15,7 +15,7 @@ describe('Ableton Push wrapper', () => {
     ({ button, channelKnobs, channelSelectButtons, clearLCD, gridRow, gridCol,
       gridSelectButtons, lcdSegmentsCol, lcdSegmentsRow, midiIn: midiFromHardware,
       timeDivisionButtons, masterKnob, swingKnob, tempoKnob, touchstrip
-    } = require('../pushV2.js')([bytes => { sentBytes = sentBytes.concat(bytes) }]))
+    } = require('../push')([bytes => { sentBytes = sentBytes.concat(bytes) }]))
     sentBytes = []
   })
 

@@ -1,4 +1,4 @@
-var Push = require('../push.js');
+var Push = require('../src/push.js');
 
 describe('Ableton Push wrapper', () => {
     var push, sent_bytes = [];
