@@ -72,19 +72,19 @@ push.gridRow(0).forEach(pad => pad.ledOn()) // turn on all pads in bottom row of
 ### No magic strings for events
 ```javascript
 /* In V1, callbacks are registered via magic strings for event names */
-push.grid.x[1].y[1].on('presssed', nothingsHappening) // what was that event called again?
+push.grid.x[1].y[1].on('pushed', nothingsHappening) // what was that event called again?
 
 /* In V2, listeners can be subscribed for specific actions only */
-push.gridRow(1)[0].onPresssed(pleaseDoSomething) // TypeError: gridRow(...)[0].onPresssed is not a function
-push.gridRow(1)[0].onPressed(youCanDoIt) // Fixed the typo, youCanDoIt!
+push.gridRow(1)[0].onPushed(pleaseDoSomething) // TypeError: gridRow(...)[0].onPushed is not a function
+push.gridRow(1)[0].onPressed(youCanDoIt) // You Can Do It!
 ```
 
 ### Camel casing
 ```javascript
-/* When I wrote V1 the project I was working on at the time had_all_its_functions_named_in_snake_case */
+/* When I wrote V1 the project I was working on at the time had_all_its_things_named_in_snake_case */
 push.grid.x[1].y[1].led_on()
 
-/* In V2 everything is camelCase */
+/* In V2 everythingIsCamelCase */
 push.gridRow(0)[0].ledOn()
 ```
 
