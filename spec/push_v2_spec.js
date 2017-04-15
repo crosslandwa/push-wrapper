@@ -4,6 +4,7 @@ describe('Ableton Push wrapper', () => {
 
   const midiCC = (cc, value) => [176, cc, value]
   const midiNote = (note, velocity) => [144, note, velocity]
+  const midiPB = (lsb, msb) => [224, lsb, msb]
 
   const testSendsMidi = ({ call: c, expect: e }) => () => { c(); expect(sentBytes).toEqual(e) }
   const testListenerInvoked = ({ receive: r, invoke: i }) => done => { i(done); midiFromHardware(r) }
@@ -184,5 +185,27 @@ describe('Ableton Push wrapper', () => {
       receive: midiNote(12, 0),
       invoke: done => touchstrip().onReleased(done)
     }))
+    it('passes pitchbend to subscribed listeners when the hardware is rubbed', done => {
+        touchstrip().onPitchBend(bendAmount => {
+          expect(bendAmount).toEqual(385)
+          done()
+        });
+        midiFromHardware(midiPB(1, 3)) // equivalent to 0b 0000011 0000001
+    })
+    it('invokes subscribed pitchbend listeners with a pitchbend of 8192 after being released', () => {
+        var emitted = [];
+        const add = x => () => { emitted.push(x) }
+        touchstrip().onPressed(add('pressed'))
+        touchstrip().onReleased(add('released'))
+        touchstrip().onPitchBend(x => { emitted.push(`pitchbend-${x}`) })
+
+        midiFromHardware(midiNote(12, 126)) // pressed
+        midiFromHardware(midiPB(1, 3))
+        midiFromHardware(midiPB(2, 3))
+        midiFromHardware(midiPB(0, 64)) // hardware sends PB 64 (8192) before sending released event
+        midiFromHardware(midiNote(12, 0)) // released
+
+        expect(emitted).toEqual(['pressed', 'pitchbend-385', 'pitchbend-386', 'released', 'pitchbend-8192'])
+    })
   })
 })

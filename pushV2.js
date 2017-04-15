@@ -18,6 +18,7 @@ const touchable = elem => ({
 })
 const aftertouchable = elem => ({ onAftertouch: listener(elem, 'aftertouch')})
 const turnable = elem => ({ onTurned: listener(elem, 'turned')})
+const pitchbendable = elem => ({ onPitchBend: listener(elem, 'pitchbend')})
 const rgbButton = elem => ({
   ledOn: elem.led_on.bind(elem),
   ledOff: elem.led_off.bind(elem),
@@ -66,7 +67,7 @@ module.exports = (midiOutCallBacks = []) => {
   let channelSelectButtons = oneToEight.map(x => compose(push.channel[x].select, roygButton, touchable))
   let channelKnobs = oneToEight.map(x => compose(push.channel[x].knob, touchable, turnable))
   let specialKnobs = ['master', 'swing', 'tempo'].map(name => compose(push.knob[name], touchable, turnable))
-  let touchstrip = compose(push.touchstrip, touchable)
+  let touchstrip = compose(push.touchstrip, touchable, pitchbendable)
 
   return {
     button: name => buttons[name],
