@@ -14,7 +14,7 @@ pad.onReleased(() => { /* released actions */ })
 pad.onAftertouch(pressure => { /* aftertouch actions. pressure = 0 -> 127 */ })
 
 
-//-----ROW OF SELECT BUTTONS ABOVE GRID-----
+//-----ROW OF BUTTONS ABOVE GRID-----
 push.gridSelectButton() // returns array (row) of buttons
 
 let gridSelectButton = push.gridSelectButtons()[X]
@@ -40,7 +40,7 @@ button.ledOff() // turn off LED
 // Device, Browse, Track, Clip, Volume, Pan&Send, Quantize, Double, Delete, Undo
 
 
-//-----TIME DIVISION & CHANNEL SELECT BUTTONS-----
+//-----TIME DIVISION ("SCENE") BUTTONS-----
 let timeDivisionButton = push.button(NAME)
 
 // As BUTTONS but with additional parameter to ledOn() and ledDim() to specify colour
@@ -51,8 +51,7 @@ timeDivisionButton.ledDim(colour = 'orange') // colour = 'orange', 'red', 'green
 // 1/4, 1/4t, 1/8, 1/8t, 1/16, 1/16t, 1/32, 1/32t
 
 
-//-----CHANNEL SELECT BUTTONS-----
-// The row of buttons immediately below the LCD.
+//-----ROW OF BUTTONS BELOW THE LCD-----
 push.channelSelectButtons() // returns array (row) of buttons
 let channelSelectButton = push.channelSelectButtons()[X]
 
