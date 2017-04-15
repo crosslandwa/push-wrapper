@@ -43,8 +43,8 @@ function createButtons (push) {
   const capitalize = name => name
     .replace(/_(\w|&)/g, (a, x) => a.replace(`_${x}`, x.toUpperCase()))
     .replace(/^(\w)/g, (a, x) => a.replace(x, x.toUpperCase()))
-  return names.reduce((acc, it) => {
-    acc[capitalize(it)] = compose(push.button[it], roygButton, touchable)
+  return names.reduce((acc, name) => {
+    acc[capitalize(name)] = compose(push.button[name], roygButton, touchable)
     return acc
   }, {})
 }
