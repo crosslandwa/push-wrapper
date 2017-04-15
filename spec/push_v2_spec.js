@@ -1,8 +1,8 @@
 describe('Ableton Push wrapper', () => {
   let sentBytes = []
   let button, channelKnobs, channelSelectButtons, clearLCD,
-    gridRow, gridCol, gridSelectButtons, midiFromHardware, timeDivisionButtons,
-    masterKnob, swingKnob, tempoKnob, touchstrip
+    gridRow, gridCol, gridSelectButtons, lcdSegmentsCol, lcdSegmentsRow,
+    midiFromHardware, timeDivisionButtons, masterKnob, swingKnob, tempoKnob, touchstrip
 
   const midiCC = (cc, value) => [176, cc, value]
   const midiNote = (note, velocity) => [144, note, velocity]
@@ -12,20 +12,9 @@ describe('Ableton Push wrapper', () => {
   const testListenerInvoked = ({ receive: r, invoke: i }) => done => { i(done); midiFromHardware(r) }
 
   beforeEach(() => {
-    ({
-      button,
-      channelKnobs,
-      channelSelectButtons,
-      clearLCD,
-      gridRow,
-      gridCol,
-      gridSelectButtons,
-      midiIn: midiFromHardware,
-      timeDivisionButtons,
-      masterKnob,
-      swingKnob,
-      tempoKnob,
-      touchstrip
+    ({ button, channelKnobs, channelSelectButtons, clearLCD, gridRow, gridCol,
+      gridSelectButtons, lcdSegmentsCol, lcdSegmentsRow, midiIn: midiFromHardware,
+      timeDivisionButtons, masterKnob, swingKnob, tempoKnob, touchstrip
     } = require('../pushV2.js')([bytes => { sentBytes = sentBytes.concat(bytes) }]))
     sentBytes = []
   })
@@ -213,18 +202,44 @@ describe('Ableton Push wrapper', () => {
   })
 
   describe('LCD', () => {
-    const segment = [32, 32, 32, 32, 32, 32, 32, 32]
-    const blankLine = [...segment, 32, ...segment, ...segment, 32, ...segment, ...segment, 32, ...segment, ...segment, 32, ...segment]
+    const blankSegment = [32, 32, 32, 32, 32, 32, 32, 32]
+    const blankLine = [...blankSegment, 32, ...blankSegment, ...blankSegment, 32, ...blankSegment, ...blankSegment, 32, ...blankSegment, ...blankSegment, 32, ...blankSegment]
 
     it('can be cleared in one go', () => {
-      clearLCD();
+      clearLCD()
 
       expect(sentBytes).toEqual([
-          240, 71, 127, 21, 27, 0, 69, 0, ...blankLine, 247,
-          240, 71, 127, 21, 26, 0, 69, 0, ...blankLine, 247,
-          240, 71, 127, 21, 25, 0, 69, 0, ...blankLine, 247,
-          240, 71, 127, 21, 24, 0, 69, 0, ...blankLine, 247,
-      ]);
+        240, 71, 127, 21, 27, 0, 69/* length */, 0/* offset */, ...blankLine, 247,
+        240, 71, 127, 21, 26, 0, 69/* length */, 0/* offset */, ...blankLine, 247,
+        240, 71, 127, 21, 25, 0, 69/* length */, 0/* offset */, ...blankLine, 247,
+        240, 71, 127, 21, 24, 0, 69/* length */, 0/* offset */, ...blankLine, 247,
+      ])
+    })
+
+    it('segments can be cleared individually', () => {
+      lcdSegmentsRow(3)[7].clear()
+
+      expect(sentBytes).toEqual([
+        240, 71, 127, 21, 24, 0, 9/* length */, 60/* offset */, ...blankSegment, 247
+      ])
+    })
+
+    it('segments can display text, truncating to 8 chars', () => {
+      lcdSegmentsRow(0)[0].display('more-than-8')
+      let textBytes = 'more-tha'.split('').map(letter => letter.charCodeAt(0))
+
+      expect(sentBytes).toEqual([
+        240, 71, 127, 21, 27, 0, 9/* length */, 0/* offset */, ...textBytes, 247
+      ])
+    })
+
+    it('segments can display text, padding to 8 chars', () => {
+      lcdSegmentsCol(3)[1].display('few')
+      let textBytes = 'few     '.split('').map(letter => letter.charCodeAt(0))
+
+      expect(sentBytes).toEqual([
+        240, 71, 127, 21, 26, 0, 9/* length */, 26/* offset */, ...textBytes, 247
+      ])
     })
   })
 })

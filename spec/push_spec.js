@@ -203,8 +203,8 @@ describe('Ableton Push wrapper', () => {
     });
 
     describe('lcd strips', () => {
-        var segment = [32, 32, 32, 32, 32, 32, 32, 32]
-        var blank_line = [...segment, 32, ...segment, ...segment, 32, ...segment, ...segment, 32, ...segment, ...segment, 32, ...segment]
+        var blank_segment = [32, 32, 32, 32, 32, 32, 32, 32]
+        var blank_line = [...blank_segment, 32, ...blank_segment, ...blank_segment, 32, ...blank_segment, ...blank_segment, 32, ...blank_segment, ...blank_segment, 32, ...blank_segment]
 
         it('displays 8 chars of text on four rows per channel', () => {
             push.lcd.x[1].y[1].update('more-than-8');
@@ -245,10 +245,9 @@ describe('Ableton Push wrapper', () => {
 
         it('can have individual elements cleared', () => {
             push.lcd.x[8].y[4].clear();
-            var text_bytes = '        '.split('').map((letter) => letter.charCodeAt(0)),
-                length = 9,
+            var length = 9,
                 offset = 60;
-            expect(sent_bytes).toEqual([240, 71, 127, 21, 24, 0, length, offset, ...text_bytes, 247]);
+            expect(sent_bytes).toEqual([240, 71, 127, 21, 24, 0, length, offset, ...blank_segment, 247]);
         });
     });
 
