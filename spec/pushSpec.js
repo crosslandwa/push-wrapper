@@ -1,3 +1,5 @@
+const pushWrapper = require('../push')
+
 describe('Ableton Push wrapper', () => {
   let sentBytes = []
   let button, channelKnobs, channelSelectButtons, clearLCD,
@@ -15,7 +17,7 @@ describe('Ableton Push wrapper', () => {
     ({ button, channelKnobs, channelSelectButtons, clearLCD, gridRow, gridCol,
       gridSelectButtons, lcdSegmentsCol, lcdSegmentsRow, midiFromHardware,
       timeDivisionButtons, masterKnob, swingKnob, tempoKnob, touchstrip
-    } = require('../push')([bytes => { sentBytes = sentBytes.concat(bytes) }]))
+    } = pushWrapper.push([bytes => { sentBytes = sentBytes.concat(bytes) }]))
     sentBytes = []
   })
 

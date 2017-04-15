@@ -63,33 +63,36 @@ const lcdSegment = elem => ({
   display: (text = '') => { elem.update(text) }
 })
 
-module.exports = (midiOutCallBacks = []) => {
-  let push = new Push({ send: bytes => { midiOutCallBacks.forEach(callback => callback(bytes)) }})
-  let buttons = createButtons(push)
-  let pads = oneToEight.map(x => oneToEight.map(y => compose(push.grid.x[x].y[y], rgbButton, touchable, aftertouchable)))
-  let lcdSegments = oneToEight.map(x => oneToEight.map(y => lcdSegment(push.lcd.x[x].y[y])))
-  let gridSelectButtons = oneToEight.map(x => compose(push.grid.x[x].select, rgbButton, touchable))
-  let timeDivisionButtons = createTimeDivisionButtons(push)
-  let channelSelectButtons = oneToEight.map(x => compose(push.channel[x].select, roygButton, touchable))
-  let channelKnobs = oneToEight.map(x => compose(push.channel[x].knob, touchable, turnable))
-  let specialKnobs = ['master', 'swing', 'tempo'].map(name => compose(push.knob[name], touchable, turnable))
-  let touchstrip = compose(push.touchstrip, touchable, pitchbendable)
+module.exports = {
+  midiIO: () => ({ midiFromHardware: () => {}, midiToHardware: { send: bytes => {} } }),
+  push: (midiOutCallBacks = []) => {
+    let push = new Push({ send: bytes => { midiOutCallBacks.forEach(callback => callback(bytes)) }})
+    let buttons = createButtons(push)
+    let pads = oneToEight.map(x => oneToEight.map(y => compose(push.grid.x[x].y[y], rgbButton, touchable, aftertouchable)))
+    let lcdSegments = oneToEight.map(x => oneToEight.map(y => lcdSegment(push.lcd.x[x].y[y])))
+    let gridSelectButtons = oneToEight.map(x => compose(push.grid.x[x].select, rgbButton, touchable))
+    let timeDivisionButtons = createTimeDivisionButtons(push)
+    let channelSelectButtons = oneToEight.map(x => compose(push.channel[x].select, roygButton, touchable))
+    let channelKnobs = oneToEight.map(x => compose(push.channel[x].knob, touchable, turnable))
+    let specialKnobs = ['master', 'swing', 'tempo'].map(name => compose(push.knob[name], touchable, turnable))
+    let touchstrip = compose(push.touchstrip, touchable, pitchbendable)
 
-  return {
-    button: name => buttons[name],
-    channelKnobs: () => channelKnobs.slice(),
-    channelSelectButtons: () => channelSelectButtons.slice(),
-    clearLCD: () => { push.lcd.clear() },
-    gridRow: y => zeroToSeven.map(x => pads[x][y]),
-    gridCol: x => zeroToSeven.map(y => pads[x][y]),
-    gridSelectButtons: () => gridSelectButtons.slice(),
-    lcdSegmentsCol: x => zeroToSeven.map(y => lcdSegments[x][y]),
-    lcdSegmentsRow: y => zeroToSeven.map(x => lcdSegments[x][y]),
-    midiFromHardware: bytes => push.receive_midi(bytes),
-    timeDivisionButtons: name => timeDivisionButtons[name],
-    masterKnob: () => specialKnobs[0],
-    swingKnob: () => specialKnobs[1],
-    tempoKnob: () => specialKnobs[2],
-    touchstrip: () => touchstrip
+    return {
+      button: name => buttons[name],
+      channelKnobs: () => channelKnobs.slice(),
+      channelSelectButtons: () => channelSelectButtons.slice(),
+      clearLCD: () => { push.lcd.clear() },
+      gridRow: y => zeroToSeven.map(x => pads[x][y]),
+      gridCol: x => zeroToSeven.map(y => pads[x][y]),
+      gridSelectButtons: () => gridSelectButtons.slice(),
+      lcdSegmentsCol: x => zeroToSeven.map(y => lcdSegments[x][y]),
+      lcdSegmentsRow: y => zeroToSeven.map(x => lcdSegments[x][y]),
+      midiFromHardware: bytes => push.receive_midi(bytes),
+      timeDivisionButtons: name => timeDivisionButtons[name],
+      masterKnob: () => specialKnobs[0],
+      swingKnob: () => specialKnobs[1],
+      tempoKnob: () => specialKnobs[2],
+      touchstrip: () => touchstrip
+    }
   }
 }
