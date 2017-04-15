@@ -66,6 +66,7 @@ module.exports = (midiOutCallBacks = []) => {
   let channelSelectButtons = oneToEight.map(x => compose(push.channel[x].select, roygButton, touchable))
   let channelKnobs = oneToEight.map(x => compose(push.channel[x].knob, touchable, turnable))
   let specialKnobs = ['master', 'swing', 'tempo'].map(name => compose(push.knob[name], touchable, turnable))
+  let touchstrip = compose(push.touchstrip, touchable)
 
   return {
     button: name => buttons[name],
@@ -78,6 +79,7 @@ module.exports = (midiOutCallBacks = []) => {
     timeDivisionButtons: name => timeDivisionButtons[name],
     masterKnob: () => specialKnobs[0],
     swingKnob: () => specialKnobs[1],
-    tempoKnob: () => specialKnobs[2]
+    tempoKnob: () => specialKnobs[2],
+    touchstrip: () => touchstrip
   }
 }

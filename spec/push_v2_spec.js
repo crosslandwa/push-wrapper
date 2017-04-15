@@ -1,6 +1,6 @@
 describe('Ableton Push wrapper', () => {
   let sentBytes = []
-  let button, channelKnobs, channelSelectButtons, gridRow, gridCol, gridSelectButtons, midiFromHardware, timeDivisionButtons, masterKnob, swingKnob, tempoKnob
+  let button, channelKnobs, channelSelectButtons, gridRow, gridCol, gridSelectButtons, midiFromHardware, timeDivisionButtons, masterKnob, swingKnob, tempoKnob, touchstrip
 
   const midiCC = (cc, value) => [176, cc, value]
   const midiNote = (note, velocity) => [144, note, velocity]
@@ -20,7 +20,8 @@ describe('Ableton Push wrapper', () => {
       timeDivisionButtons,
       masterKnob,
       swingKnob,
-      tempoKnob
+      tempoKnob,
+      touchstrip
     } = require('../pushV2.js')([bytes => { sentBytes = sentBytes.concat(bytes) }]))
     sentBytes = []
   })
@@ -88,7 +89,7 @@ describe('Ableton Push wrapper', () => {
   })
 
   describe('buttons', () => {
-    it('invoke subscribed listeners when released', testListenerInvoked({
+    it('invoke subscribed listeners when pressed', testListenerInvoked({
       receive: midiCC(53, 120),
       invoke: done => button('AddTrack').onPressed(done)
     }))
@@ -103,7 +104,7 @@ describe('Ableton Push wrapper', () => {
   })
 
   describe('time division buttons', () => {
-    it('invoke subscribed listeners when released', testListenerInvoked({
+    it('invoke subscribed listeners when pressed', testListenerInvoked({
       receive: midiCC(43, 127),
       invoke: done => timeDivisionButtons('1/32t').onPressed(done)
     }))
@@ -126,7 +127,7 @@ describe('Ableton Push wrapper', () => {
   })
 
   describe('channel select buttons', () => {
-    it('invoke subscribed listeners when released', testListenerInvoked({
+    it('invoke subscribed listeners when pressed', testListenerInvoked({
       receive: midiCC(24, 127),
       invoke: done => channelSelectButtons()[4].onPressed(done)
     }))
@@ -149,7 +150,7 @@ describe('Ableton Push wrapper', () => {
   })
 
   describe('knobs', () => {
-    it('invoke subscribed listeners when released', testListenerInvoked({
+    it('invoke subscribed listeners when pressed', testListenerInvoked({
       receive: midiNote(0, 126),
       invoke: done => channelKnobs()[0].onPressed(done)
     }))
@@ -174,4 +175,14 @@ describe('Ableton Push wrapper', () => {
     })
   })
 
+  describe('touchstrip', () => {
+    it('invokes subscribed listeners when pressed', testListenerInvoked({
+      receive: midiNote(12, 126),
+      invoke: done => touchstrip().onPressed(done)
+    }))
+    it('invokes subscribed listeners when released', testListenerInvoked({
+      receive: midiNote(12, 0),
+      invoke: done => touchstrip().onReleased(done)
+    }))
+  })
 })
