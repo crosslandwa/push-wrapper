@@ -51,8 +51,8 @@ function createButtons (push) {
 
 function createTimeDivisionButtons (push) {
   const names = ['1/4', '1/4t', '1/8', '1/8t', '1/16', '1/16t', '1/32', '1/32t']
-  return names.reduce((acc, it) => {
-    acc[it] = compose(push.button[it], roygButton, touchable)
+  return names.reduce((acc, name) => {
+    acc[name] = compose(push.button[name], roygButton, touchable)
     return acc
   }, {})
 }
