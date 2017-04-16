@@ -43,7 +43,7 @@ I made some breaking API changes. Sorry, but I felt I made some improvements...
 ### Purer Functions
 
 ```javascript
-/* In V1, state made presented functions behave differently at different times */
+/* In V1, state meant functions behaved inconsistently over time */
 push.grid.x[1].y[1].led_on() // makes LED orange
 push.grid.x[1].y[1].red()
 push.grid.x[1].y[1].led_on() // makes LED red
@@ -57,7 +57,7 @@ push.gridRow(0)[0].ledOn() // makes LED orange
 ### Zero-indexing
 ```javascript
 /*
-  In V1, I decided to access the grid using one-indexing, in line with thinking about
+  In V1, the grid was accessed using one-indexing, in line with thinking about
   a mixing console, where you'd have an instrument presented on channel 1 (rather than channel 0)
 */
 push.grid.x[1].y[1].on('pressed', doSomething)
@@ -71,18 +71,29 @@ push.grid.x[1].y[1].on('pressed', doSomething)
 push.gridRow(0)[0].ledOn() // turn on bottom left pad LED
 ```
 
+### No nested accessors
+```javascript
+/* In V1 a tree of elements were presented */
+push.grid.x[8].y[8] // top right pad
+push.grid.x[2].select // button above the grid, second from left
+
+/* In V2 a flat API is preferred */
+push.gridRow(7)[7] // the top right pad
+push.gridSelectButtons()[1]  // button above the grid, second from left
+```
+
 ### Consistent array access
 ```javascript
-/* In V1 I presented elements in an 'array like' manner, but these where really just maps with numeric keys... */
+/* In V1 elements were presented in an 'array like' manner, but these where really just maps with numeric keys... */
 push.grid.x.forEach(columnOfPads => { /* do something */}) // TypeError: push.grid.x.forEach is not a function
 
-/* In V2 I consistently present arrays of elements, allowing you to leverage javascript's native array APIs */
+/* In V2 arrays of elements are consistently presented, allowing javascript's native array APIs to be leveraged */
 push.gridRow(0).forEach(pad => pad.ledOn()) // turn on all pads in bottom row of grid
 ```
 
 ### No magic strings for events
 ```javascript
-/* In V1, callbacks are registered via magic strings for event names */
+/* In V1, callbacks were registered via magic strings for event names */
 push.grid.x[1].y[1].on('pushed', nothingsHappening) // what was that event called again?
 
 /* In V2, listeners can be subscribed for specific actions only */
@@ -92,7 +103,7 @@ push.gridRow(1)[0].onPressed(youCanDoIt) // You Can Do It!
 
 ### Camel casing
 ```javascript
-/* When I wrote V1 the project I was working on at the time had_all_its_things_named_in_snake_case */
+/* At the time of writing V1 I was working_on_a_project_that_had_all_its_things_named_in_snake_case */
 push.grid.x[1].y[1].led_on()
 
 /* In V2 everythingIsCamelCase */
