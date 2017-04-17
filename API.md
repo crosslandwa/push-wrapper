@@ -21,6 +21,19 @@ push.onMidiToHardware(sendMidiToHardware) // add listener
 push.onMidiToHardware(console.log) // add multiple listeners (e.g. for logging sent MIDI)
 ```
 
+### Web MIDI API integration
+If you are using the Web MIDI API you can bind a MIDI input/output ports to the Push wrapper. It's no coincidence the interfaces expected by the wrapper closely match those exposed by the Web MIDI API:
+
+```javascript
+navigator.requestMIDIAccess({ sysex: true }).then((midiAccess) => {
+  const input = midiAccess.inputs.values()[0].value
+  const output = midiAccess.outputs.values()[0].value
+  const push = pushWrapper.push()
+  push.onMidiToHardware(output.send.bind(output))
+  input.onmidimessage = event => push.midiFromHardware(event.data)
+})
+```
+
 ## Hardware interactions
 ```javascript
 //-----GRID PADS-----
