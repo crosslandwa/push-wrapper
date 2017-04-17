@@ -14,10 +14,12 @@ describe('Ableton Push wrapper', () => {
   const testListenerInvoked = ({ receive: r, invoke: i }) => done => { i(done); midiFromHardware(r) }
 
   beforeEach(() => {
+    const push = pushWrapper.push();
     ({ button, channelKnobs, channelSelectButtons, clearLCD, gridRow, gridCol,
       gridSelectButtons, lcdSegmentsCol, lcdSegmentsRow, midiFromHardware,
       timeDivisionButtons, masterKnob, swingKnob, tempoKnob, touchstrip
-    } = pushWrapper.push([bytes => { sentBytes = sentBytes.concat(bytes) }]))
+    } = push)
+    push.onMidiToHardware(bytes => { sentBytes = sentBytes.concat(bytes) })
     sentBytes = []
   })
 
