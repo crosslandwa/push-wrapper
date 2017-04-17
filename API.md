@@ -1,5 +1,27 @@
 # Push Wrapper API
 
+## Setup and IO
+
+### Instantiation
+```javascript
+const pushWrapper = require('push-wrapper')
+const push = pushWrapper.push() // create a new push instance
+```
+
+### Receiving MIDI from hardware
+```javascript
+let bytes = [144, 44, 127] // MIDI note on
+push.midiFromHardware(bytes)
+```
+
+### Listening to MIDI messages sent by wrapper
+```javascript
+const sendMidiToHardware = bytes => { /* bytes is an array of integers */ }
+push.onMidiToHardware(sendMidiToHardware) // add listener
+push.onMidiToHardware(console.log) // add multiple listeners (e.g. for logging sent MIDI)
+```
+
+## Hardware interactions
 ```javascript
 //-----GRID PADS-----
 push.gridRow(Y) // returns array (row) of pads
@@ -85,9 +107,10 @@ lcdSegment.display(text) // display text in LCD segment (automatically truncates
 lcdSegment.clear() // clear text in LCD segment
 
 push.clearLCD() // clear all LCD text
+```
 
-
-//-----X & Y-----
+### X & Y
+``` javascript
 // uses zero indexing, with 0,0 at the bottom left
 push.gridCol(0)[0] // the bottom left grid pad
 push.gridCol(7)[0] // the bottom right grid pad
@@ -101,9 +124,10 @@ push.channelSelectButtons()[7] // the right most channel select button
 
 lcd.lcdSegmentsRow(0)[0].display('muzaaaak') // the bottom left LCD segment
 lcd.lcdSegmentsRow(3).map(seg => {segment.clear()}) // clear top row of LCD segments
+```
 
-
-//-----LISTENERS-----
+## Listeners
+```javascript
 const unsubscribe = element.onX(() => { /* listener code */ }) // returns a function...
 unsubscribe() // ...that will unsubscribe the passed listener
 
