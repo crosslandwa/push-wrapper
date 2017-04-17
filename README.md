@@ -24,15 +24,20 @@ push-wrapper presents each element of the Push hardware such that a you can:
 [Read the full API here](https://github.com/crosslandwa/push-wrapper/API.md)
 
 ## Quick Start
+Can't wait to get going? The following snippet will instantiate a push instance bound to web MIDI inputs/outputs if:
+- your browser supports the Web MIDI API
+- your browser can find MIDI IO ports called *"Ableton Push User Port"*
+
 ```javascript
 const pushWrapper = require('push-wrapper')
-pushWrapper.midiIO()
-  .then(({ midiFromHardware, midiToHardware}) => {
-    const push = pushWrapper.push([midiToHardware.send])
-    midiFromHardware.onmidimessage = push.midiFromHardware
+pushWrapper.webMIDIio()
+  .catch(err => { console.error(err); return { inputPort: {}, outputPort: { send: () => {} } } })
+  .then(({inputPort, outputPort}) => {
+    const push = pushWrapper.push()
+    inputPort.onmidimessage = event => push.midiFromHardware(event.data)
+    push.onMidiToHardware(outputPort.send.bind(outputPort))
     return push
   })
-  .catch(err => { console.error(err); return Promise.resolve(pushWrapper.push())) // Logs "No MIDI ports found with name matching 'x' and 'y'" error, returns unbound push
   .then(push => { /* do stuff with push */ })
 ```
 

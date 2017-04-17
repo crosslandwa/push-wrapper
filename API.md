@@ -34,6 +34,18 @@ navigator.requestMIDIAccess({ sysex: true }).then((midiAccess) => {
 })
 ```
 
+For convenience the wrapper provides a function `webMIDIio` that returns a Promise that resolves to give input/output ports named "Ableton Push User Port"
+```javascript
+pushWrapper.webMIDIio() // a Promise that rejects if the browser does not support the Web MIDI API, or input/output ports named "Ableton Push User Port" can not be found
+  .then(({inputPort, outputPort}) => {
+    const push = pushWrapper.push()
+    inputPort.onmidimessage = event => push.midiFromHardware(event.data)
+    push.onMidiToHardware(outputPort.send.bind(outputPort))
+    return push
+  }).then(push => /* do stuff with push */)
+```
+*This convenience method works nicely on OS X, but on Windows the Push likely reports itself as "USB AudioDevice 1" or similar (MIDI devices did last time I checked in) - you may have to roll your own binding if using this under Windows...*
+
 ## Hardware interactions
 ```javascript
 //-----GRID PADS-----
