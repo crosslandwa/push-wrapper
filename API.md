@@ -34,7 +34,7 @@ navigator.requestMIDIAccess({ sysex: true }).then((midiAccess) => {
 })
 ```
 
-For convenience the wrapper provides a function `webMIDIio` that returns a Promise that resolves to give input/output ports named "Ableton Push User Port"
+For convenience the wrapper provides a Promise function that resolves to give Web MIDI input/output ports named "Ableton Push User Port"
 ```javascript
 pushWrapper.webMIDIio() // a Promise that rejects if the browser does not support the Web MIDI API, or input/output ports named "Ableton Push User Port" can not be found
   .then(({inputPort, outputPort}) => {
