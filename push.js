@@ -6,7 +6,6 @@ refactor to remove the additional layer of abstraction
 */
 
 const Push = require('./src/push.js')
-const log = console.log
 const zeroToSeven = [0, 1, 2, 3, 4, 5, 6, 7]
 const oneToEight = [1, 2, 3, 4, 5, 6, 7, 8]
 
@@ -16,13 +15,13 @@ const touchable = elem => ({
   onPressed: listener(elem, 'pressed'),
   onReleased: listener(elem, 'released')
 })
-const aftertouchable = elem => ({ onAftertouch: listener(elem, 'aftertouch')})
-const turnable = elem => ({ onTurned: listener(elem, 'turned')})
-const pitchbendable = elem => ({ onPitchBend: listener(elem, 'pitchbend')})
+const aftertouchable = elem => ({ onAftertouch: listener(elem, 'aftertouch') })
+const turnable = elem => ({ onTurned: listener(elem, 'turned') })
+const pitchbendable = elem => ({ onPitchBend: listener(elem, 'pitchbend') })
 const rgbButton = elem => ({
   ledOn: elem.led_on.bind(elem),
   ledOff: elem.led_off.bind(elem),
-  ledRGB: elem.led_rgb.bind(elem),
+  ledRGB: elem.led_rgb.bind(elem)
 })
 function roygButton (elem) {
   const colours = {'orange': 'orange', 'green': 'green', 'red': 'red', 'yellow': 'yellow'}
@@ -70,8 +69,8 @@ function webMidiIO () {
       const input = userPort(Array.from(midiAccess.inputs.values()))
       const output = userPort(Array.from(midiAccess.outputs.values()))
 
-      return (input && output) ?
-        Promise.resolve({ inputPort: input, outputPort: output })
+      return (input && output)
+        ? Promise.resolve({ inputPort: input, outputPort: output })
         : Promise.reject('No default MIDI IO ports found with name "Ableton Push User Port"')
     })
   }
@@ -82,7 +81,7 @@ module.exports = {
   webMIDIio: webMidiIO,
   push: () => {
     let midiOutCallBacks = []
-    const push = new Push({ send: bytes => { midiOutCallBacks.forEach(callback => callback(bytes)) }})
+    const push = new Push({ send: bytes => { midiOutCallBacks.forEach(callback => callback(bytes)) } })
     const buttons = createButtons(push)
     const pads = oneToEight.map(x => oneToEight.map(y => compose(push.grid.x[x].y[y], rgbButton, touchable, aftertouchable)))
     const lcdSegments = oneToEight.map(x => oneToEight.map(y => lcdSegment(push.lcd.x[x].y[y])))

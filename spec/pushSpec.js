@@ -54,7 +54,7 @@ describe('Ableton Push wrapper', () => {
         expect(pressure).toEqual(100)
         done()
       })
-      midiFromHardware([160, 37, 100]); // MIDI poly key-pressure
+      midiFromHardware([160, 37, 100]) // MIDI poly key-pressure
     })
 
     it('can have LED turned on', testSendsMidi({ call: () => gridCol(7)[7].ledOn(), expect: midiNote(99, 100) }))
@@ -182,26 +182,26 @@ describe('Ableton Push wrapper', () => {
       invoke: done => touchstrip().onReleased(done)
     }))
     it('passes pitchbend to subscribed listeners when the hardware is rubbed', done => {
-        touchstrip().onPitchBend(bendAmount => {
-          expect(bendAmount).toEqual(385)
-          done()
-        });
-        midiFromHardware(midiPB(1, 3)) // equivalent to 0b 0000011 0000001
+      touchstrip().onPitchBend(bendAmount => {
+        expect(bendAmount).toEqual(385)
+        done()
+      })
+      midiFromHardware(midiPB(1, 3)) // equivalent to 0b 0000011 0000001
     })
     it('invokes subscribed pitchbend listeners with a pitchbend of 8192 after being released', () => {
-        var emitted = [];
-        const add = x => () => { emitted.push(x) }
-        touchstrip().onPressed(add('pressed'))
-        touchstrip().onReleased(add('released'))
-        touchstrip().onPitchBend(x => { emitted.push(`pitchbend-${x}`) })
+      var emitted = []
+      const add = x => () => { emitted.push(x) }
+      touchstrip().onPressed(add('pressed'))
+      touchstrip().onReleased(add('released'))
+      touchstrip().onPitchBend(x => { emitted.push(`pitchbend-${x}`) })
 
-        midiFromHardware(midiNote(12, 126)) // pressed
-        midiFromHardware(midiPB(1, 3))
-        midiFromHardware(midiPB(2, 3))
-        midiFromHardware(midiPB(0, 64)) // hardware sends PB 64 (8192) before sending released event
-        midiFromHardware(midiNote(12, 0)) // released
+      midiFromHardware(midiNote(12, 126)) // pressed
+      midiFromHardware(midiPB(1, 3))
+      midiFromHardware(midiPB(2, 3))
+      midiFromHardware(midiPB(0, 64)) // hardware sends PB 64 (8192) before sending released event
+      midiFromHardware(midiNote(12, 0)) // released
 
-        expect(emitted).toEqual(['pressed', 'pitchbend-385', 'pitchbend-386', 'released', 'pitchbend-8192'])
+      expect(emitted).toEqual(['pressed', 'pitchbend-385', 'pitchbend-386', 'released', 'pitchbend-8192'])
     })
   })
 
@@ -216,7 +216,7 @@ describe('Ableton Push wrapper', () => {
         240, 71, 127, 21, 27, 0, 69/* length */, 0/* offset */, ...blankLine, 247,
         240, 71, 127, 21, 26, 0, 69/* length */, 0/* offset */, ...blankLine, 247,
         240, 71, 127, 21, 25, 0, 69/* length */, 0/* offset */, ...blankLine, 247,
-        240, 71, 127, 21, 24, 0, 69/* length */, 0/* offset */, ...blankLine, 247,
+        240, 71, 127, 21, 24, 0, 69/* length */, 0/* offset */, ...blankLine, 247
       ]
     }))
 
