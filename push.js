@@ -24,11 +24,12 @@ const rgbButton = elem => ({
   ledRGB: elem.led_rgb.bind(elem)
 })
 function roygButton (elem) {
-  const colours = {'orange': 'orange', 'green': 'green', 'red': 'red', 'yellow': 'yellow'}
-  const applyColour = (elem, col) => elem[colours[col] || 'orange']()
+  const dimColours = { orange: 7, red: 1, green: 19, yellow: 13 }
+  const dimColour = colour => dimColours[colour] || dimColours['orange']
+
   return {
-    ledOn: (colour = 'orange') => { applyColour(elem, colour); elem.led_on() },
-    ledDim: (colour = 'orange') => { applyColour(elem, colour); elem.led_dim() },
+    ledOn: (colour = 'orange') => { elem.led_on(dimColour(colour) + 3) },
+    ledDim: (colour = 'orange') => { elem.led_dim(dimColour(colour)) },
     ledOff: elem.led_off.bind(elem)
   }
 }

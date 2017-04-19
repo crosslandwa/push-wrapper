@@ -24,16 +24,10 @@ const handled_ccs = Object.keys(ccToPadMap);
 function Pad(send_cc, cc) {
     EventEmitter.call(this);
     this.output = function(value) { send_cc(cc, value) };
-    var colours = [7, 10]; // dim, bright
-    this.colours = [7, 10]; // dim, bright
     return {
-        led_on: function() { send_cc(cc, colours[1]) },
-        led_dim: function() { send_cc(cc, colours[0]) },
+        led_on: function(value) { send_cc(cc, value) },
+        led_dim: function(value) { send_cc(cc, value) },
         led_off: function() { send_cc(cc, 0) },
-        red: function() { colours = [1, 4] },
-        orange: function() { colours = [7, 10] },
-        yellow: function() { colours = [13, 16] },
-        green: function() { colours = [19, 22] },
         on: this.on,
         emit: this.emit,
         removeListener: this.removeListener
