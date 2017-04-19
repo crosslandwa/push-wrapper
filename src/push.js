@@ -21,7 +21,7 @@ function Push(midi_out_port) {
 
     const buttons = new Buttons(midi_out.send_cc);
     this.knobs = new Knobs();
-    this.grid = new Grid(midi_out.send_note, midi_out.send_cc);
+    this.grid = new Grid();
     this.touchstrip = new Touchstrip();
     this.control = new ControlButtons(midi_out.send_cc);
     this.ccMap = [];

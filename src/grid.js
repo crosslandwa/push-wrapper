@@ -16,12 +16,10 @@ const handledCCs = Object.keys(controlButtons).map(Number);
 var handledNotes = [];
 for (var i = 36; i <= 99; i++) handledNotes.push(i);
 
-function GridButton(send_midi_message, note) {
+function GridButton() {
     EventEmitter.call(this);
 
     return {
-        led_on: (value) => { send_midi_message(note, value ? value : 100) },
-        led_off: () => { send_midi_message(note, 0) },
         on: this.on,
         emit: this.emit,
         removeListener: this.removeListener
@@ -29,17 +27,17 @@ function GridButton(send_midi_message, note) {
 }
 util.inherits(GridButton, EventEmitter);
 
-function Grid(send_note, send_cc) {
+function Grid() {
     this.x = {};
     this.select = {};
     for (var x = 1; x <= 8; x++) {
         this.x[x] = { y: {} }
         for (var y = 1; y <= 8; y++) {
-            this.x[x].y[y] = new GridButton(send_note, (x - 1) + ((y - 1) * 8) + 36);
+            this.x[x].y[y] = new GridButton();
         }
     }
 
-    handledCCs.forEach(cc => { this.select[controlButtons[cc]] = new GridButton(send_cc, cc) });
+    handledCCs.forEach(cc => { this.select[controlButtons[cc]] = new GridButton() });
     this.handled_ccs = handledCCs;
     this.handled_notes = handledNotes;
     this.receive_midi_note = receive_midi_note.bind(null, this);
