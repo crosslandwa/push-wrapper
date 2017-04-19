@@ -1,4 +1,4 @@
-var Push = require('../push.js');
+var Push = require('../src/push.js');
 
 describe('Ableton Push wrapper', () => {
     var push, sent_bytes = [];
@@ -67,7 +67,7 @@ describe('Ableton Push wrapper', () => {
             expect(sent_bytes).toEqual([240, 71, 127, 21, 4, 0, 8, 6, 0, 13, 8, 5, 0, 15, 15, 247]);
         });
 
-        it('pads can have LED turned on', () => {
+        it('button row above pads can have LED turned on', () => {
             push.grid.x[2].select.led_on(101);
             expect(sent_bytes).toEqual([176, 103, 101]);
 
@@ -203,30 +203,27 @@ describe('Ableton Push wrapper', () => {
     });
 
     describe('lcd strips', () => {
-        var blank_segment = [32, 32, 32, 32, 32, 32, 32, 32],
-            blank_line = blank_segment.concat([32]).concat(blank_segment)
-                .concat(blank_segment).concat([32]).concat(blank_segment)
-                .concat(blank_segment).concat([32]).concat(blank_segment)
-                .concat(blank_segment).concat([32]).concat(blank_segment);
+        var blank_segment = [32, 32, 32, 32, 32, 32, 32, 32]
+        var blank_line = [...blank_segment, 32, ...blank_segment, ...blank_segment, 32, ...blank_segment, ...blank_segment, 32, ...blank_segment, ...blank_segment, 32, ...blank_segment]
 
         it('displays 8 chars of text on four rows per channel', () => {
             push.lcd.x[1].y[1].update('more-than-8');
             var text_bytes = 'more-tha'.split('').map((letter) => letter.charCodeAt(0)),
                 length = 9,
                 offset = 0;
-            expect(sent_bytes).toEqual([240, 71, 127, 21, 27, 0, length, offset].concat(text_bytes).concat([247]));
+            expect(sent_bytes).toEqual([240, 71, 127, 21, 27, 0, length, offset, ...text_bytes, 247]);
 
             push.lcd.x[4].y[1].update(123);
             var text_bytes = '123     '.split('').map((letter) => letter.charCodeAt(0)),
                 length = 9,
                 offset = 26;
-            expect(sent_bytes).toEqual([240, 71, 127, 21, 27, 0, length, offset].concat(text_bytes).concat([247]));
+            expect(sent_bytes).toEqual([240, 71, 127, 21, 27, 0, length, offset, ...text_bytes, 247]);
 
             push.lcd.x[1].y[4].update('more-than-8');
             var text_bytes = 'more-tha'.split('').map((letter) => letter.charCodeAt(0)),
                 length = 9,
                 offset = 0;
-            expect(sent_bytes).toEqual([240, 71, 127, 21, 24, 0, length, offset].concat(text_bytes).concat([247]));
+            expect(sent_bytes).toEqual([240, 71, 127, 21, 24, 0, length, offset, ...text_bytes, 247]);
         });
 
         it('can be cleared so all LCDs are blank', () => {
@@ -238,20 +235,19 @@ describe('Ableton Push wrapper', () => {
 
             push.lcd.clear();
 
-            expect(sent_bytes).toEqual(
-                [240, 71, 127, 21, 27, 0, 69, 0].concat(blank_line).concat([247])
-                .concat([240, 71, 127, 21, 26, 0, 69, 0].concat(blank_line).concat([247]))
-                .concat([240, 71, 127, 21, 25, 0, 69, 0].concat(blank_line).concat([247]))
-                .concat([240, 71, 127, 21, 24, 0, 69, 0].concat(blank_line).concat([247]))
-            );
+            expect(sent_bytes).toEqual([
+                240, 71, 127, 21, 27, 0, 69, 0, ...blank_line, 247,
+                240, 71, 127, 21, 26, 0, 69, 0, ...blank_line, 247,
+                240, 71, 127, 21, 25, 0, 69, 0, ...blank_line, 247,
+                240, 71, 127, 21, 24, 0, 69, 0, ...blank_line, 247,
+            ]);
         });
 
         it('can have individual elements cleared', () => {
             push.lcd.x[8].y[4].clear();
-            var text_bytes = '        '.split('').map((letter) => letter.charCodeAt(0)),
-                length = 9,
+            var length = 9,
                 offset = 60;
-            expect(sent_bytes).toEqual([240, 71, 127, 21, 24, 0, length, offset].concat(text_bytes).concat([247]));
+            expect(sent_bytes).toEqual([240, 71, 127, 21, 24, 0, length, offset, ...blank_segment, 247]);
         });
     });
 

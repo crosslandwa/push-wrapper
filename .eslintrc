@@ -1,0 +1,20 @@
+{
+    "plugins": [ "jasmine" ],
+    "parserOptions": {
+        "ecmaVersion": 6,
+        "sourceType": "module"
+    },
+    "rules": {
+        "jasmine/no-focused-tests": "error"
+    },
+    "env": {
+        "es6": true,
+        "node": true,
+        "jasmine": true
+    },
+    "globals": {
+      "XMLHttpRequest": true,
+      "FileReader": true
+    },
+    "extends": "standard"
+}
