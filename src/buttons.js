@@ -51,10 +51,6 @@ function Button(send_cc, cc) {
         led_on: function() { send_cc(cc, 4) },
         led_dim: function() { send_cc(cc, 1) },
         led_off: function() { send_cc(cc, 0) },
-        red: () => {},
-        orange: () => {},
-        yellow: () => {},
-        green: () => {},
         on: this.on,
         emit: this.emit,
         removeListener: this.removeListener
