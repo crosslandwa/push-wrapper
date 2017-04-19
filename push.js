@@ -18,10 +18,14 @@ const touchable = elem => ({
 const aftertouchable = elem => ({ onAftertouch: listener(elem, 'aftertouch') })
 const turnable = elem => ({ onTurned: listener(elem, 'turned') })
 const pitchbendable = elem => ({ onPitchBend: listener(elem, 'pitchbend') })
-const rgbButton = elem => ({
-  ledOn: elem.led_on.bind(elem),
-  ledOff: elem.led_off.bind(elem),
-  ledRGB: elem.led_rgb.bind(elem)
+const rgbButton = (sendOnMessage, index, sendRgbMessage) => () => ({
+  ledOn: (value = 100) => sendOnMessage(value),
+  ledOff: () => sendOnMessage(0),
+  ledRGB: (r, g, b) => {
+    const msb = [r, g, b].map(x => (x & 240) >> 4)
+    const lsb = [r, g, b].map(x => x & 15)
+    sendRgbMessage([4, 0, 8, index, 0, msb[0], lsb[0], msb[1], lsb[1], msb[2], lsb[2]])
+  }
 })
 function roygButton (elem) {
   const dimColours = { orange: 7, red: 1, green: 19, yellow: 13 }
@@ -82,11 +86,15 @@ module.exports = {
   webMIDIio: webMidiIO,
   push: () => {
     let midiOutCallBacks = []
-    const push = new Push({ send: bytes => { midiOutCallBacks.forEach(callback => callback(bytes)) } })
+    const midiOut = bytes => { midiOutCallBacks.forEach(callback => callback(bytes)) }
+    const sendCC = cc => value => { midiOut([176, cc, value]) }
+    const sendMidiNote = note => value => { midiOut([144, note, value]) }
+    const sendSysex = data => { midiOut([240, 71, 127, 21, ...data, 247]) }
+    const push = new Push({ send: midiOut })
     const buttons = createButtons(push)
-    const pads = oneToEight.map(x => oneToEight.map(y => compose(push.grid.x[x].y[y], rgbButton, touchable, aftertouchable)))
+    const pads = oneToEight.map(x => oneToEight.map(y => compose(push.grid.x[x].y[y], rgbButton(sendMidiNote(x - 1 + (8 * (y - 1)) + 36), x - 1 + (8 * (y - 1)), sendSysex), touchable, aftertouchable)))
     const lcdSegments = oneToEight.map(x => oneToEight.map(y => lcdSegment(push.lcd.x[x].y[y])))
-    const gridSelectButtons = oneToEight.map(x => compose(push.grid.x[x].select, rgbButton, touchable))
+    const gridSelectButtons = oneToEight.map(x => compose(push.grid.x[x].select, rgbButton(sendCC(102 + x - 1), 64 + x - 1, sendSysex), touchable))
     const timeDivisionButtons = createTimeDivisionButtons(push)
     const channelSelectButtons = oneToEight.map(x => compose(push.channel[x].select, roygButton, touchable))
     const channelKnobs = oneToEight.map(x => compose(push.channel[x].knob, touchable, turnable))

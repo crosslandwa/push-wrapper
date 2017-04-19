@@ -18,16 +18,10 @@ for (var i = 36; i <= 99; i++) handledNotes.push(i);
 
 function GridButton(send_midi_message, send_sysex, note) {
     EventEmitter.call(this);
-    let index = note < 102 ? note - 36 : note - 38;
 
     return {
         led_on: (value) => { send_midi_message(note, value ? value : 100) },
         led_off: () => { send_midi_message(note, 0) },
-        led_rgb: (r, g, b) => {
-            var msb = [r, g, b].map((x) => (x & 240) >> 4),
-                lsb = [r, g, b].map((x) => x & 15);
-            send_sysex([4, 0, 8, index, 0, msb[0], lsb[0], msb[1], lsb[1], msb[2], lsb[2]]);
-        },
         on: this.on,
         emit: this.emit,
         removeListener: this.removeListener
