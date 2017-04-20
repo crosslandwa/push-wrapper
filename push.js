@@ -11,8 +11,23 @@ const zeroToSeven = [0, 1, 2, 3, 4, 5, 6, 7]
 const oneToEight = [1, 2, 3, 4, 5, 6, 7, 8]
 
 const listener = (elem, event) => listener => { elem.on(event, listener); return () => elem.removeListener(event, listener) }
+const listenable = () => {
+  let store = []
+  return {
+    dispatch: () => { store.forEach(listener => listener()) },
+    listen: listener => {
+      if (store.indexOf(listener) === -1) store.push(listener);
+      return () => { store = store.filter(cb => cb !== listener) }
+    }
+  }
+}
+const touchable = () => {
+  const pressed = listenable()
+  const released = listenable()
+  return { pressed, released, api: () => ({ onPressed: pressed.listen, onReleased: released.listen }) }
+}
 
-const touchable = elem => ({
+const touchableElem = elem => ({
   onPressed: listener(elem, 'pressed'),
   onReleased: listener(elem, 'released')
 })
@@ -28,7 +43,7 @@ const rgbButton = (sendOnMessage, index, sendRgbMessage) => () => ({
     sendRgbMessage([4, 0, 8, index, 0, msb[0], lsb[0], msb[1], lsb[1], msb[2], lsb[2]])
   }
 })
-const dimmableLed = send => () => ({
+const dimmableLed = send => ({
   ledOn: () => send(4),
   ledDim: () => send(1),
   ledOff: () => send(0)
@@ -44,11 +59,12 @@ function roygButton (elem) {
   }
 }
 const compose = (elem, ...funcs) => Object.assign({}, ...funcs.map(func => func(elem)))
+const combine = (...parts) => Object.assign({}, ...parts)
 
 function createTimeDivisionButtons (push) {
   const names = ['1/4', '1/4t', '1/8', '1/8t', '1/16', '1/16t', '1/32', '1/32t']
   return names.reduce((acc, name) => {
-    acc[name] = compose(push.button[name], roygButton, touchable)
+    acc[name] = compose(push.button[name], roygButton, touchableElem)
     return acc
   }, {})
 }
@@ -83,21 +99,37 @@ module.exports = {
     const sendSysex = data => { midiOut([240, 71, 127, 21, ...data, 247]) }
     const push = new Push({ send: midiOut })
 
-    const buttons = Object.keys(buttonToCC).reduce((acc, name) => {
-      acc[name] = compose(push.button[name], dimmableLed(sendCC(buttonToCC[name])), touchable)
+    const buttons = Object.keys(buttonToCC).map(name => combine({ id: buttonToCC[name], name}, touchable()))
+
+    const dispatchers = buttons.reduce((acc, fullButton) => {
+      acc[176][fullButton.id] = value => value > 0 ? fullButton.pressed.dispatch() : fullButton.released.dispatch()
+      return acc
+    }, {176: {}})
+
+    const buttonMap = buttons.reduce((acc, button) => {
+      acc[button.name] = combine(dimmableLed(sendCC(button.id)), button.api())
       return acc
     }, {})
-    const pads = oneToEight.map(x => oneToEight.map(y => compose(push.grid.x[x].y[y], rgbButton(sendMidiNote(x - 1 + (8 * (y - 1)) + 36), x - 1 + (8 * (y - 1)), sendSysex), touchable, aftertouchable)))
+
+    const pads = oneToEight.map(x => oneToEight.map(y => compose(push.grid.x[x].y[y], rgbButton(sendMidiNote(x - 1 + (8 * (y - 1)) + 36), x - 1 + (8 * (y - 1)), sendSysex), touchableElem, aftertouchable)))
     const lcdSegments = oneToEight.map(x => oneToEight.map(y => lcdSegment(push.lcd.x[x].y[y])))
-    const gridSelectButtons = oneToEight.map(x => compose(push.grid.x[x].select, rgbButton(sendCC(102 + x - 1), 64 + x - 1, sendSysex), touchable))
+    const gridSelectButtons = oneToEight.map(x => compose(push.grid.x[x].select, rgbButton(sendCC(102 + x - 1), 64 + x - 1, sendSysex), touchableElem))
     const timeDivisionButtons = createTimeDivisionButtons(push)
-    const channelSelectButtons = oneToEight.map(x => compose(push.channel[x].select, roygButton, touchable))
-    const channelKnobs = oneToEight.map(x => compose(push.channel[x].knob, touchable, turnable))
-    const specialKnobs = ['master', 'swing', 'tempo'].map(name => compose(push.knob[name], touchable, turnable))
-    const touchstrip = compose(push.touchstrip, touchable, pitchbendable)
+    const channelSelectButtons = oneToEight.map(x => compose(push.channel[x].select, roygButton, touchableElem))
+    const channelKnobs = oneToEight.map(x => compose(push.channel[x].knob, touchableElem, turnable))
+    const specialKnobs = ['master', 'swing', 'tempo'].map(name => compose(push.knob[name], touchableElem, turnable))
+    const touchstrip = compose(push.touchstrip, touchableElem, pitchbendable)
+
+    const dispatch = ([one, two, ...rest]) => {
+      if (dispatchers[one] && dispatchers[one][two]) {
+        dispatchers[one][two](rest)
+        return true
+      }
+      return false
+    }
 
     return {
-      button: name => buttons[name],
+      button: name => buttonMap[name],
       channelKnobs: () => channelKnobs.slice(),
       channelSelectButtons: () => channelSelectButtons.slice(),
       clearLCD: () => { push.lcd.clear() },
@@ -106,7 +138,7 @@ module.exports = {
       gridSelectButtons: () => gridSelectButtons.slice(),
       lcdSegmentsCol: x => zeroToSeven.map(y => lcdSegments[x][y]),
       lcdSegmentsRow: y => zeroToSeven.map(x => lcdSegments[x][y]),
-      midiFromHardware: bytes => push.receive_midi(bytes),
+      midiFromHardware: bytes => dispatch(bytes) || push.receive_midi(bytes),
       onMidiToHardware: listener => { midiOutCallBacks.push(listener); return () => { midiOutCallBacks = midiOutCallBacks.filter(cb => cb !== listener) } },
       timeDivisionButtons: name => timeDivisionButtons[name],
       masterKnob: () => specialKnobs[0],
