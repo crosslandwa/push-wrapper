@@ -5,7 +5,8 @@ I'd anticipate creating this for 2.0.0, and 2.1.0 would look to
 refactor to remove the additional layer of abstraction
 */
 
-const Push = require('./src/push.js')
+const Push = require('./src/push')
+const {ccToButton, buttonToCC} = require('./src/buttonMap')
 const zeroToSeven = [0, 1, 2, 3, 4, 5, 6, 7]
 const oneToEight = [1, 2, 3, 4, 5, 6, 7, 8]
 
@@ -27,6 +28,11 @@ const rgbButton = (sendOnMessage, index, sendRgbMessage) => () => ({
     sendRgbMessage([4, 0, 8, index, 0, msb[0], lsb[0], msb[1], lsb[1], msb[2], lsb[2]])
   }
 })
+const dimmableLed = send => () => ({
+  ledOn: () => send(4),
+  ledDim: () => send(1),
+  ledOff: () => send(0)
+})
 function roygButton (elem) {
   const dimColours = { orange: 7, red: 1, green: 19, yellow: 13 }
   const dimColour = colour => dimColours[colour] || dimColours['orange']
@@ -38,21 +44,6 @@ function roygButton (elem) {
   }
 }
 const compose = (elem, ...funcs) => Object.assign({}, ...funcs.map(func => func(elem)))
-
-function createButtons (push) {
-  const names = ['tap_tempo', 'metronome', 'master', 'stop', 'left', 'right', 'up', 'down',
-    'select', 'shift', 'note', 'session', 'add_effect', 'add_track', 'octave_down', 'octave_up',
-    'repeat', 'accent', 'scales', 'user', 'mute', 'solo', 'step_in', 'step_out', 'play', 'rec',
-    'new', 'duplicate', 'automation', 'fixed_length', 'device', 'browse', 'track', 'clip',
-    'volume', 'pan_&_send', 'quantize', 'double', 'delete', 'undo']
-  const capitalize = name => name
-    .replace(/_(\w|&)/g, (a, x) => a.replace(`_${x}`, x.toUpperCase()))
-    .replace(/^(\w)/g, (a, x) => a.replace(x, x.toUpperCase()))
-  return names.reduce((acc, name) => {
-    acc[capitalize(name)] = compose(push.button[name], roygButton, touchable)
-    return acc
-  }, {})
-}
 
 function createTimeDivisionButtons (push) {
   const names = ['1/4', '1/4t', '1/8', '1/8t', '1/16', '1/16t', '1/32', '1/32t']
@@ -91,7 +82,20 @@ module.exports = {
     const sendMidiNote = note => value => { midiOut([144, note, value]) }
     const sendSysex = data => { midiOut([240, 71, 127, 21, ...data, 247]) }
     const push = new Push({ send: midiOut })
-    const buttons = createButtons(push)
+
+    const names = ['tap_tempo', 'metronome', 'master', 'stop', 'left', 'right', 'up', 'down',
+      'select', 'shift', 'note', 'session', 'add_effect', 'add_track', 'octave_down', 'octave_up',
+      'repeat', 'accent', 'scales', 'user', 'mute', 'solo', 'step_in', 'step_out', 'play', 'rec',
+      'new', 'duplicate', 'automation', 'fixed_length', 'device', 'browse', 'track', 'clip',
+      'volume', 'pan_&_send', 'quantize', 'double', 'delete', 'undo']
+    const capitalize = name => name
+      .replace(/_(\w|&)/g, (a, x) => a.replace(`_${x}`, x.toUpperCase()))
+      .replace(/^(\w)/g, (a, x) => a.replace(x, x.toUpperCase()))
+
+    const buttons = names.reduce((acc, name) => {
+      acc[capitalize(name)] = compose(push.button[name], dimmableLed(sendCC(buttonToCC[capitalize(name)])), touchable)
+      return acc
+    }, {})
     const pads = oneToEight.map(x => oneToEight.map(y => compose(push.grid.x[x].y[y], rgbButton(sendMidiNote(x - 1 + (8 * (y - 1)) + 36), x - 1 + (8 * (y - 1)), sendSysex), touchable, aftertouchable)))
     const lcdSegments = oneToEight.map(x => oneToEight.map(y => lcdSegment(push.lcd.x[x].y[y])))
     const gridSelectButtons = oneToEight.map(x => compose(push.grid.x[x].select, rgbButton(sendCC(102 + x - 1), 64 + x - 1, sendSysex), touchable))

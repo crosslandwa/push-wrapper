@@ -45,12 +45,9 @@ var ccToButtonMap = {
 }
 const handled_ccs = Object.keys(ccToButtonMap);
 
-function Button(send_cc, cc) {
+function Button() {
     EventEmitter.call(this);
     return {
-        led_on: function() { send_cc(cc, 4) },
-        led_dim: function() { send_cc(cc, 1) },
-        led_off: function() { send_cc(cc, 0) },
         on: this.on,
         emit: this.emit,
         removeListener: this.removeListener
@@ -58,10 +55,10 @@ function Button(send_cc, cc) {
 }
 util.inherits(Button, EventEmitter);
 
-function Buttons(send_cc) {
+function Buttons() {
     const buttons = this;
     Object.keys(ccToButtonMap).map(Number).forEach(cc => {
-      this[ccToButtonMap[cc]] = new Button(send_cc, cc)
+      this[ccToButtonMap[cc]] = new Button()
     });
     this.names = Object.keys(ccToButtonMap).map((key) => { return ccToButtonMap[key] });
     this.receive_midi_cc = function(index, value) {

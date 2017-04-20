@@ -18,7 +18,7 @@ function Push(midi_out_port) {
         send_sysex: function(data) { midi_out_port.send([240, 71, 127, 21].concat(data).concat([247])) }
     }
 
-    const buttons = new Buttons(midi_out.send_cc);
+    const buttons = new Buttons();
     this.knobs = new Knobs();
     this.grid = new Grid();
     this.touchstrip = new Touchstrip();
