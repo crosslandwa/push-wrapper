@@ -2,7 +2,6 @@
 
 const EventEmitter = require('events'),
     util = require('util'),
-    Buttons = require('./buttons'),
     Knobs = require('./knobs'),
     Grid = require('./grid'),
     Touchstrip = require('./touchstrip'),
@@ -18,7 +17,6 @@ function Push(midi_out_port) {
         send_sysex: function(data) { midi_out_port.send([240, 71, 127, 21].concat(data).concat([247])) }
     }
 
-    const buttons = new Buttons();
     this.knobs = new Knobs();
     this.grid = new Grid();
     this.touchstrip = new Touchstrip();
@@ -30,7 +28,7 @@ function Push(midi_out_port) {
         (module) => module.handled_notes.forEach(note => this.noteMap[note] = module)
     );
 
-    [this.knobs, this.control, buttons, this.grid].forEach(
+    [this.knobs, this.control, this.grid].forEach(
         (module) => module.handled_ccs.forEach(cc => this.ccMap[cc] = module)
     );
 
@@ -66,7 +64,6 @@ function Push(midi_out_port) {
             oneToEight.forEach(Y => { api.grid.x[X].y[Y] = this.grid.x[X].y[Y] });
         }
     );
-    buttons.names.forEach((name) => api.button[name] = buttons[name]);
     return api;
 }
 util.inherits(Push, EventEmitter);
