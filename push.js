@@ -83,17 +83,8 @@ module.exports = {
     const sendSysex = data => { midiOut([240, 71, 127, 21, ...data, 247]) }
     const push = new Push({ send: midiOut })
 
-    const names = ['tap_tempo', 'metronome', 'master', 'stop', 'left', 'right', 'up', 'down',
-      'select', 'shift', 'note', 'session', 'add_effect', 'add_track', 'octave_down', 'octave_up',
-      'repeat', 'accent', 'scales', 'user', 'mute', 'solo', 'step_in', 'step_out', 'play', 'rec',
-      'new', 'duplicate', 'automation', 'fixed_length', 'device', 'browse', 'track', 'clip',
-      'volume', 'pan_&_send', 'quantize', 'double', 'delete', 'undo']
-    const capitalize = name => name
-      .replace(/_(\w|&)/g, (a, x) => a.replace(`_${x}`, x.toUpperCase()))
-      .replace(/^(\w)/g, (a, x) => a.replace(x, x.toUpperCase()))
-
-    const buttons = names.reduce((acc, name) => {
-      acc[capitalize(name)] = compose(push.button[name], dimmableLed(sendCC(buttonToCC[capitalize(name)])), touchable)
+    const buttons = Object.keys(buttonToCC).reduce((acc, name) => {
+      acc[name] = compose(push.button[name], dimmableLed(sendCC(buttonToCC[name])), touchable)
       return acc
     }, {})
     const pads = oneToEight.map(x => oneToEight.map(y => compose(push.grid.x[x].y[y], rgbButton(sendMidiNote(x - 1 + (8 * (y - 1)) + 36), x - 1 + (8 * (y - 1)), sendSysex), touchable, aftertouchable)))
