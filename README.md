@@ -21,7 +21,7 @@ push-wrapper presents each element of the Push hardware such that a you can:
 - subscribe listeners that are called in response to user interaction with the hardware (e.g. `push.swingKnob().onTurned(myCallback)`)
 - provide feedback on the hardware by controlling button/pad LEDs and the LCD screen (e.g. `push.button['TapTempo'].ledOn()`)
 
-[Read the full API here](https://github.com/crosslandwa/push-wrapper/API.md)
+[Read the full API here](https://github.com/crosslandwa/push-wrapper/blob/master/API.md)
 
 ## Quick Start
 Can't wait to get going? The following snippet will instantiate a push instance bound to web MIDI inputs/outputs if:
