@@ -14,7 +14,7 @@ const listener = (elem, event) => listener => { elem.on(event, listener); return
 const listenable = () => {
   let store = []
   return {
-    dispatch: () => { store.forEach(listener => listener()) },
+    dispatch: value => { store.forEach(listener => listener(value)) },
     listen: listener => {
       if (store.indexOf(listener) === -1) store.push(listener);
       return () => { store = store.filter(cb => cb !== listener) }
@@ -26,15 +26,18 @@ const touchable = () => {
   const released = listenable()
   return { pressed, released, api: () => ({ onPressed: pressed.listen, onReleased: released.listen }) }
 }
-
+const aftertouchable = () => {
+  const aftertouch = listenable()
+  return { aftertouch, api: () => ({ onAftertouch: aftertouch.listen }) }
+}
 const touchableElem = elem => ({
   onPressed: listener(elem, 'pressed'),
   onReleased: listener(elem, 'released')
 })
-const aftertouchable = elem => ({ onAftertouch: listener(elem, 'aftertouch') })
+
 const turnable = elem => ({ onTurned: listener(elem, 'turned') })
 const pitchbendable = elem => ({ onPitchBend: listener(elem, 'pitchbend') })
-const rgbButton = (sendOnMessage, index, sendRgbMessage) => () => ({
+const rgbButton = (sendOnMessage, index, sendRgbMessage) => ({
   ledOn: (value = 100) => sendOnMessage(value),
   ledOff: () => sendOnMessage(0),
   ledRGB: (r, g, b) => {
@@ -92,8 +95,10 @@ module.exports = {
 
     const buttons = Object.keys(buttonToCC).map(name => combine({ id: buttonToCC[name], name}, touchable()))
     const channelSelectButtons = zeroToSeven.map(x => combine({ id: 20 + x }, touchable()))
-    const gridSelectButtons = zeroToSeven.map(x => combine({ id: 102 + x}, touchable()))
+    const gridSelectButtons = zeroToSeven.map(x => combine({ id: 102 + x }, touchable()))
     const timeDivisionButtons = Object.keys(timeDivisionButtonToCC).map(name => combine({ id: timeDivisionButtonToCC[name], name}, touchable()))
+
+    const pads = zeroToSeven.map(x => zeroToSeven.map(y => ({ id: x + 8 * y + 36, touchable: touchable(), aftertouchable: aftertouchable() })))
 
     const api = {
       buttons: buttons.reduce((acc, button) => {
@@ -101,14 +106,23 @@ module.exports = {
         return acc
       }, {}),
       channelSelectButtons: channelSelectButtons.map(button => combine(roygLed(sendCC(button.id)), button.api())),
-      gridSelectButtons: gridSelectButtons.map(button => combine(rgbButton(sendCC(button.id), button.id - 38, sendSysex)(), button.api())),
+      gridSelectButtons: gridSelectButtons.map(button => combine(rgbButton(sendCC(button.id), button.id - 38, sendSysex), button.api())),
       timeDivisionButtons: timeDivisionButtons.reduce((acc, button) => {
         acc[button.name] = combine(roygLed(sendCC(button.id)), button.api())
         return acc
       }, {}),
+      pads: pads.map(col => col.map(pad => combine(rgbButton(sendMidiNote(pad.id), pad.id - 36, sendSysex), pad.touchable.api(), pad.aftertouchable.api())))
     }
 
     const dispatchers = {
+      144: [].concat.apply([], pads).reduce((acc, pad) => {
+        acc[pad.id] = velocity => velocity > 0 ? pad.touchable.pressed.dispatch(velocity) : pad.touchable.released.dispatch()
+        return acc
+      }, {}),
+      160: [].concat.apply([], pads).reduce((acc, pad) => {
+        acc[pad.id] = pad.aftertouchable.aftertouch.dispatch
+        return acc
+      }, {}),
       176: [...buttons, ...channelSelectButtons, ...gridSelectButtons, ...timeDivisionButtons]
         .reduce((acc, button) => {
           acc[button.id] = value => value > 0 ? button.pressed.dispatch() : button.released.dispatch()
@@ -116,7 +130,7 @@ module.exports = {
         }, {})
     }
 
-    const pads = oneToEight.map(x => oneToEight.map(y => compose(push.grid.x[x].y[y], rgbButton(sendMidiNote(x - 1 + (8 * (y - 1)) + 36), x - 1 + (8 * (y - 1)), sendSysex), touchableElem, aftertouchable)))
+
     const lcdSegments = oneToEight.map(x => oneToEight.map(y => lcdSegment(push.lcd.x[x].y[y])))
 
     const channelKnobs = oneToEight.map(x => compose(push.channel[x].knob, touchableElem, turnable))
@@ -125,7 +139,7 @@ module.exports = {
 
     const dispatch = ([one, two, ...rest]) => {
       if (dispatchers[one] && dispatchers[one][two]) {
-        dispatchers[one][two](rest)
+        dispatchers[one][two](...rest)
         return true
       }
       return false
@@ -136,8 +150,8 @@ module.exports = {
       channelKnobs: () => channelKnobs.slice(),
       channelSelectButtons: () => api.channelSelectButtons.slice(),
       clearLCD: () => { push.lcd.clear() },
-      gridRow: y => zeroToSeven.map(x => pads[x][y]),
-      gridCol: x => zeroToSeven.map(y => pads[x][y]),
+      gridRow: y => zeroToSeven.map(x => api.pads[x][y]),
+      gridCol: x => api.pads[x].slice(),
       gridSelectButtons: () => api.gridSelectButtons.slice(),
       lcdSegmentsCol: x => zeroToSeven.map(y => lcdSegments[x][y]),
       lcdSegmentsRow: y => zeroToSeven.map(x => lcdSegments[x][y]),
