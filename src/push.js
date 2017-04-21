@@ -5,7 +5,6 @@ const EventEmitter = require('events'),
     Knobs = require('./knobs'),
     Grid = require('./grid'),
     Touchstrip = require('./touchstrip'),
-    ControlButtons = require('./control-buttons'),
     LCDs = require('./lcds'),
     oneToEight = [1, 2, 3, 4, 5, 6, 7, 8];
 
@@ -19,7 +18,6 @@ function Push(midi_out_port) {
     this.knobs = new Knobs();
     this.grid = new Grid();
     this.touchstrip = new Touchstrip();
-    this.control = new ControlButtons();
     this.ccMap = [];
     this.noteMap = [];
 
@@ -27,7 +25,7 @@ function Push(midi_out_port) {
         (module) => module.handled_notes.forEach(note => this.noteMap[note] = module)
     );
 
-    [this.knobs, this.control, this.grid].forEach(
+    [this.knobs, this.grid].forEach(
         (module) => module.handled_ccs.forEach(cc => this.ccMap[cc] = module)
     );
 
@@ -41,21 +39,11 @@ function Push(midi_out_port) {
         grid: { x: {}},
         touchstrip: this.touchstrip,
         lcd: new LCDs(midi_out.send_sysex),
-        button: {
-            '1/32t': this.control['1/32t'],
-            '1/32': this.control['1/32'],
-            '1/16t': this.control['1/16t'],
-            '1/16': this.control['1/16'],
-            '1/8t': this.control['1/8t'],
-            '1/8': this.control['1/8'],
-            '1/4t': this.control['1/4t'],
-            '1/4': this.control['1/4'],
-        },
         channel: {},
         receive_midi: receive_midi.bind(null, this),
     }
     oneToEight.forEach(
-        (number) => api.channel[number] = { knob: this.knobs[number], select: this.control[number] }
+        (number) => api.channel[number] = { knob: this.knobs[number] }
     );
     oneToEight.forEach(
         (X) => {
