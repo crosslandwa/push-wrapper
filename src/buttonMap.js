@@ -55,7 +55,6 @@ const timeDivisionButtonToCC = {
 }
 
 module.exports = {
-  ccToButton: ccToButtonMap,
   buttonToCC: Object.keys(ccToButtonMap).map(Number)
     .reduce((acc, cc) => { acc[ccToButtonMap[cc]] = cc; return acc }, {}),
   timeDivisionButtonToCC
