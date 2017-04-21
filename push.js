@@ -16,7 +16,7 @@ const listenable = () => {
   return {
     dispatch: value => { store.forEach(listener => listener(value)) },
     listen: listener => {
-      if (store.indexOf(listener) === -1) store.push(listener);
+      if (store.indexOf(listener) === -1) store.push(listener)
       return () => { store = store.filter(cb => cb !== listener) }
     }
   }
@@ -93,10 +93,10 @@ module.exports = {
     const sendSysex = data => { midiOut([240, 71, 127, 21, ...data, 247]) }
     const push = new Push({ send: midiOut })
 
-    const buttons = Object.keys(buttonToCC).map(name => combine({ id: buttonToCC[name], name}, touchable()))
+    const buttons = Object.keys(buttonToCC).map(name => combine({ id: buttonToCC[name], name }, touchable()))
     const channelSelectButtons = zeroToSeven.map(x => combine({ id: 20 + x }, touchable()))
     const gridSelectButtons = zeroToSeven.map(x => combine({ id: 102 + x }, touchable()))
-    const timeDivisionButtons = Object.keys(timeDivisionButtonToCC).map(name => combine({ id: timeDivisionButtonToCC[name], name}, touchable()))
+    const timeDivisionButtons = Object.keys(timeDivisionButtonToCC).map(name => combine({ id: timeDivisionButtonToCC[name], name }, touchable()))
 
     const pads = zeroToSeven.map(x => zeroToSeven.map(y => ({ id: x + 8 * y + 36, touchable: touchable(), aftertouchable: aftertouchable() })))
 
@@ -129,7 +129,6 @@ module.exports = {
           return acc
         }, {})
     }
-
 
     const lcdSegments = oneToEight.map(x => oneToEight.map(y => lcdSegment(push.lcd.x[x].y[y])))
 
