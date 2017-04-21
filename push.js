@@ -51,7 +51,7 @@ const dimmableLed = send => ({
 const dimColours = { orange: 7, red: 1, green: 19, yellow: 13 }
 const dimColour = colour => dimColours[colour] || dimColours['orange']
 
-const roygLed = send => () => ({
+const roygLed = send => ({
   ledOn: (colour = 'orange') => send(dimColour(colour) + 3),
   ledDim: (colour = 'orange') => send(dimColour(colour)),
   ledOff: () => send(0)
@@ -92,16 +92,21 @@ module.exports = {
 
     const buttons = Object.keys(buttonToCC).map(name => combine({ id: buttonToCC[name], name}, touchable()))
     const channelSelectButtons = zeroToSeven.map(x => combine({ id: 20 + x }, touchable()))
+    const timeDivisionButtons = Object.keys(timeDivisionButtonToCC).map(name => combine({ id: timeDivisionButtonToCC[name], name}, touchable()))
 
     const api = {
-      channelSelectButtons: channelSelectButtons.map(button => combine(roygLed(sendCC(button.id))(), button.api())),
       buttons: buttons.reduce((acc, button) => {
         acc[button.name] = combine(dimmableLed(sendCC(button.id)), button.api())
         return acc
-      }, {})
+      }, {}),
+      channelSelectButtons: channelSelectButtons.map(button => combine(roygLed(sendCC(button.id)), button.api())),
+      timeDivisionButtons: timeDivisionButtons.reduce((acc, button) => {
+        acc[button.name] = combine(roygLed(sendCC(button.id)), button.api())
+        return acc
+      }, {}),
     }
 
-    const ccDispatchers = [...channelSelectButtons, ...buttons]
+    const ccDispatchers = [...channelSelectButtons, ...buttons, ...timeDivisionButtons]
       .reduce((acc, button) => {
         acc[button.id] = value => value > 0 ? button.pressed.dispatch() : button.released.dispatch()
         return acc
@@ -114,10 +119,6 @@ module.exports = {
     const pads = oneToEight.map(x => oneToEight.map(y => compose(push.grid.x[x].y[y], rgbButton(sendMidiNote(x - 1 + (8 * (y - 1)) + 36), x - 1 + (8 * (y - 1)), sendSysex), touchableElem, aftertouchable)))
     const lcdSegments = oneToEight.map(x => oneToEight.map(y => lcdSegment(push.lcd.x[x].y[y])))
     const gridSelectButtons = oneToEight.map(x => compose(push.grid.x[x].select, rgbButton(sendCC(102 + x - 1), 64 + x - 1, sendSysex), touchableElem))
-    const timeDivisionButtons = Object.keys(timeDivisionButtonToCC).reduce((acc, name) => {
-      acc[name] = compose(push.button[name], roygLed(sendCC(timeDivisionButtonToCC[name])), touchableElem)
-      return acc
-    }, {})
     const channelKnobs = oneToEight.map(x => compose(push.channel[x].knob, touchableElem, turnable))
     const specialKnobs = ['master', 'swing', 'tempo'].map(name => compose(push.knob[name], touchableElem, turnable))
     const touchstrip = compose(push.touchstrip, touchableElem, pitchbendable)
@@ -142,7 +143,7 @@ module.exports = {
       lcdSegmentsRow: y => zeroToSeven.map(x => lcdSegments[x][y]),
       midiFromHardware: bytes => dispatch(bytes) || push.receive_midi(bytes),
       onMidiToHardware: listener => { midiOutCallBacks.push(listener); return () => { midiOutCallBacks = midiOutCallBacks.filter(cb => cb !== listener) } },
-      timeDivisionButtons: name => timeDivisionButtons[name],
+      timeDivisionButtons: name => api.timeDivisionButtons[name],
       masterKnob: () => specialKnobs[0],
       swingKnob: () => specialKnobs[1],
       tempoKnob: () => specialKnobs[2],
