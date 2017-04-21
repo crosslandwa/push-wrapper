@@ -3,7 +3,6 @@
 const EventEmitter = require('events'),
     util = require('util'),
     Knobs = require('./knobs'),
-    Grid = require('./grid'),
     Touchstrip = require('./touchstrip'),
     LCDs = require('./lcds'),
     oneToEight = [1, 2, 3, 4, 5, 6, 7, 8];
@@ -16,16 +15,15 @@ function Push(midi_out_port) {
     }
 
     this.knobs = new Knobs();
-    this.grid = new Grid();
     this.touchstrip = new Touchstrip();
     this.ccMap = [];
     this.noteMap = [];
 
-    [this.knobs, this.touchstrip, this.grid].forEach(
+    [this.knobs, this.touchstrip].forEach(
         (module) => module.handled_notes.forEach(note => this.noteMap[note] = module)
     );
 
-    [this.knobs, this.grid].forEach(
+    [this.knobs].forEach(
         (module) => module.handled_ccs.forEach(cc => this.ccMap[cc] = module)
     );
 
@@ -36,7 +34,6 @@ function Push(midi_out_port) {
             swing: this.knobs.swing,
             master: this.knobs.master,
         },
-        grid: { x: {}},
         touchstrip: this.touchstrip,
         lcd: new LCDs(midi_out.send_sysex),
         channel: {},
@@ -44,12 +41,6 @@ function Push(midi_out_port) {
     }
     oneToEight.forEach(
         (number) => api.channel[number] = { knob: this.knobs[number] }
-    );
-    oneToEight.forEach(
-        (X) => {
-            api.grid.x[X] = { y: {}, select: this.grid.select[X], };
-            oneToEight.forEach(Y => { api.grid.x[X].y[Y] = this.grid.x[X].y[Y] });
-        }
     );
     return api;
 }
@@ -73,10 +64,6 @@ function handle_midi_note(push, note, velocity) {
 
 function handle_midi_pitch_bend(push, lsb_byte, msb_byte) {
     push.touchstrip.receive_midi_pitch_bend((msb_byte << 7) + lsb_byte);
-}
-
-function handle_midi_poly_pressure(push, note, pressure) {
-    push.grid.receive_midi_poly_pressure(note, pressure);
 }
 
 var midi_messages = {
@@ -105,9 +92,6 @@ function receive_midi(push, bytes) {
             break;
         case (midi_messages['pitch-bend']):
             handle_midi_pitch_bend(push, bytes[1], bytes[2]);
-            break;
-        case(midi_messages['poly-pressure']):
-            handle_midi_poly_pressure(push, bytes[1], bytes[2]);
             break;
     }
 }
