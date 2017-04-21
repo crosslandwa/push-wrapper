@@ -43,8 +43,20 @@ const ccToButtonMap = {
     49: 'Shift'
 }
 
+const timeDivisionButtonToCC = {
+  '1/4': 36,
+  '1/4t': 37,
+  '1/8': 38,
+  '1/8t': 39,
+  '1/16': 40,
+  '1/16t': 42,
+  '1/32': 43,
+  '1/32t': 44
+}
+
 module.exports = {
   ccToButton: ccToButtonMap,
   buttonToCC: Object.keys(ccToButtonMap).map(Number)
-    .reduce((acc, cc) => { acc[ccToButtonMap[cc]] = cc; return acc }, {})
+    .reduce((acc, cc) => { acc[ccToButtonMap[cc]] = cc; return acc }, {}),
+  timeDivisionButtonToCC
 }

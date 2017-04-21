@@ -21,13 +21,9 @@ var ccToPadMap = {
 }
 const handled_ccs = Object.keys(ccToPadMap);
 
-function Pad(send_cc, cc) {
+function Pad() {
     EventEmitter.call(this);
-    this.output = function(value) { send_cc(cc, value) };
     return {
-        led_on: function(value) { send_cc(cc, value) },
-        led_dim: function(value) { send_cc(cc, value) },
-        led_off: function() { send_cc(cc, 0) },
         on: this.on,
         emit: this.emit,
         removeListener: this.removeListener
@@ -35,10 +31,10 @@ function Pad(send_cc, cc) {
 }
 util.inherits(Pad, EventEmitter);
 
-function ControlButtons(send_cc) {
+function ControlButtons() {
     const control_buttons = this;
     Object.keys(ccToPadMap).map(Number).forEach(cc => {
-      this[ccToPadMap[cc]] = new Pad(send_cc, cc)
+      this[ccToPadMap[cc]] = new Pad()
     })
     this.handled_ccs = handled_ccs;
     this.receive_midi_cc = function(cc, value) {
