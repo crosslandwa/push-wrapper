@@ -21,15 +21,9 @@ const listenable = () => {
     }
   }
 }
-const touchable = () => {
-  const pressed = listenable()
-  const released = listenable()
-  return { pressed, released, api: () => ({ onPressed: pressed.listen, onReleased: released.listen }) }
-}
-const aftertouchable = () => {
-  const aftertouch = listenable()
-  return { aftertouch, api: () => ({ onAftertouch: aftertouch.listen }) }
-}
+const aftertouchable = ({ aftertouch: { listen: onAftertouch } }) => ({ onAftertouch })
+const pressable = ({ press: { listen: onPressed } }) => ({ onPressed })
+const releaseable = ({ release: { listen: onReleased } }) => ({ onReleased })
 const touchableElem = elem => ({
   onPressed: listener(elem, 'pressed'),
   onReleased: listener(elem, 'released')
@@ -93,39 +87,39 @@ module.exports = {
     const sendSysex = data => { midiOut([240, 71, 127, 21, ...data, 247]) }
     const push = new Push({ send: midiOut })
 
-    const buttons = Object.keys(buttonToCC).map(name => combine({ id: buttonToCC[name], name }, touchable()))
-    const channelSelectButtons = zeroToSeven.map(x => combine({ id: 20 + x }, touchable()))
-    const gridSelectButtons = zeroToSeven.map(x => combine({ id: 102 + x }, touchable()))
-    const timeDivisionButtons = Object.keys(timeDivisionButtonToCC).map(name => combine({ id: timeDivisionButtonToCC[name], name }, touchable()))
+    const buttons = Object.keys(buttonToCC).map(name => ({ id: buttonToCC[name], name, press: listenable(), release: listenable() }))
+    const channelSelectButtons = zeroToSeven.map(x => ({ id: 20 + x, press: listenable(), release: listenable() }))
+    const gridSelectButtons = zeroToSeven.map(x => ({ id: 102 + x, press: listenable(), release: listenable() }))
+    const timeDivisionButtons = Object.keys(timeDivisionButtonToCC).map(name => ({ id: timeDivisionButtonToCC[name], name, press: listenable(), release: listenable() }))
 
-    const pads = zeroToSeven.map(x => zeroToSeven.map(y => ({ id: x + 8 * y + 36, touchable: touchable(), aftertouchable: aftertouchable() })))
+    const pads = zeroToSeven.map(x => zeroToSeven.map(y => ({ id: x + 8 * y + 36, press: listenable(), release: listenable(), aftertouch: listenable() })))
 
     const api = {
       buttons: buttons.reduce((acc, button) => {
-        acc[button.name] = combine(dimmableLed(sendCC(button.id)), button.api())
+        acc[button.name] = combine(dimmableLed(sendCC(button.id)), pressable(button), releaseable(button))
         return acc
       }, {}),
-      channelSelectButtons: channelSelectButtons.map(button => combine(roygLed(sendCC(button.id)), button.api())),
-      gridSelectButtons: gridSelectButtons.map(button => combine(rgbButton(sendCC(button.id), button.id - 38, sendSysex), button.api())),
+      channelSelectButtons: channelSelectButtons.map(button => combine(roygLed(sendCC(button.id)), pressable(button), releaseable(button))),
+      gridSelectButtons: gridSelectButtons.map(button => combine(rgbButton(sendCC(button.id), button.id - 38, sendSysex), pressable(button), releaseable(button))),
       timeDivisionButtons: timeDivisionButtons.reduce((acc, button) => {
-        acc[button.name] = combine(roygLed(sendCC(button.id)), button.api())
+        acc[button.name] = combine(roygLed(sendCC(button.id)), pressable(button), releaseable(button))
         return acc
       }, {}),
-      pads: pads.map(col => col.map(pad => combine(rgbButton(sendMidiNote(pad.id), pad.id - 36, sendSysex), pad.touchable.api(), pad.aftertouchable.api())))
+      pads: pads.map(col => col.map(pad => combine(rgbButton(sendMidiNote(pad.id), pad.id - 36, sendSysex), aftertouchable(pad), pressable(pad), releaseable(pad))))
     }
 
     const dispatchers = {
       144: [].concat.apply([], pads).reduce((acc, pad) => {
-        acc[pad.id] = velocity => velocity > 0 ? pad.touchable.pressed.dispatch(velocity) : pad.touchable.released.dispatch()
+        acc[pad.id] = velocity => velocity > 0 ? pad.press.dispatch(velocity) : pad.release.dispatch()
         return acc
       }, {}),
       160: [].concat.apply([], pads).reduce((acc, pad) => {
-        acc[pad.id] = pad.aftertouchable.aftertouch.dispatch
+        acc[pad.id] = pad.aftertouch.dispatch
         return acc
       }, {}),
       176: [...buttons, ...channelSelectButtons, ...gridSelectButtons, ...timeDivisionButtons]
         .reduce((acc, button) => {
-          acc[button.id] = value => value > 0 ? button.pressed.dispatch() : button.released.dispatch()
+          acc[button.id] = value => value > 0 ? button.press.dispatch() : button.release.dispatch()
           return acc
         }, {})
     }
