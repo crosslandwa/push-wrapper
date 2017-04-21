@@ -91,16 +91,25 @@ module.exports = {
     const push = new Push({ send: midiOut })
 
     const buttons = Object.keys(buttonToCC).map(name => combine({ id: buttonToCC[name], name}, touchable()))
+    const channelSelectButtons = zeroToSeven.map(x => combine({ id: 20 + x }, touchable()))
 
-    const dispatchers = buttons.reduce((acc, fullButton) => {
-      acc[176][fullButton.id] = value => value > 0 ? fullButton.pressed.dispatch() : fullButton.released.dispatch()
-      return acc
-    }, {176: {}})
+    const api = {
+      channelSelectButtons: channelSelectButtons.map(button => combine(roygLed(sendCC(button.id))(), button.api())),
+      buttons: buttons.reduce((acc, button) => {
+        acc[button.name] = combine(dimmableLed(sendCC(button.id)), button.api())
+        return acc
+      }, {})
+    }
 
-    const buttonMap = buttons.reduce((acc, button) => {
-      acc[button.name] = combine(dimmableLed(sendCC(button.id)), button.api())
-      return acc
-    }, {})
+    const ccDispatchers = [...channelSelectButtons, ...buttons]
+      .reduce((acc, button) => {
+        acc[button.id] = value => value > 0 ? button.pressed.dispatch() : button.released.dispatch()
+        return acc
+      }, {})
+
+    const dispatchers = {
+      176: ccDispatchers
+    }
 
     const pads = oneToEight.map(x => oneToEight.map(y => compose(push.grid.x[x].y[y], rgbButton(sendMidiNote(x - 1 + (8 * (y - 1)) + 36), x - 1 + (8 * (y - 1)), sendSysex), touchableElem, aftertouchable)))
     const lcdSegments = oneToEight.map(x => oneToEight.map(y => lcdSegment(push.lcd.x[x].y[y])))
@@ -109,7 +118,6 @@ module.exports = {
       acc[name] = compose(push.button[name], roygLed(sendCC(timeDivisionButtonToCC[name])), touchableElem)
       return acc
     }, {})
-    const channelSelectButtons = oneToEight.map(x => compose(push.channel[x].select, roygLed(sendCC(20 + x - 1)), touchableElem))
     const channelKnobs = oneToEight.map(x => compose(push.channel[x].knob, touchableElem, turnable))
     const specialKnobs = ['master', 'swing', 'tempo'].map(name => compose(push.knob[name], touchableElem, turnable))
     const touchstrip = compose(push.touchstrip, touchableElem, pitchbendable)
@@ -123,9 +131,9 @@ module.exports = {
     }
 
     return {
-      button: name => buttonMap[name],
+      button: name => api.buttons[name],
       channelKnobs: () => channelKnobs.slice(),
-      channelSelectButtons: () => channelSelectButtons.slice(),
+      channelSelectButtons: () => api.channelSelectButtons.slice(),
       clearLCD: () => { push.lcd.clear() },
       gridRow: y => zeroToSeven.map(x => pads[x][y]),
       gridCol: x => zeroToSeven.map(y => pads[x][y]),
