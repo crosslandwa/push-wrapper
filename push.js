@@ -1,16 +1,10 @@
 'use strict'
-/*
-An adaptor to translate the current (V1) push API to the V2 API
-I'd anticipate creating this for 2.0.0, and 2.1.0 would look to
-refactor to remove the additional layer of abstraction
-*/
 
 const Push = require('./src/push')
-const {timeDivisionButtonToCC, buttonToCC} = require('./src/buttonMap')
+const { timeDivisionButtonToCC, buttonToCC } = require('./src/buttonMap')
 const zeroToSeven = [0, 1, 2, 3, 4, 5, 6, 7]
 const oneToEight = [1, 2, 3, 4, 5, 6, 7, 8]
 
-const listener = (elem, event) => listener => { elem.on(event, listener); return () => elem.removeListener(event, listener) }
 const listenable = () => {
   let store = []
   return {
@@ -26,10 +20,6 @@ const pitchbendable = ({ bend: { listen: onPitchBend } }) => ({ onPitchBend })
 const pressable = ({ press: { listen: onPressed } }) => ({ onPressed })
 const releaseable = ({ release: { listen: onReleased } }) => ({ onReleased })
 const turnable = ({ turn: { listen: onTurned } }) => ({ onTurned })
-const touchableElem = elem => ({
-  onPressed: listener(elem, 'pressed'),
-  onReleased: listener(elem, 'released')
-})
 
 const rgbButton = (sendOnMessage, index, sendRgbMessage) => ({
   ledOn: (value = 100) => sendOnMessage(value),
@@ -54,7 +44,6 @@ const roygLed = send => ({
   ledOff: () => send(0)
 })
 
-const compose = (elem, ...funcs) => Object.assign({}, ...funcs.map(func => func(elem)))
 const combine = (...parts) => Object.assign({}, ...parts)
 
 const lcdSegment = elem => ({
@@ -96,8 +85,8 @@ module.exports = {
 
     const channelKnobs = zeroToSeven.map(x => ({ cc: 71 + x, note: x, press: listenable(), release: listenable(), turn: listenable() }))
     const specialKnobs = [
-      { cc: 79, note: 8, press: listenable(), release: listenable(), turn: listenable() }, //master
-      { cc: 15, note: 9, press: listenable(), release: listenable(), turn: listenable() }, //swing
+      { cc: 79, note: 8, press: listenable(), release: listenable(), turn: listenable() }, // master
+      { cc: 15, note: 9, press: listenable(), release: listenable(), turn: listenable() }, // swing
       { cc: 14, note: 10, press: listenable(), release: listenable(), turn: listenable() } // tempo
     ]
 
