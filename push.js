@@ -2,6 +2,7 @@
 
 const { timeDivisionButtonToCC, buttonToCC } = require('./src/buttonMap')
 const zeroToSeven = [0, 1, 2, 3, 4, 5, 6, 7]
+const lcdOffsets = [0, 9, 17, 26, 34, 43, 51, 60]
 const combine = (...parts) => Object.assign({}, ...parts)
 
 const listenable = () => {
@@ -145,15 +146,20 @@ module.exports = {
     }
 
     const dispatchIncomingMidi = ([one, two, ...rest]) => {
-      if (one === 224) { // pitchbend
-        const fourteenBitValue = (rest[0] << 7) + two
-        if (fourteenBitValue !== 8192) touchstrip.bend.dispatch(fourteenBitValue)
-      } else if (dispatchers[one] && dispatchers[one][two]) {
-        dispatchers[one][two](...rest)
+      const messageType = one & 0xf0
+      switch (messageType) {
+        case (176): // CC
+        case (144): // NOTE-ON
+        case (128): // NOTE-OFF
+        case (160): // POLY PRESSURE (AFTERTOUCH)
+          dispatchers[messageType][two] && dispatchers[messageType][two](...rest)
+          break
+        case (224): // PITCHBEND
+          const fourteenBitValue = (rest[0] << 7) + two
+          if (fourteenBitValue !== 8192) touchstrip.bend.dispatch(fourteenBitValue)
+          break
       }
     }
-
-    const lcdOffsets = [0, 9, 17, 26, 34, 43, 51, 60]
 
     return {
       button: name => api.buttons[name],
