@@ -20,7 +20,7 @@
     "jasmine": "~2.3.1"
   },
   "scripts": {
-    "lint": "eslint push.js spec/pushSpec.js src/buttonMap.js",
+    "lint": "eslint *.js **/*.js",
     "test": "jasmine",
     "start": "node app.js"
   },
