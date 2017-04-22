@@ -24,12 +24,12 @@ const listenable = () => {
 const aftertouchable = ({ aftertouch: { listen: onAftertouch } }) => ({ onAftertouch })
 const pressable = ({ press: { listen: onPressed } }) => ({ onPressed })
 const releaseable = ({ release: { listen: onReleased } }) => ({ onReleased })
+const turnable = ({ turn: { listen: onTurned } }) => ({ onTurned })
 const touchableElem = elem => ({
   onPressed: listener(elem, 'pressed'),
   onReleased: listener(elem, 'released')
 })
 
-const turnable = elem => ({ onTurned: listener(elem, 'turned') })
 const pitchbendable = elem => ({ onPitchBend: listener(elem, 'pitchbend') })
 const rgbButton = (sendOnMessage, index, sendRgbMessage) => ({
   ledOn: (value = 100) => sendOnMessage(value),
@@ -94,40 +94,61 @@ module.exports = {
 
     const pads = zeroToSeven.map(x => zeroToSeven.map(y => ({ id: x + 8 * y + 36, press: listenable(), release: listenable(), aftertouch: listenable() })))
 
+    const channelKnobs = zeroToSeven.map(x => ({ cc: 71 + x, note: x, press: listenable(), release: listenable(), turn: listenable() }))
+    const specialKnobs = [
+      { cc: 79, note: 8, press: listenable(), release: listenable(), turn: listenable() }, //master
+      { cc: 15, note: 9, press: listenable(), release: listenable(), turn: listenable() }, //swing
+      { cc: 14, note: 10, press: listenable(), release: listenable(), turn: listenable() } // tempo
+    ]
+
     const api = {
       buttons: buttons.reduce((acc, button) => {
         acc[button.name] = combine(dimmableLed(sendCC(button.id)), pressable(button), releaseable(button))
         return acc
       }, {}),
+      channelKnobs: channelKnobs.map(knob => combine(pressable(knob), releaseable(knob), turnable(knob))),
       channelSelectButtons: channelSelectButtons.map(button => combine(roygLed(sendCC(button.id)), pressable(button), releaseable(button))),
       gridSelectButtons: gridSelectButtons.map(button => combine(rgbButton(sendCC(button.id), button.id - 38, sendSysex), pressable(button), releaseable(button))),
+      pads: pads.map(col => col.map(pad => combine(rgbButton(sendMidiNote(pad.id), pad.id - 36, sendSysex), aftertouchable(pad), pressable(pad), releaseable(pad)))),
+      specialKnobs: specialKnobs.map(knob => combine(pressable(knob), releaseable(knob), turnable(knob))),
       timeDivisionButtons: timeDivisionButtons.reduce((acc, button) => {
         acc[button.name] = combine(roygLed(sendCC(button.id)), pressable(button), releaseable(button))
         return acc
       }, {}),
-      pads: pads.map(col => col.map(pad => combine(rgbButton(sendMidiNote(pad.id), pad.id - 36, sendSysex), aftertouchable(pad), pressable(pad), releaseable(pad))))
     }
 
     const dispatchers = {
-      144: [].concat.apply([], pads).reduce((acc, pad) => {
-        acc[pad.id] = velocity => velocity > 0 ? pad.press.dispatch(velocity) : pad.release.dispatch()
-        return acc
-      }, {}),
+      // MIDI NOTES
+      144: combine(
+        [].concat.apply([], pads).reduce((acc, pad) => {
+          acc[pad.id] = velocity => velocity > 0 ? pad.press.dispatch(velocity) : pad.release.dispatch()
+          return acc
+        }, {}),
+        [...specialKnobs, ...channelKnobs].reduce((acc, knob) => {
+          acc[knob.note] = value => value > 0 ? knob.press.dispatch() : knob.release.dispatch()
+          return acc
+        }, {})
+      ),
+      // POLY PRESSURE
       160: [].concat.apply([], pads).reduce((acc, pad) => {
         acc[pad.id] = pad.aftertouch.dispatch
         return acc
       }, {}),
-      176: [...buttons, ...channelSelectButtons, ...gridSelectButtons, ...timeDivisionButtons]
-        .reduce((acc, button) => {
-          acc[button.id] = value => value > 0 ? button.press.dispatch() : button.release.dispatch()
+      // MIDI CC
+      176: combine(
+        [...buttons, ...channelSelectButtons, ...gridSelectButtons, ...timeDivisionButtons]
+          .reduce((acc, button) => {
+            acc[button.id] = value => value > 0 ? button.press.dispatch() : button.release.dispatch()
+            return acc
+          }, {}),
+        [...specialKnobs, ...channelKnobs].reduce((acc, knob) => {
+          acc[knob.cc] = value => knob.turn.dispatch(value < 64 ? value : value - 128)
           return acc
         }, {})
+      )
     }
 
     const lcdSegments = oneToEight.map(x => oneToEight.map(y => lcdSegment(push.lcd.x[x].y[y])))
-
-    const channelKnobs = oneToEight.map(x => compose(push.channel[x].knob, touchableElem, turnable))
-    const specialKnobs = ['master', 'swing', 'tempo'].map(name => compose(push.knob[name], touchableElem, turnable))
     const touchstrip = compose(push.touchstrip, touchableElem, pitchbendable)
 
     const dispatch = ([one, two, ...rest]) => {
@@ -140,7 +161,7 @@ module.exports = {
 
     return {
       button: name => api.buttons[name],
-      channelKnobs: () => channelKnobs.slice(),
+      channelKnobs: () => api.channelKnobs.slice(),
       channelSelectButtons: () => api.channelSelectButtons.slice(),
       clearLCD: () => { push.lcd.clear() },
       gridRow: y => zeroToSeven.map(x => api.pads[x][y]),
@@ -151,9 +172,9 @@ module.exports = {
       midiFromHardware: bytes => dispatch(bytes) || push.receive_midi(bytes),
       onMidiToHardware: listener => { midiOutCallBacks.push(listener); return () => { midiOutCallBacks = midiOutCallBacks.filter(cb => cb !== listener) } },
       timeDivisionButtons: name => api.timeDivisionButtons[name],
-      masterKnob: () => specialKnobs[0],
-      swingKnob: () => specialKnobs[1],
-      tempoKnob: () => specialKnobs[2],
+      masterKnob: () => api.specialKnobs[0],
+      swingKnob: () => api.specialKnobs[1],
+      tempoKnob: () => api.specialKnobs[2],
       touchstrip: () => touchstrip
     }
   }
