@@ -22,6 +22,7 @@ const listenable = () => {
   }
 }
 const aftertouchable = ({ aftertouch: { listen: onAftertouch } }) => ({ onAftertouch })
+const pitchbendable = ({ bend: { listen: onPitchBend } }) => ({ onPitchBend })
 const pressable = ({ press: { listen: onPressed } }) => ({ onPressed })
 const releaseable = ({ release: { listen: onReleased } }) => ({ onReleased })
 const turnable = ({ turn: { listen: onTurned } }) => ({ onTurned })
@@ -30,7 +31,6 @@ const touchableElem = elem => ({
   onReleased: listener(elem, 'released')
 })
 
-const pitchbendable = elem => ({ onPitchBend: listener(elem, 'pitchbend') })
 const rgbButton = (sendOnMessage, index, sendRgbMessage) => ({
   ledOn: (value = 100) => sendOnMessage(value),
   ledOff: () => sendOnMessage(0),
@@ -101,6 +101,8 @@ module.exports = {
       { cc: 14, note: 10, press: listenable(), release: listenable(), turn: listenable() } // tempo
     ]
 
+    const touchstrip = { note: 12, press: listenable(), release: listenable(), bend: listenable() }
+
     const api = {
       buttons: buttons.reduce((acc, button) => {
         acc[button.name] = combine(dimmableLed(sendCC(button.id)), pressable(button), releaseable(button))
@@ -115,6 +117,7 @@ module.exports = {
         acc[button.name] = combine(roygLed(sendCC(button.id)), pressable(button), releaseable(button))
         return acc
       }, {}),
+      touchstrip: combine(pressable(touchstrip), releaseable(touchstrip), pitchbendable(touchstrip))
     }
 
     const dispatchers = {
@@ -127,7 +130,15 @@ module.exports = {
         [...specialKnobs, ...channelKnobs].reduce((acc, knob) => {
           acc[knob.note] = value => value > 0 ? knob.press.dispatch() : knob.release.dispatch()
           return acc
-        }, {})
+        }, {}),
+        {[touchstrip.note]: value => {
+          if (value > 0) {
+            touchstrip.press.dispatch()
+          } else {
+            touchstrip.release.dispatch()
+            touchstrip.bend.dispatch(8192)
+          }
+        }}
       ),
       // POLY PRESSURE
       160: [].concat.apply([], pads).reduce((acc, pad) => {
@@ -149,9 +160,13 @@ module.exports = {
     }
 
     const lcdSegments = oneToEight.map(x => oneToEight.map(y => lcdSegment(push.lcd.x[x].y[y])))
-    const touchstrip = compose(push.touchstrip, touchableElem, pitchbendable)
 
     const dispatch = ([one, two, ...rest]) => {
+      if (one === 224) { // pitchbend
+        const fourteenBitValue = (rest[0] << 7) + two
+        if (fourteenBitValue !== 8192) touchstrip.bend.dispatch(fourteenBitValue)
+        return true
+      }
       if (dispatchers[one] && dispatchers[one][two]) {
         dispatchers[one][two](...rest)
         return true
@@ -175,7 +190,7 @@ module.exports = {
       masterKnob: () => api.specialKnobs[0],
       swingKnob: () => api.specialKnobs[1],
       tempoKnob: () => api.specialKnobs[2],
-      touchstrip: () => touchstrip
+      touchstrip: () => api.touchstrip
     }
   }
 }
