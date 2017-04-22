@@ -2,7 +2,6 @@
 
 const EventEmitter = require('events'),
     util = require('util'),
-    Knobs = require('./knobs'),
     Touchstrip = require('./touchstrip'),
     LCDs = require('./lcds'),
     oneToEight = [1, 2, 3, 4, 5, 6, 7, 8];
@@ -14,34 +13,21 @@ function Push(midi_out_port) {
         send_sysex: function(data) { midi_out_port.send([240, 71, 127, 21].concat(data).concat([247])) }
     }
 
-    this.knobs = new Knobs();
     this.touchstrip = new Touchstrip();
     this.ccMap = [];
     this.noteMap = [];
 
-    [this.knobs, this.touchstrip].forEach(
+    [this.touchstrip].forEach(
         (module) => module.handled_notes.forEach(note => this.noteMap[note] = module)
     );
 
-    [this.knobs].forEach(
-        (module) => module.handled_ccs.forEach(cc => this.ccMap[cc] = module)
-    );
 
     // Defines public API returned
     const api = {
-        knob: {
-            tempo: this.knobs.tempo,
-            swing: this.knobs.swing,
-            master: this.knobs.master,
-        },
         touchstrip: this.touchstrip,
         lcd: new LCDs(midi_out.send_sysex),
-        channel: {},
         receive_midi: receive_midi.bind(null, this),
     }
-    oneToEight.forEach(
-        (number) => api.channel[number] = { knob: this.knobs[number] }
-    );
     return api;
 }
 util.inherits(Push, EventEmitter);
