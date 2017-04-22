@@ -29,12 +29,12 @@ function LCDs(send_sysex) {
         oneToEight.forEach(x => {
             lcds.x[x] = { y: {} };
             oneToFour.forEach(y => {
-                lcds.x[x].y[y] = new LCDSegment((display_data) => {
-                    send_sysex([28 - y].concat([0, 9, offsets[x - 1]]).concat(display_data));
+                lcds.x[x].y[y] = new LCDSegment(display_data => {
+                    send_sysex([28 - y, 0, 9, offsets[x - 1], ...display_data]);
                 })
             })
         });
-        oneToFour.forEach(row => { send_sysex([28 - row].concat([0, 69, 0]).concat(blank_line)) });
+        oneToFour.forEach(row => { send_sysex([28 - row, 0, 69, 0, ...blank_line]) });
     };
 
     this.x = {};

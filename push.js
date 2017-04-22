@@ -3,7 +3,7 @@
 const Push = require('./src/push')
 const { timeDivisionButtonToCC, buttonToCC } = require('./src/buttonMap')
 const zeroToSeven = [0, 1, 2, 3, 4, 5, 6, 7]
-const oneToEight = [1, 2, 3, 4, 5, 6, 7, 8]
+const combine = (...parts) => Object.assign({}, ...parts)
 
 const listenable = () => {
   let store = []
@@ -37,18 +37,10 @@ const dimmableLed = send => ({
 })
 const dimColours = { orange: 7, red: 1, green: 19, yellow: 13 }
 const dimColour = colour => dimColours[colour] || dimColours['orange']
-
 const roygLed = send => ({
   ledOn: (colour = 'orange') => send(dimColour(colour) + 3),
   ledDim: (colour = 'orange') => send(dimColour(colour)),
   ledOff: () => send(0)
-})
-
-const combine = (...parts) => Object.assign({}, ...parts)
-
-const lcdSegment = elem => ({
-  clear: () => { elem.clear() },
-  display: (text = '') => { elem.update(text) }
 })
 
 function webMidiIO () {
@@ -91,6 +83,11 @@ module.exports = {
     ]
 
     const touchstrip = { note: 12, press: listenable(), release: listenable(), bend: listenable() }
+
+    const lcdSegments = zeroToSeven.map(x => zeroToSeven.map(y => ({
+      clear: () => { push.lcd.x[x + 1].y[y + 1].clear() },
+      display: (text = '') => { push.lcd.x[x + 1].y[y + 1].update(text) }
+    })))
 
     const api = {
       buttons: buttons.reduce((acc, button) => {
@@ -147,8 +144,6 @@ module.exports = {
         }, {})
       )
     }
-
-    const lcdSegments = oneToEight.map(x => oneToEight.map(y => lcdSegment(push.lcd.x[x].y[y])))
 
     const dispatchIncomingMidi = ([one, two, ...rest]) => {
       if (one === 224) { // pitchbend
