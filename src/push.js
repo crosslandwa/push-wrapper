@@ -2,7 +2,6 @@
 
 const EventEmitter = require('events'),
     util = require('util'),
-    Touchstrip = require('./touchstrip'),
     LCDs = require('./lcds'),
     oneToEight = [1, 2, 3, 4, 5, 6, 7, 8];
 
@@ -13,44 +12,14 @@ function Push(midi_out_port) {
         send_sysex: function(data) { midi_out_port.send([240, 71, 127, 21].concat(data).concat([247])) }
     }
 
-    this.touchstrip = new Touchstrip();
-    this.ccMap = [];
-    this.noteMap = [];
-
-    [this.touchstrip].forEach(
-        (module) => module.handled_notes.forEach(note => this.noteMap[note] = module)
-    );
-
-
     // Defines public API returned
     const api = {
-        touchstrip: this.touchstrip,
         lcd: new LCDs(midi_out.send_sysex),
         receive_midi: receive_midi.bind(null, this),
     }
     return api;
 }
 util.inherits(Push, EventEmitter);
-
-function handle_midi_cc(push, index, value) {
-    if (index in push.ccMap) {
-        push.ccMap[index].receive_midi_cc(index, value);
-    } else {
-        console.log('No known mapping for CC: ' + index);
-    }
-}
-
-function handle_midi_note(push, note, velocity) {
-    if (note in push.noteMap) {
-        push.noteMap[note].receive_midi_note(note, velocity);
-    } else {
-        console.log('No known mapping for note: ' + note);
-    }
-}
-
-function handle_midi_pitch_bend(push, lsb_byte, msb_byte) {
-    push.touchstrip.receive_midi_pitch_bend((msb_byte << 7) + lsb_byte);
-}
 
 var midi_messages = {
     'note-off': 128, // note number, velocity
@@ -70,14 +39,11 @@ function receive_midi(push, bytes) {
 
     switch (message_type) {
         case (midi_messages['cc']):
-            handle_midi_cc(push, bytes[1], bytes[2]);
             break;
         case (midi_messages['note-on']):
         case (midi_messages['note-off']):
-            handle_midi_note(push, bytes[1], bytes[2]);
             break;
         case (midi_messages['pitch-bend']):
-            handle_midi_pitch_bend(push, bytes[1], bytes[2]);
             break;
     }
 }
