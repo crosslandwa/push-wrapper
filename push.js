@@ -1,6 +1,5 @@
 'use strict'
 
-const Push = require('./src/push')
 const { timeDivisionButtonToCC, buttonToCC } = require('./src/buttonMap')
 const zeroToSeven = [0, 1, 2, 3, 4, 5, 6, 7]
 const combine = (...parts) => Object.assign({}, ...parts)
@@ -72,7 +71,6 @@ module.exports = {
     const sendCC = cc => value => { midiOut([176, cc, value]) }
     const sendMidiNote = note => value => { midiOut([144, note, value]) }
     const sendSysex = data => { midiOut([240, 71, 127, 21, ...data, 247]) }
-    const push = new Push({ send: midiOut })
 
     const buttons = Object.keys(buttonToCC).map(name => ({ id: buttonToCC[name], name, press: listenable(), release: listenable() }))
     const channelSelectButtons = zeroToSeven.map(x => ({ id: 20 + x, press: listenable(), release: listenable() }))
@@ -89,11 +87,6 @@ module.exports = {
     ]
 
     const touchstrip = { note: 12, press: listenable(), release: listenable(), bend: listenable() }
-
-    const lcdSegments = zeroToSeven.map(x => zeroToSeven.map(y => ({
-      clear: () => { push.lcd.x[x + 1].y[y + 1].clear() },
-      display: (text = '') => { push.lcd.x[x + 1].y[y + 1].update(text) }
-    })))
 
     const api = {
       buttons: buttons.reduce((acc, button) => {
