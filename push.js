@@ -158,7 +158,7 @@ module.exports = {
       button: name => api.buttons[name],
       channelKnobs: () => api.channelKnobs.slice(),
       channelSelectButtons: () => api.channelSelectButtons.slice(),
-      clearLCD: () => { push.lcd.clear() },
+      clearLCD: () => { [27, 26, 25, 24].forEach(row => { sendSysex([row, 0, 69, 0, ...new Array(68).fill(32)]) }) },
       gridRow: y => zeroToSeven.map(x => api.pads[x][y]),
       gridCol: x => api.pads[x].slice(),
       gridSelectButtons: () => api.gridSelectButtons.slice(),
