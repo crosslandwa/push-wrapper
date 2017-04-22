@@ -43,6 +43,12 @@ const roygLed = send => ({
   ledOff: () => send(0)
 })
 
+function eigthCharLcdData (input) {
+  let chars = input.split('').slice(0, 8).map(x => x.charCodeAt(0))
+  while (chars.length < 8) chars.push(32)
+  return chars
+}
+
 function webMidiIO () {
   if (navigator && navigator.requestMIDIAccess) {
     return navigator.requestMIDIAccess({ sysex: true }).then(midiAccess => {
@@ -154,6 +160,8 @@ module.exports = {
       }
     }
 
+    const lcdOffsets = [0, 9, 17, 26, 34, 43, 51, 60]
+
     return {
       button: name => api.buttons[name],
       channelKnobs: () => api.channelKnobs.slice(),
@@ -162,8 +170,14 @@ module.exports = {
       gridRow: y => zeroToSeven.map(x => api.pads[x][y]),
       gridCol: x => api.pads[x].slice(),
       gridSelectButtons: () => api.gridSelectButtons.slice(),
-      lcdSegmentsCol: x => zeroToSeven.map(y => lcdSegments[x][y]),
-      lcdSegmentsRow: y => zeroToSeven.map(x => lcdSegments[x][y]),
+      lcdSegmentsCol: x => zeroToSeven.map(y => ({
+        clear: () => sendSysex([27 - y, 0, 9, lcdOffsets[x], ...eigthCharLcdData('')]),
+        display: (text = '') => sendSysex([27 - y, 0, 9, lcdOffsets[x], ...eigthCharLcdData(text)])
+      })),
+      lcdSegmentsRow: y => zeroToSeven.map(x => ({
+        clear: () => sendSysex([27 - y, 0, 9, lcdOffsets[x], ...eigthCharLcdData('')]),
+        display: (text = '') => sendSysex([27 - y, 0, 9, lcdOffsets[x], ...eigthCharLcdData(text)])
+      })),
       midiFromHardware: dispatchIncomingMidi,
       onMidiToHardware: listener => { midiOutCallBacks.push(listener); return () => { midiOutCallBacks = midiOutCallBacks.filter(cb => cb !== listener) } },
       timeDivisionButtons: name => api.timeDivisionButtons[name],
