@@ -150,17 +150,13 @@ module.exports = {
 
     const lcdSegments = oneToEight.map(x => oneToEight.map(y => lcdSegment(push.lcd.x[x].y[y])))
 
-    const dispatch = ([one, two, ...rest]) => {
+    const dispatchIncomingMidi = ([one, two, ...rest]) => {
       if (one === 224) { // pitchbend
         const fourteenBitValue = (rest[0] << 7) + two
         if (fourteenBitValue !== 8192) touchstrip.bend.dispatch(fourteenBitValue)
-        return true
-      }
-      if (dispatchers[one] && dispatchers[one][two]) {
+      } else if (dispatchers[one] && dispatchers[one][two]) {
         dispatchers[one][two](...rest)
-        return true
       }
-      return false
     }
 
     return {
@@ -173,7 +169,7 @@ module.exports = {
       gridSelectButtons: () => api.gridSelectButtons.slice(),
       lcdSegmentsCol: x => zeroToSeven.map(y => lcdSegments[x][y]),
       lcdSegmentsRow: y => zeroToSeven.map(x => lcdSegments[x][y]),
-      midiFromHardware: bytes => dispatch(bytes) || push.receive_midi(bytes),
+      midiFromHardware: dispatchIncomingMidi,
       onMidiToHardware: listener => { midiOutCallBacks.push(listener); return () => { midiOutCallBacks = midiOutCallBacks.filter(cb => cb !== listener) } },
       timeDivisionButtons: name => api.timeDivisionButtons[name],
       masterKnob: () => api.specialKnobs[0],
