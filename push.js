@@ -100,17 +100,14 @@ module.exports = {
 
     const touchstrip = { note: 12, press: listenable(), release: listenable(), bend: listenable() }
 
+    const dispatchPressOrRelease = elem => value => value > 0 ? elem.press.dispatch(value) : elem.release.dispatch()
+
     const dispatchers = {
       // MIDI NOTES
       144: combine(
-        pads.reduce((acc, pad) => {
-          acc[pad.id] = velocity => velocity > 0 ? pad.press.dispatch(velocity) : pad.release.dispatch()
-          return acc
-        }, {}),
-        [masterKnob, swingKnob, tempoKnob, ...channelKnobs].reduce((acc, knob) => {
-          acc[knob.note] = value => value > 0 ? knob.press.dispatch() : knob.release.dispatch()
-          return acc
-        }, {}),
+        pads.reduce((acc, pad) => { acc[pad.id] = dispatchPressOrRelease(pad); return acc }, {}),
+        [masterKnob, swingKnob, tempoKnob, ...channelKnobs]
+          .reduce((acc, knob) => { acc[knob.note] = dispatchPressOrRelease(knob) ; return acc }, {}),
         {[touchstrip.note]: value => {
           if (value > 0) {
             touchstrip.press.dispatch()
@@ -125,10 +122,7 @@ module.exports = {
       // MIDI CC
       176: combine(
         [...buttons, ...channelSelectButtons, ...gridSelectButtons, ...timeDivisionButtons]
-          .reduce((acc, button) => {
-            acc[button.id] = value => value > 0 ? button.press.dispatch() : button.release.dispatch()
-            return acc
-          }, {}),
+          .reduce((acc, button) => { acc[button.id] = dispatchPressOrRelease(button); return acc }, {}),
         [masterKnob, swingKnob, tempoKnob, ...channelKnobs].reduce((acc, knob) => {
           acc[knob.cc] = value => knob.turn.dispatch(value < 64 ? value : value - 128)
           return acc
