@@ -86,7 +86,8 @@ module.exports = {
     const gridSelectButtons = zeroToSeven.map(x => ({ id: 102 + x, press: listenable(), release: listenable() }))
     const timeDivisionButtons = Object.keys(timeDivisionButtonToCC).map(name => ({ id: timeDivisionButtonToCC[name], name, press: listenable(), release: listenable() }))
 
-    const pads = zeroToSeven.map(x => zeroToSeven.map(y => ({ id: x + 8 * y + 36, press: listenable(), release: listenable(), aftertouch: listenable() })))
+    const pads = [].concat.apply([], zeroToSeven.map(y => zeroToSeven.map(x => ({ id: x + 8 * y + 36, press: listenable(), release: listenable(), aftertouch: listenable() }))))
+    const padApi = pad => compose(pad, rgbButton(sendMidiNote(pad.id), rgbSysex(pad.id - 36)), aftertouchable, pressable, releaseable)
 
     const channelKnobs = zeroToSeven.map(x => ({ cc: 71 + x, note: x, press: listenable(), release: listenable(), turn: listenable() }))
     const masterKnob = { cc: 79, note: 8, press: listenable(), release: listenable(), turn: listenable() }
@@ -101,17 +102,16 @@ module.exports = {
         acc[button.name] = compose(button, pressable, releaseable, dimmableLed(sendCC(button.id)))
         return acc
       }, {}),
-      pads: pads.map(col => col.map(pad => compose(pad, rgbButton(sendMidiNote(pad.id), rgbSysex(pad.id - 36)), aftertouchable, pressable, releaseable))),
+      // pads: pads.map(col => col.map(pad => ),
       timeDivisionButtons: timeDivisionButtons.reduce((acc, button) => {
         acc[button.name] = compose(button, roygLed(sendCC(button.id)), pressable, releaseable)
         return acc
       }, {})
     }
-
     const dispatchers = {
       // MIDI NOTES
       144: combine(
-        [].concat.apply([], pads).reduce((acc, pad) => {
+        pads.reduce((acc, pad) => {
           acc[pad.id] = velocity => velocity > 0 ? pad.press.dispatch(velocity) : pad.release.dispatch()
           return acc
         }, {}),
@@ -129,7 +129,7 @@ module.exports = {
         }}
       ),
       // POLY PRESSURE
-      160: [].concat.apply([], pads).reduce((acc, pad) => {
+      160: pads.reduce((acc, pad) => {
         acc[pad.id] = pad.aftertouch.dispatch
         return acc
       }, {}),
@@ -168,8 +168,8 @@ module.exports = {
       channelKnobs: () => channelKnobs.map(knobApi),
       channelSelectButtons: () => channelSelectButtons.map(button => compose(button, roygLed(sendCC(button.id)), pressable, releaseable)),
       clearLCD: () => { [27, 26, 25, 24].forEach(row => { sendSysex([row, 0, 69, 0, ...new Array(68).fill(32)]) }) },
-      gridRow: y => zeroToSeven.map(x => api.pads[x][y]),
-      gridCol: x => api.pads[x].slice(),
+      gridRow: y => zeroToSeven.map(x => x + (y * 8)).map(index => pads[index]).map(padApi),
+      gridCol: x => zeroToSeven.map(y => x + (y * 8)).map(index => pads[index]).map(padApi),
       gridSelectButtons: () => gridSelectButtons.map(button => compose(button, rgbButton(sendCC(button.id), rgbSysex(button.id - 38)), pressable, releaseable)),
       lcdSegmentsCol: x => zeroToSeven.map(y => lcdSegment(lcdSegmentSysex, x, y)),
       lcdSegmentsRow: y => zeroToSeven.map(x => lcdSegment(lcdSegmentSysex, x, y)),
