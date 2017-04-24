@@ -106,7 +106,7 @@ module.exports = {
       144: Object.assign({},
         pads.reduce((acc, pad) => { acc[pad.id] = dispatchPressOrRelease(pad); return acc }, {}),
         [masterKnob, swingKnob, tempoKnob, ...channelKnobs]
-          .reduce((acc, knob) => { acc[knob.note] = dispatchPressOrRelease(knob) ; return acc }, {}),
+          .reduce((acc, knob) => { acc[knob.note] = dispatchPressOrRelease(knob); return acc }, {}),
         {[touchstrip.note]: value => {
           if (value > 0) {
             touchstrip.press.dispatch()
@@ -134,6 +134,7 @@ module.exports = {
       switch (messageType) {
         case (128): // NOTE-OFF
           messageType = 144
+          // fall through
         case (176): // CC
         case (144): // NOTE-ON
         case (160): // POLY PRESSURE (AFTERTOUCH)
