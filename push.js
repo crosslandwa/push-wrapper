@@ -92,6 +92,7 @@ module.exports = {
     const masterKnob = { cc: 79, note: 8, press: listenable(), release: listenable(), turn: listenable() }
     const swingKnob = { cc: 15, note: 9, press: listenable(), release: listenable(), turn: listenable() }
     const tempoKnob = { cc: 14, note: 10, press: listenable(), release: listenable(), turn: listenable() }
+    const knobApi = knob => compose(knob, pressable, releaseable, turnable)
 
     const touchstrip = { note: 12, press: listenable(), release: listenable(), bend: listenable() }
 
@@ -164,7 +165,7 @@ module.exports = {
 
     return {
       button: name => api.buttons[name],
-      channelKnobs: () => channelKnobs.map(knob => compose(knob, pressable, releaseable, turnable)),
+      channelKnobs: () => channelKnobs.map(knobApi),
       channelSelectButtons: () => channelSelectButtons.map(button => compose(button, roygLed(sendCC(button.id)), pressable, releaseable)),
       clearLCD: () => { [27, 26, 25, 24].forEach(row => { sendSysex([row, 0, 69, 0, ...new Array(68).fill(32)]) }) },
       gridRow: y => zeroToSeven.map(x => api.pads[x][y]),
@@ -175,9 +176,9 @@ module.exports = {
       midiFromHardware: dispatchIncomingMidi,
       onMidiToHardware: listener => { midiOutCallBacks.push(listener); return () => { midiOutCallBacks = midiOutCallBacks.filter(cb => cb !== listener) } },
       timeDivisionButtons: name => api.timeDivisionButtons[name],
-      masterKnob: () => compose(masterKnob, pressable, releaseable, turnable),
-      swingKnob: () => compose(swingKnob, pressable, releaseable, turnable),
-      tempoKnob: () => compose(tempoKnob, pressable, releaseable, turnable),
+      masterKnob: () => knobApi(masterKnob),
+      swingKnob: () => knobApi(swingKnob),
+      tempoKnob: () => knobApi(tempoKnob),
       touchstrip: () => compose(touchstrip, pressable, releaseable, pitchbendable)
     }
   }
