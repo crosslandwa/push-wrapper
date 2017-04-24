@@ -49,6 +49,11 @@ function eigthCharLcdData (input) {
   return chars
 }
 
+const lcdSegment = (send, x, y) => ({
+  clear: () => send(x, y, ''),
+  display: (text = '') => send(x, y, text)
+})
+
 function webMidiIO () {
   if (navigator && navigator.requestMIDIAccess) {
     return navigator.requestMIDIAccess({ sysex: true }).then(midiAccess => {
@@ -72,6 +77,7 @@ module.exports = {
     const sendCC = cc => value => { midiOut([176, cc, value]) }
     const sendMidiNote = note => value => { midiOut([144, note, value]) }
     const sendSysex = data => { midiOut([240, 71, 127, 21, ...data, 247]) }
+    const lcdSegmentSysex = (x, y, data) => sendSysex([27 - y, 0, 9, lcdOffsets[x], ...eigthCharLcdData(data)])
 
     const buttons = Object.keys(buttonToCC).map(name => ({ id: buttonToCC[name], name, press: listenable(), release: listenable() }))
     const channelSelectButtons = zeroToSeven.map(x => ({ id: 20 + x, press: listenable(), release: listenable() }))
@@ -169,14 +175,8 @@ module.exports = {
       gridRow: y => zeroToSeven.map(x => api.pads[x][y]),
       gridCol: x => api.pads[x].slice(),
       gridSelectButtons: () => api.gridSelectButtons.slice(),
-      lcdSegmentsCol: x => zeroToSeven.map(y => ({
-        clear: () => sendSysex([27 - y, 0, 9, lcdOffsets[x], ...eigthCharLcdData('')]),
-        display: (text = '') => sendSysex([27 - y, 0, 9, lcdOffsets[x], ...eigthCharLcdData(text)])
-      })),
-      lcdSegmentsRow: y => zeroToSeven.map(x => ({
-        clear: () => sendSysex([27 - y, 0, 9, lcdOffsets[x], ...eigthCharLcdData('')]),
-        display: (text = '') => sendSysex([27 - y, 0, 9, lcdOffsets[x], ...eigthCharLcdData(text)])
-      })),
+      lcdSegmentsCol: x => zeroToSeven.map(y => lcdSegment(lcdSegmentSysex, x, y)),
+      lcdSegmentsRow: y => zeroToSeven.map(x => lcdSegment(lcdSegmentSysex, x, y)),
       midiFromHardware: dispatchIncomingMidi,
       onMidiToHardware: listener => { midiOutCallBacks.push(listener); return () => { midiOutCallBacks = midiOutCallBacks.filter(cb => cb !== listener) } },
       timeDivisionButtons: name => api.timeDivisionButtons[name],
