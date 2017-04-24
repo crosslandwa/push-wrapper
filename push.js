@@ -3,7 +3,8 @@
 const { timeDivisionButtonToCC, buttonToCC } = require('./src/buttonMap')
 const zeroToSeven = [0, 1, 2, 3, 4, 5, 6, 7]
 const lcdOffsets = [0, 9, 17, 26, 34, 43, 51, 60]
-const combine = (...parts) => Object.assign({}, ...parts)
+const combine = (...parts) => compose({}, ...parts)
+const compose = (elem, ...parts) => Object.assign({}, ...parts.map(part => (typeof part === 'function') ? part(elem) : part))
 
 const listenable = () => {
   let store = []
@@ -98,19 +99,19 @@ module.exports = {
 
     const api = {
       buttons: buttons.reduce((acc, button) => {
-        acc[button.name] = combine(dimmableLed(sendCC(button.id)), pressable(button), releaseable(button))
+        acc[button.name] = compose(button, pressable, releaseable, dimmableLed(sendCC(button.id)))
         return acc
       }, {}),
-      channelKnobs: channelKnobs.map(knob => combine(pressable(knob), releaseable(knob), turnable(knob))),
-      channelSelectButtons: channelSelectButtons.map(button => combine(roygLed(sendCC(button.id)), pressable(button), releaseable(button))),
-      gridSelectButtons: gridSelectButtons.map(button => combine(rgbButton(sendCC(button.id), rgbSysex(button.id - 38)), pressable(button), releaseable(button))),
-      pads: pads.map(col => col.map(pad => combine(rgbButton(sendMidiNote(pad.id), rgbSysex(pad.id - 36)), aftertouchable(pad), pressable(pad), releaseable(pad)))),
-      specialKnobs: specialKnobs.map(knob => combine(pressable(knob), releaseable(knob), turnable(knob))),
+      channelKnobs: channelKnobs.map(knob => compose(knob, pressable, releaseable, turnable)),
+      channelSelectButtons: channelSelectButtons.map(button => compose(button, roygLed(sendCC(button.id)), pressable, releaseable)),
+      gridSelectButtons: gridSelectButtons.map(button => compose(button, rgbButton(sendCC(button.id), rgbSysex(button.id - 38)), pressable, releaseable)),
+      pads: pads.map(col => col.map(pad => compose(pad, rgbButton(sendMidiNote(pad.id), rgbSysex(pad.id - 36)), aftertouchable, pressable, releaseable))),
+      specialKnobs: specialKnobs.map(knob => compose(knob, pressable, releaseable, turnable)),
       timeDivisionButtons: timeDivisionButtons.reduce((acc, button) => {
-        acc[button.name] = combine(roygLed(sendCC(button.id)), pressable(button), releaseable(button))
+        acc[button.name] = compose(button, roygLed(sendCC(button.id)), pressable, releaseable)
         return acc
       }, {}),
-      touchstrip: combine(pressable(touchstrip), releaseable(touchstrip), pitchbendable(touchstrip))
+      touchstrip: compose(touchstrip, pressable, releaseable, pitchbendable)
     }
 
     const dispatchers = {
