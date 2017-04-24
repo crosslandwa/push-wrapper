@@ -21,14 +21,10 @@ const pressable = ({ press: { listen: onPressed } }) => ({ onPressed })
 const releaseable = ({ release: { listen: onReleased } }) => ({ onReleased })
 const turnable = ({ turn: { listen: onTurned } }) => ({ onTurned })
 
-const rgbButton = (sendOnMessage, index, sendRgbMessage) => ({
-  ledOn: (value = 100) => sendOnMessage(value),
-  ledOff: () => sendOnMessage(0),
-  ledRGB: (r, g, b) => {
-    const msb = [r, g, b].map(x => (x & 240) >> 4)
-    const lsb = [r, g, b].map(x => x & 15)
-    sendRgbMessage([4, 0, 8, index, 0, msb[0], lsb[0], msb[1], lsb[1], msb[2], lsb[2]])
-  }
+const rgbButton = (sendOnOff, sendRgbSysex) => ({
+  ledOn: (value = 100) => sendOnOff(value),
+  ledOff: () => sendOnOff(0),
+  ledRGB: (r = 0, g = 0, b = 0) => sendRgbSysex(r, g, b)
 })
 const dimmableLed = send => ({
   ledOn: () => send(4),
@@ -78,6 +74,11 @@ module.exports = {
     const sendMidiNote = note => value => { midiOut([144, note, value]) }
     const sendSysex = data => { midiOut([240, 71, 127, 21, ...data, 247]) }
     const lcdSegmentSysex = (x, y, data) => sendSysex([27 - y, 0, 9, lcdOffsets[x], ...eigthCharLcdData(data)])
+    const rgbSysex = index => (r, g, b) => {
+      const msb = [r, g, b].map(x => (x & 240) >> 4)
+      const lsb = [r, g, b].map(x => x & 15)
+      sendSysex([4, 0, 8, index, 0, msb[0], lsb[0], msb[1], lsb[1], msb[2], lsb[2]])
+    }
 
     const buttons = Object.keys(buttonToCC).map(name => ({ id: buttonToCC[name], name, press: listenable(), release: listenable() }))
     const channelSelectButtons = zeroToSeven.map(x => ({ id: 20 + x, press: listenable(), release: listenable() }))
@@ -102,8 +103,8 @@ module.exports = {
       }, {}),
       channelKnobs: channelKnobs.map(knob => combine(pressable(knob), releaseable(knob), turnable(knob))),
       channelSelectButtons: channelSelectButtons.map(button => combine(roygLed(sendCC(button.id)), pressable(button), releaseable(button))),
-      gridSelectButtons: gridSelectButtons.map(button => combine(rgbButton(sendCC(button.id), button.id - 38, sendSysex), pressable(button), releaseable(button))),
-      pads: pads.map(col => col.map(pad => combine(rgbButton(sendMidiNote(pad.id), pad.id - 36, sendSysex), aftertouchable(pad), pressable(pad), releaseable(pad)))),
+      gridSelectButtons: gridSelectButtons.map(button => combine(rgbButton(sendCC(button.id), rgbSysex(button.id - 38)), pressable(button), releaseable(button))),
+      pads: pads.map(col => col.map(pad => combine(rgbButton(sendMidiNote(pad.id), rgbSysex(pad.id - 36)), aftertouchable(pad), pressable(pad), releaseable(pad)))),
       specialKnobs: specialKnobs.map(knob => combine(pressable(knob), releaseable(knob), turnable(knob))),
       timeDivisionButtons: timeDivisionButtons.reduce((acc, button) => {
         acc[button.name] = combine(roygLed(sendCC(button.id)), pressable(button), releaseable(button))
