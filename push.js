@@ -89,11 +89,9 @@ module.exports = {
     const pads = zeroToSeven.map(x => zeroToSeven.map(y => ({ id: x + 8 * y + 36, press: listenable(), release: listenable(), aftertouch: listenable() })))
 
     const channelKnobs = zeroToSeven.map(x => ({ cc: 71 + x, note: x, press: listenable(), release: listenable(), turn: listenable() }))
-    const specialKnobs = [
-      { cc: 79, note: 8, press: listenable(), release: listenable(), turn: listenable() }, // master
-      { cc: 15, note: 9, press: listenable(), release: listenable(), turn: listenable() }, // swing
-      { cc: 14, note: 10, press: listenable(), release: listenable(), turn: listenable() } // tempo
-    ]
+    const masterKnob = { cc: 79, note: 8, press: listenable(), release: listenable(), turn: listenable() }
+    const swingKnob = { cc: 15, note: 9, press: listenable(), release: listenable(), turn: listenable() }
+    const tempoKnob = { cc: 14, note: 10, press: listenable(), release: listenable(), turn: listenable() }
 
     const touchstrip = { note: 12, press: listenable(), release: listenable(), bend: listenable() }
 
@@ -102,16 +100,11 @@ module.exports = {
         acc[button.name] = compose(button, pressable, releaseable, dimmableLed(sendCC(button.id)))
         return acc
       }, {}),
-      channelKnobs: channelKnobs.map(knob => compose(knob, pressable, releaseable, turnable)),
-      channelSelectButtons: channelSelectButtons.map(button => compose(button, roygLed(sendCC(button.id)), pressable, releaseable)),
-      gridSelectButtons: gridSelectButtons.map(button => compose(button, rgbButton(sendCC(button.id), rgbSysex(button.id - 38)), pressable, releaseable)),
       pads: pads.map(col => col.map(pad => compose(pad, rgbButton(sendMidiNote(pad.id), rgbSysex(pad.id - 36)), aftertouchable, pressable, releaseable))),
-      specialKnobs: specialKnobs.map(knob => compose(knob, pressable, releaseable, turnable)),
       timeDivisionButtons: timeDivisionButtons.reduce((acc, button) => {
         acc[button.name] = compose(button, roygLed(sendCC(button.id)), pressable, releaseable)
         return acc
-      }, {}),
-      touchstrip: compose(touchstrip, pressable, releaseable, pitchbendable)
+      }, {})
     }
 
     const dispatchers = {
@@ -121,7 +114,7 @@ module.exports = {
           acc[pad.id] = velocity => velocity > 0 ? pad.press.dispatch(velocity) : pad.release.dispatch()
           return acc
         }, {}),
-        [...specialKnobs, ...channelKnobs].reduce((acc, knob) => {
+        [masterKnob, swingKnob, tempoKnob, ...channelKnobs].reduce((acc, knob) => {
           acc[knob.note] = value => value > 0 ? knob.press.dispatch() : knob.release.dispatch()
           return acc
         }, {}),
@@ -146,7 +139,7 @@ module.exports = {
             acc[button.id] = value => value > 0 ? button.press.dispatch() : button.release.dispatch()
             return acc
           }, {}),
-        [...specialKnobs, ...channelKnobs].reduce((acc, knob) => {
+        [masterKnob, swingKnob, tempoKnob, ...channelKnobs].reduce((acc, knob) => {
           acc[knob.cc] = value => knob.turn.dispatch(value < 64 ? value : value - 128)
           return acc
         }, {})
@@ -171,21 +164,21 @@ module.exports = {
 
     return {
       button: name => api.buttons[name],
-      channelKnobs: () => api.channelKnobs.slice(),
-      channelSelectButtons: () => api.channelSelectButtons.slice(),
+      channelKnobs: () => channelKnobs.map(knob => compose(knob, pressable, releaseable, turnable)),
+      channelSelectButtons: () => channelSelectButtons.map(button => compose(button, roygLed(sendCC(button.id)), pressable, releaseable)),
       clearLCD: () => { [27, 26, 25, 24].forEach(row => { sendSysex([row, 0, 69, 0, ...new Array(68).fill(32)]) }) },
       gridRow: y => zeroToSeven.map(x => api.pads[x][y]),
       gridCol: x => api.pads[x].slice(),
-      gridSelectButtons: () => api.gridSelectButtons.slice(),
+      gridSelectButtons: () => gridSelectButtons.map(button => compose(button, rgbButton(sendCC(button.id), rgbSysex(button.id - 38)), pressable, releaseable)),
       lcdSegmentsCol: x => zeroToSeven.map(y => lcdSegment(lcdSegmentSysex, x, y)),
       lcdSegmentsRow: y => zeroToSeven.map(x => lcdSegment(lcdSegmentSysex, x, y)),
       midiFromHardware: dispatchIncomingMidi,
       onMidiToHardware: listener => { midiOutCallBacks.push(listener); return () => { midiOutCallBacks = midiOutCallBacks.filter(cb => cb !== listener) } },
       timeDivisionButtons: name => api.timeDivisionButtons[name],
-      masterKnob: () => api.specialKnobs[0],
-      swingKnob: () => api.specialKnobs[1],
-      tempoKnob: () => api.specialKnobs[2],
-      touchstrip: () => api.touchstrip
+      masterKnob: () => compose(masterKnob, pressable, releaseable, turnable),
+      swingKnob: () => compose(swingKnob, pressable, releaseable, turnable),
+      tempoKnob: () => compose(tempoKnob, pressable, releaseable, turnable),
+      touchstrip: () => compose(touchstrip, pressable, releaseable, pitchbendable)
     }
   }
 }
