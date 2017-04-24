@@ -1,46 +1,46 @@
 'use strict'
 
-const ccToButtonMap = {
-  3: 'TapTempo',
-  9: 'Metronome',
-  119: 'Undo',
-  118: 'Delete',
-  117: 'Double',
-  116: 'Quantize',
-  90: 'FixedLength',
-  89: 'Automation',
-  88: 'Duplicate',
-  87: 'New',
-  86: 'Rec',
-  85: 'Play',
-  28: 'Master',
-  29: 'Stop',
-  44: 'Left',
-  45: 'Right',
-  46: 'Up',
-  47: 'Down',
-  114: 'Volume',
-  115: 'Pan&Send',
-  112: 'Track',
-  113: 'Clip',
-  110: 'Device',
-  111: 'Browse',
-  62: 'StepIn',
-  63: 'StepOut',
-  60: 'Mute',
-  61: 'Solo',
-  58: 'Scales',
-  59: 'User',
-  56: 'Repeat',
-  57: 'Accent',
-  54: 'OctaveDown',
-  55: 'OctaveUp',
-  52: 'AddEffect',
-  53: 'AddTrack',
-  50: 'Note',
-  51: 'Session',
-  48: 'Select',
-  49: 'Shift'
+const buttonToCC = {
+  'TapTempo': 3,
+  'Metronome': 9,
+  'Undo': 119,
+  'Delete': 118,
+  'Double': 117,
+  'Quantize': 116,
+  'FixedLength': 90,
+  'Automation': 89,
+  'Duplicate': 88,
+  'New': 87,
+  'Rec': 86,
+  'Play': 85,
+  'Master': 28,
+  'Stop': 29,
+  'Left': 44,
+  'Right': 45,
+  'Up': 46,
+  'Down': 47,
+  'Volume': 114,
+  'Pan&Send': 115,
+  'Track': 112,
+  'Clip': 113,
+  'Device': 110,
+  'Browse': 111,
+  'StepIn': 62,
+  'StepOut': 63,
+  'Mute': 60,
+  'Solo': 61,
+  'Scales': 58,
+  'User': 59,
+  'Repeat': 56,
+  'Accent': 57,
+  'OctaveDown': 54,
+  'OctaveUp': 55,
+  'AddEffect': 52,
+  'AddTrack': 53,
+  'Note': 50,
+  'Session': 51,
+  'Select': 48,
+  'Shift': 49
 }
 
 const timeDivisionButtonToCC = {
@@ -54,8 +54,4 @@ const timeDivisionButtonToCC = {
   '1/32t': 43
 }
 
-module.exports = {
-  buttonToCC: Object.keys(ccToButtonMap).map(Number)
-    .reduce((acc, cc) => { acc[ccToButtonMap[cc]] = cc; return acc }, {}),
-  timeDivisionButtonToCC
-}
+module.exports = {buttonToCC, timeDivisionButtonToCC}
