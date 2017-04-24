@@ -3,7 +3,6 @@
 const { timeDivisionButtonToCC, buttonToCC } = require('./src/buttonMap')
 const zeroToSeven = [0, 1, 2, 3, 4, 5, 6, 7]
 const lcdOffsets = [0, 9, 17, 26, 34, 43, 51, 60]
-const combine = (...parts) => compose({}, ...parts)
 const compose = (elem, ...parts) => Object.assign({}, ...parts.map(part => (typeof part === 'function') ? part(elem) : part))
 
 const listenable = () => {
@@ -104,7 +103,7 @@ module.exports = {
 
     const dispatchers = {
       // MIDI NOTES
-      144: combine(
+      144: Object.assign({},
         pads.reduce((acc, pad) => { acc[pad.id] = dispatchPressOrRelease(pad); return acc }, {}),
         [masterKnob, swingKnob, tempoKnob, ...channelKnobs]
           .reduce((acc, knob) => { acc[knob.note] = dispatchPressOrRelease(knob) ; return acc }, {}),
@@ -120,7 +119,7 @@ module.exports = {
       // POLY PRESSURE
       160: pads.reduce((acc, pad) => { acc[pad.id] = pad.aftertouch.dispatch; return acc }, {}),
       // MIDI CC
-      176: combine(
+      176: Object.assign({},
         [...buttons, ...channelSelectButtons, ...gridSelectButtons, ...timeDivisionButtons]
           .reduce((acc, button) => { acc[button.id] = dispatchPressOrRelease(button); return acc }, {}),
         [masterKnob, swingKnob, tempoKnob, ...channelKnobs].reduce((acc, knob) => {
