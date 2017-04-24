@@ -85,6 +85,9 @@ module.exports = {
     const channelSelectButtons = zeroToSeven.map(x => ({ id: 20 + x, press: listenable(), release: listenable() }))
     const gridSelectButtons = zeroToSeven.map(x => ({ id: 102 + x, press: listenable(), release: listenable() }))
     const timeDivisionButtons = Object.keys(timeDivisionButtonToCC).map(name => ({ id: timeDivisionButtonToCC[name], name, press: listenable(), release: listenable() }))
+    const dimButtonApi = button => compose(button, dimmableLed(sendCC(button.id)), pressable, releaseable)
+    const roygButtonApi = button => compose(button, roygLed(sendCC(button.id)), pressable, releaseable)
+    const rgbButtonApi = button => compose(button, rgbButton(sendCC(button.id), rgbSysex(button.id - 38)), pressable, releaseable)
 
     const pads = [].concat.apply([], zeroToSeven.map(y => zeroToSeven.map(x => ({ id: x + 8 * y + 36, press: listenable(), release: listenable(), aftertouch: listenable() }))))
     const padApi = pad => compose(pad, rgbButton(sendMidiNote(pad.id), rgbSysex(pad.id - 36)), aftertouchable, pressable, releaseable)
@@ -97,17 +100,6 @@ module.exports = {
 
     const touchstrip = { note: 12, press: listenable(), release: listenable(), bend: listenable() }
 
-    const api = {
-      buttons: buttons.reduce((acc, button) => {
-        acc[button.name] = compose(button, pressable, releaseable, dimmableLed(sendCC(button.id)))
-        return acc
-      }, {}),
-      // pads: pads.map(col => col.map(pad => ),
-      timeDivisionButtons: timeDivisionButtons.reduce((acc, button) => {
-        acc[button.name] = compose(button, roygLed(sendCC(button.id)), pressable, releaseable)
-        return acc
-      }, {})
-    }
     const dispatchers = {
       // MIDI NOTES
       144: combine(
@@ -129,10 +121,7 @@ module.exports = {
         }}
       ),
       // POLY PRESSURE
-      160: pads.reduce((acc, pad) => {
-        acc[pad.id] = pad.aftertouch.dispatch
-        return acc
-      }, {}),
+      160: pads.reduce((acc, pad) => { acc[pad.id] = pad.aftertouch.dispatch; return acc }, {}),
       // MIDI CC
       176: combine(
         [...buttons, ...channelSelectButtons, ...gridSelectButtons, ...timeDivisionButtons]
@@ -148,11 +137,12 @@ module.exports = {
     }
 
     const dispatchIncomingMidi = ([one, two, ...rest]) => {
-      const messageType = one & 0xf0
+      let messageType = one & 0xf0
       switch (messageType) {
+        case (128): // NOTE-OFF
+          messageType = 144
         case (176): // CC
         case (144): // NOTE-ON
-        case (128): // NOTE-OFF
         case (160): // POLY PRESSURE (AFTERTOUCH)
           dispatchers[messageType][two] && dispatchers[messageType][two](...rest)
           break
@@ -164,18 +154,18 @@ module.exports = {
     }
 
     return {
-      button: name => api.buttons[name],
+      button: name => dimButtonApi(buttons.filter(button => button.name === name)[0]),
       channelKnobs: () => channelKnobs.map(knobApi),
-      channelSelectButtons: () => channelSelectButtons.map(button => compose(button, roygLed(sendCC(button.id)), pressable, releaseable)),
+      channelSelectButtons: () => channelSelectButtons.map(roygButtonApi),
       clearLCD: () => { [27, 26, 25, 24].forEach(row => { sendSysex([row, 0, 69, 0, ...new Array(68).fill(32)]) }) },
       gridRow: y => zeroToSeven.map(x => x + (y * 8)).map(index => pads[index]).map(padApi),
       gridCol: x => zeroToSeven.map(y => x + (y * 8)).map(index => pads[index]).map(padApi),
-      gridSelectButtons: () => gridSelectButtons.map(button => compose(button, rgbButton(sendCC(button.id), rgbSysex(button.id - 38)), pressable, releaseable)),
+      gridSelectButtons: () => gridSelectButtons.map(rgbButtonApi),
       lcdSegmentsCol: x => zeroToSeven.map(y => lcdSegment(lcdSegmentSysex, x, y)),
       lcdSegmentsRow: y => zeroToSeven.map(x => lcdSegment(lcdSegmentSysex, x, y)),
       midiFromHardware: dispatchIncomingMidi,
       onMidiToHardware: listener => { midiOutCallBacks.push(listener); return () => { midiOutCallBacks = midiOutCallBacks.filter(cb => cb !== listener) } },
-      timeDivisionButtons: name => api.timeDivisionButtons[name],
+      timeDivisionButtons: name => roygButtonApi(timeDivisionButtons.filter(button => button.name === name)[0]),
       masterKnob: () => knobApi(masterKnob),
       swingKnob: () => knobApi(swingKnob),
       tempoKnob: () => knobApi(tempoKnob),
