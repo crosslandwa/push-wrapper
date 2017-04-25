@@ -89,7 +89,7 @@ module.exports = {
     let midiOutCallBacks = []
     const midiOut = bytes => { midiOutCallBacks.forEach(callback => callback(bytes)) }
     const sendCC = ({cc}) => value => { midiOut([176, cc, value]) }
-    const sendMidiNote = note => value => { midiOut([144, note, value]) }
+    const sendMidiNote = ({note}) => value => { midiOut([144, note, value]) }
     const sendSysex = data => { midiOut([240, 71, 127, 21, ...data, 247]) }
     const lcdSegmentSysex = (x, y, data) => sendSysex([27 - y, 0, 9, lcdOffsets[x], ...eigthCharLcdData(data)])
     const rgbSysex = index => (r, g, b) => {
@@ -107,7 +107,7 @@ module.exports = {
     const rgbButtonApi = button => compose(button, rgbButton(sendCC(button), rgbSysex(button.cc - 38)), pressable, releaseable)
 
     const pads = Array(64).fill(36).map((x, i) => x + i).map(note => ({ note, press: listenable(), release: listenable(), aftertouch: listenable() }))
-    const padApi = pad => compose(pad, rgbButton(sendMidiNote(pad.note), rgbSysex(pad.note - 36)), aftertouchable, pressable, releaseable)
+    const padApi = pad => compose(pad, rgbButton(sendMidiNote(pad), rgbSysex(pad.note - 36)), aftertouchable, pressable, releaseable)
 
     const channelKnobs = zeroToSeven.map(x => ({ cc: 71 + x, note: x, press: listenable(), release: listenable(), turn: listenable() }))
     const masterKnob = { cc: 79, note: 8, press: listenable(), release: listenable(), turn: listenable() }
