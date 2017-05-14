@@ -62,7 +62,7 @@ pad.onAftertouch(pressure => { /* aftertouch actions. pressure = 0 -> 127 */ })
 
 
 //-----ROW OF BUTTONS ABOVE GRID-----
-push.gridSelectButton() // returns array (row) of buttons
+push.gridSelectButtons() // returns array (row) of buttons
 
 let gridSelectButton = push.gridSelectButtons()[X]
 gridSelectButton.ledOn(value = 100) // turn on LED, value = 1 -> 127, giving various colours, defaults to 100 (orange)
