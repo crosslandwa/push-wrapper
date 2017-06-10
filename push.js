@@ -58,7 +58,7 @@ const roygLed = send => ({
 })
 
 function eigthCharLcdData (input) {
-  let chars = input.split('').slice(0, 8).map(x => x.charCodeAt(0))
+  let chars = String(input).split('').slice(0, 8).map(x => x.charCodeAt(0))
   while (chars.length < 8) chars.push(32)
   return chars
 }

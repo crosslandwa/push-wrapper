@@ -234,5 +234,10 @@ describe('Ableton Push wrapper', () => {
       call: () => lcdSegmentsCol(3)[1].display('few'),
       expect: [240, 71, 127, 21, 26, 0, 9/* length */, 26/* offset */, ...toBytes('few     '), 247]
     }))
+
+    it('segments can display numbers, padding to 8 chars', testSendsMidi({
+      call: () => lcdSegmentsCol(3)[1].display(1),
+      expect: [240, 71, 127, 21, 26, 0, 9/* length */, 26/* offset */, ...toBytes('1       '), 247]
+    }))
   })
 })
