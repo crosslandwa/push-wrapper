@@ -18,8 +18,8 @@ If you want to modify the wrapper, install its dependencies and run its test sui
 # API
 
 push-wrapper presents each element of the Push hardware such that a you can:
-- subscribe listeners that are called in response to user interaction with the hardware (e.g. `push.swingKnob().onTurned(myCallback)`)
-- provide feedback on the hardware by controlling button/pad LEDs and the LCD screen (e.g. `push.button['TapTempo'].ledOn()`)
+- subscribe listeners that are called in response to user interaction with the hardware e.g. `push.swingKnob().onTurned(myCallback)`
+- provide feedback on the hardware by controlling button/pad LEDs and the LCD screen e.g. `push.button('TapTempo').ledOn()`
 
 [Read the full API here](https://github.com/crosslandwa/push-wrapper/blob/master/API.md)
 
