@@ -2,7 +2,7 @@ const pushWrapper = require('../push')
 
 describe('Ableton Push wrapper', () => {
   let sentBytes = []
-  let button, channelKnobs, channelSelectButtons, clearLCD,
+  let button, channel, channelKnobs, channelSelectButtons, clearLCD,
     gridRow, gridCol, gridSelectButtons, lcdSegmentsCol, lcdSegmentsRow,
     midiFromHardware, timeDivisionButtons, masterKnob, swingKnob, tempoKnob, touchstrip
 
@@ -15,12 +15,22 @@ describe('Ableton Push wrapper', () => {
 
   beforeEach(() => {
     const push = pushWrapper.push();
-    ({ button, channelKnobs, channelSelectButtons, clearLCD, gridRow, gridCol,
+    ({ button, channel, channelKnobs, channelSelectButtons, clearLCD, gridRow, gridCol,
       gridSelectButtons, lcdSegmentsCol, lcdSegmentsRow, midiFromHardware,
       timeDivisionButtons, masterKnob, swingKnob, tempoKnob, touchstrip
     } = push)
     push.onMidiToHardware(bytes => { sentBytes = sentBytes.concat(bytes) })
     sentBytes = []
+  })
+
+  describe('channel', () => {
+    it('can have listeners subscribed that are passed pressure for channel aftertouch', (done) => {
+      channel().onAftertouch(pressure => {
+        expect(pressure).toEqual(100)
+        done()
+      })
+      midiFromHardware([208, 100]) // MIDI channel pressure
+    })
   })
 
   describe('grid pads', () => {
