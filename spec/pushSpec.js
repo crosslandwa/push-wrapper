@@ -3,7 +3,7 @@ const pushWrapper = require('../push')
 describe('Ableton Push wrapper', () => {
   let sentBytes = []
   let button, channelKnobs, channelSelectButtons, clearLCD,
-    gridRow, gridCol, gridSelectButtons, lcdSegmentsCol, lcdSegmentsRow,
+    gridRow, gridCol, gridSelectButtons, lcdSegmentsCol, lcdSegmentsCol17, lcdSegmentsRow, lcdSegmentsRow17,
     midiFromHardware, timeDivisionButtons, masterKnob, swingKnob, tempoKnob, touchstrip
 
   const midiCC = (cc, value) => [176, cc, value]
@@ -16,7 +16,7 @@ describe('Ableton Push wrapper', () => {
   beforeEach(() => {
     const push = pushWrapper.push();
     ({ button, channelKnobs, channelSelectButtons, clearLCD, gridRow, gridCol,
-      gridSelectButtons, lcdSegmentsCol, lcdSegmentsRow, midiFromHardware,
+      gridSelectButtons, lcdSegmentsCol, lcdSegmentsCol17, lcdSegmentsRow, lcdSegmentsRow17, midiFromHardware,
       timeDivisionButtons, masterKnob, swingKnob, tempoKnob, touchstrip
     } = push)
     push.onMidiToHardware(bytes => { sentBytes = sentBytes.concat(bytes) })
@@ -238,6 +238,42 @@ describe('Ableton Push wrapper', () => {
     it('segments can display numbers, padding to 8 chars', testSendsMidi({
       call: () => lcdSegmentsCol(3)[1].display(1),
       expect: [240, 71, 127, 21, 26, 0, 9/* length */, 26/* offset */, ...toBytes('1       '), 247]
+    }))
+  })
+
+  describe('LCD17', () => {
+    const blankSegment = [32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32]
+    const blankLine = [...blankSegment, ...blankSegment, ...blankSegment, ...blankSegment]
+    const toBytes = text => text.split('').map(letter => letter.charCodeAt(0))
+
+    it('can be cleared in one go', testSendsMidi({
+      call: () => clearLCD(),
+      expect: [
+        240, 71, 127, 21, 27, 0, 69/* length */, 0/* offset */, ...blankLine, 247,
+        240, 71, 127, 21, 26, 0, 69/* length */, 0/* offset */, ...blankLine, 247,
+        240, 71, 127, 21, 25, 0, 69/* length */, 0/* offset */, ...blankLine, 247,
+        240, 71, 127, 21, 24, 0, 69/* length */, 0/* offset */, ...blankLine, 247
+      ]
+    }))
+
+    it('segments can cleared individually', testSendsMidi({
+      call: () => lcdSegmentsRow17(3)[3].clear(),
+      expect: [240, 71, 127, 21, 24, 0, 18/* length */, 51/* offset */, ...blankSegment, 247]
+    }))
+
+    it('segments can display text, truncating to 17 chars', testSendsMidi({
+      call: () => lcdSegmentsRow17(0)[0].display('more-than-seventeen'),
+      expect: [240, 71, 127, 21, 27, 0, 18/* length */, 0/* offset */, ...toBytes('more-than-sevente'), 247]
+    }))
+
+    it('segments can display text, padding to 17 chars', testSendsMidi({
+      call: () => lcdSegmentsCol17(2)[1].display('few'),
+      expect: [240, 71, 127, 21, 26, 0, 18/* length */, 34/* offset */, ...toBytes('few              '), 247]
+    }))
+
+    it('segments can display numbers, padding to 17 chars', testSendsMidi({
+      call: () => lcdSegmentsCol17(2)[1].display(1),
+      expect: [240, 71, 127, 21, 26, 0, 18/* length */, 34/* offset */, ...toBytes('1                '), 247]
     }))
   })
 })
