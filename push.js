@@ -161,6 +161,8 @@ module.exports = {
       onMidiToHardware: listener => { midiOutCallBacks.push(listener); return () => { midiOutCallBacks = midiOutCallBacks.filter(cb => cb !== listener) } },
       timeDivisionButtons: name => roygButtonApi(timeDivisionButtons.filter(button => button.name === name)[0]),
       masterKnob: () => knobApi(masterKnob),
+      setUserMode: () => sendSysex([98,0,1,1]),
+      setLiveMode: () => sendSysex([98,0,1,0]),
       swingKnob: () => knobApi(swingKnob),
       tempoKnob: () => knobApi(tempoKnob),
       touchstrip: () => compose(touchstrip, pressable, releaseable, pitchbendable)
