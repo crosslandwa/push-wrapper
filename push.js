@@ -16,6 +16,9 @@ const dispatchIncomingMidi = dispatchMap => ([one, two, ...rest]) => {
     case (160): // POLY PRESSURE (AFTERTOUCH)
       dispatchMap[messageType][two](...rest)
       break
+    case (208): // CHANNEL PRESSURE (AFTERTOUCH)
+      dispatchMap[messageType](two)
+      break
     case (224): // PITCHBEND
       const fourteenBitValue = (rest[0] << 7) + two
       if (fourteenBitValue !== 8192) dispatchMap[messageType](fourteenBitValue)
@@ -99,6 +102,7 @@ module.exports = {
     }
 
     const buttons = Object.keys(buttonToCC).map(name => ({ cc: buttonToCC[name], name, press: listenable(), release: listenable() }))
+    const channel = { aftertouch: listenable() }
     const channelSelectButtons = zeroToSeven.map(x => ({ cc: 20 + x, press: listenable(), release: listenable() }))
     const gridSelectButtons = zeroToSeven.map(x => ({ cc: 102 + x, press: listenable(), release: listenable() }))
     const timeDivisionButtons = Object.keys(timeDivisionButtonToCC).map(name => ({ cc: timeDivisionButtonToCC[name], name, press: listenable(), release: listenable() }))
@@ -135,6 +139,8 @@ module.exports = {
       ),
       // POLY PRESSURE
       160: pads.reduce((acc, pad) => { acc[pad.note] = pad.aftertouch.dispatch; return acc }, {}),
+      // CHANNEL PRESSURE
+      208: channel.aftertouch.dispatch,
       // MIDI CC
       176: Object.assign({},
         [...buttons, ...channelSelectButtons, ...gridSelectButtons, ...timeDivisionButtons]
@@ -149,6 +155,7 @@ module.exports = {
 
     return {
       button: name => dimButtonApi(buttons.filter(button => button.name === name)[0]),
+      channel: () => compose(channel, aftertouchable),
       channelKnobs: () => channelKnobs.map(knobApi),
       channelSelectButtons: () => channelSelectButtons.map(roygButtonApi),
       clearLCD: () => { [27, 26, 25, 24].forEach(row => { sendSysex([row, 0, 69, 0, ...new Array(68).fill(32)]) }) },
