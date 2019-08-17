@@ -3,6 +3,7 @@
 const { timeDivisionButtonToCC, buttonToCC } = require('./src/buttonMap')
 const zeroToSeven = [0, 1, 2, 3, 4, 5, 6, 7]
 const lcdOffsets = [0, 9, 17, 26, 34, 43, 51, 60]
+const lcdOffsets17 = [0, 17, 34, 51]
 const compose = (elem, ...parts) => Object.assign({}, ...parts.map(part => (typeof part === 'function') ? part(elem) : part))
 
 const dispatchIncomingMidi = dispatchMap => ([one, two, ...rest]) => {
@@ -63,6 +64,12 @@ function eigthCharLcdData (input) {
   return chars
 }
 
+function seventeenCharLcdData (input) {
+  let chars = String(input).split('').slice(0, 17).map(x => x.charCodeAt(0))
+  while (chars.length < 17) chars.push(32)
+  return chars
+}
+
 const lcdSegment = (send, x, y) => ({
   clear: () => send(x, y, ''),
   display: (text = '') => send(x, y, text)
@@ -92,6 +99,7 @@ module.exports = {
     const sendMidiNote = ({note}) => value => { midiOut([144, note, value]) }
     const sendSysex = data => { midiOut([240, 71, 127, 21, ...data, 247]) }
     const lcdSegmentSysex = (x, y, data) => sendSysex([27 - y, 0, 9, lcdOffsets[x], ...eigthCharLcdData(data)])
+    const lcdSegmentSysex17 = (x, y, data) => sendSysex([27 - y, 0, 18, lcdOffsets17[x], ...seventeenCharLcdData(data)])
     const rgbSysex = index => (r, g, b) => {
       const msb = [r, g, b].map(x => (x & 240) >> 4)
       const lsb = [r, g, b].map(x => x & 15)
@@ -157,6 +165,8 @@ module.exports = {
       gridSelectButtons: () => gridSelectButtons.map(rgbButtonApi),
       lcdSegmentsCol: x => zeroToSeven.map(y => lcdSegment(lcdSegmentSysex, x, y)),
       lcdSegmentsRow: y => zeroToSeven.map(x => lcdSegment(lcdSegmentSysex, x, y)),
+      lcdSegmentsCol17: x => zeroToSeven.map(y => lcdSegment(lcdSegmentSysex17, x, y)),
+      lcdSegmentsRow17: y => zeroToSeven.map(x => lcdSegment(lcdSegmentSysex17, x, y)),
       midiFromHardware: dispatchIncomingMidi(dispatchers),
       onMidiToHardware: listener => { midiOutCallBacks.push(listener); return () => { midiOutCallBacks = midiOutCallBacks.filter(cb => cb !== listener) } },
       timeDivisionButtons: name => roygButtonApi(timeDivisionButtons.filter(button => button.name === name)[0]),
