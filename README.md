@@ -2,13 +2,14 @@
 
 ## What?
 
-A javascript wrapper enabling use of the [Ableton Push](https://www.ableton.com/en/push/) (mk1) hardware as a MIDI controller in a Web MIDI/Audio API enabled web browser - I created a simple [example application](https://chippanfire.com/push-wrapper.html) ([source code](https://github.com/crosslandwa/push-wrapper-example-site)) to demonstrate this.
+A javascript wrapper enabling use of the [Ableton Push](https://www.ableton.com/en/push/) (mk1) hardware as a MIDI controller in a Web MIDI/Audio API enabled environment
 
 The wrapper presents a simple [API](./API.md) that abstracts the generation and parsing of MIDI messages sent to/from the hardware.
 
-push-wrapper is written as a [requirejs](http://requirejs.org/) compatible module, and is distributed via [npm](https://www.npmjs.com/package/push-wrapper). The code is written using javascript [ES2015/ES6](http://es6-features.org/) so expects native Promises and other newer language features to be available.
+push-wrapper is written as a **CommonJS** module, and is distributed via [npm](https://www.npmjs.com/package/push-wrapper) - you'll need to transpile the code (e.g. using Babel) to use it in your browser application
+- The code is written using javascript [ES2015/ES6](http://es6-features.org/) so expects native Promises and other newer language features to be available.
 
-###Modification & Running tests
+### Modification & Running tests
 
 If you want to modify the wrapper, install its dependencies and run its test suite by:
 
