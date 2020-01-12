@@ -21,8 +21,7 @@
   },
   "scripts": {
     "lint": "eslint *.js **/*.js",
-    "test": "jasmine",
-    "start": "node app.js"
+    "test": "jasmine"
   },
   "author": "https://github.com/crosslandwa",
   "license": "MIT"
