@@ -1,7 +1,7 @@
 {
   "name": "push-wrapper",
   "version": "2.1.3",
-  "main": "push.js",
+  "main": "dist/push-wrapper.js",
   "description": "A wrapper for the Ableton Push to give easy to use APIs for controlling/being controlled by the Push",
   "keywords": [
     "ableton",
@@ -9,17 +9,23 @@
     "MIDI",
     "webmidi api"
   ],
-  "dependencies": {},
   "devDependencies": {
+    "@rollup/plugin-commonjs": "^11.0.2",
     "eslint": "^6.8.0",
     "eslint-config-standard": "^5.3.1",
     "eslint-plugin-jasmine": "^1.8.1",
     "eslint-plugin-promise": "^1.3.2",
     "eslint-plugin-standard": "^1.3.2",
-    "jasmine": "^3.5.0"
+    "jasmine": "^3.5.0",
+    "rollup": "^1.31.0"
   },
+  "files": [
+    "dist/*"
+  ],
   "scripts": {
-    "lint": "eslint *.js **/*.js",
+    "build": "npm run prepare",
+    "lint": "eslint *.js src/*.js spec/*.js",
+    "prepare": "rollup --config",
     "test": "jasmine"
   },
   "author": "https://github.com/crosslandwa",
