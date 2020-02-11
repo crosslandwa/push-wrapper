@@ -1,11 +1,24 @@
 import commonjs from '@rollup/plugin-commonjs'
 
-export default {
-  input: 'push.js',
-  output: {
-    file: 'dist/push-wrapper.js',
-    format: 'umd',
-    name: 'pushWrapper'
+const input = 'push.js'
+const plugins = [commonjs()]
+
+export default [
+  {
+    input,
+    output: {
+      file: 'dist/umd/push-wrapper.js',
+      format: 'umd',
+      name: 'pushWrapper'
+    },
+    plugins
   },
-  plugins: [commonjs()]
-}
+  {
+    input,
+    output: {
+      file: 'dist/esm/push-wrapper.js',
+      format: 'esm'
+    },
+    plugins
+  }
+]
