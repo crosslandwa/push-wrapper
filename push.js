@@ -68,7 +68,7 @@ const lcdSegment = (send, x, y) => ({
   display: (text = '') => send(x, y, text)
 })
 
-function webMidiIO (inputPortName = 'Ableton Push User Port', outputPortName = 'Ableton Push User Port') {
+function webMIDIio (inputPortName = 'Ableton Push User Port', outputPortName = 'Ableton Push User Port') {
   if (navigator && navigator.requestMIDIAccess) {
     return navigator.requestMIDIAccess({ sysex: true }).then(midiAccess => {
       const portWithName = name => port => port.name === name
@@ -84,7 +84,7 @@ function webMidiIO (inputPortName = 'Ableton Push User Port', outputPortName = '
 }
 
 module.exports = {
-  webMIDIio: webMidiIO,
+  webMIDIio,
   push: () => {
     let midiOutCallBacks = []
     const midiOut = bytes => { midiOutCallBacks.forEach(callback => callback(bytes)) }

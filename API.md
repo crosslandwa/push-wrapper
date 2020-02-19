@@ -52,7 +52,7 @@ navigator.requestMIDIAccess({ sysex: true }).then((midiAccess) => {
 The library exposes a convenience method that will provide handles to named input/output ports
 
 ```javascript
-pushWrapper.webMidiIO() // By default looks for ports named "Ableton Push User Port"
+pushWrapper.webMIDIio() // By default looks for ports named "Ableton Push User Port"
   .then(
     ({inputPort, outputPort}) => {
       const push = pushWrapper.push()
@@ -67,7 +67,7 @@ pushWrapper.webMidiIO() // By default looks for ports named "Ableton Push User P
 
 You can supply values for the port names if the default values ("Ableton Push User Port") are not be used on your system
 ```javascript
-pushWrapper.webMidiIO('USB MIDI Device Port 2', 'USB MIDI Device Port 2').then(({ inputPort, outputPort }) => { /* ... */ })
+pushWrapper.webMIDIio('USB MIDI Device Port 2', 'USB MIDI Device Port 2').then(({ inputPort, outputPort }) => { /* ... */ })
 ```
 
 ## Hardware interactions
