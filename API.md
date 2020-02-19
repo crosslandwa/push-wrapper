@@ -12,26 +12,6 @@ To send feedback from your application to the hardware the system looks like:
 Application code ----> (function calls) push-wrapper library --(MIDI)--> Push hardware
 ```
 
-## Quick Start
-Can't wait to get going? The following snippet will instantiate a push instance bound to web MIDI inputs/outputs if:
-- your browser supports the Web MIDI API
-- your browser can find MIDI IO ports called *"Ableton Push User Port"*
-
-```javascript
-const pushWrapper = require('push-wrapper')
-pushWrapper.webMIDIio()
-  .catch(err => { console.error(err); return { inputPort: {}, outputPort: { send: () => {} } } })
-  .then(({inputPort, outputPort}) => {
-    const push = pushWrapper.push()
-    inputPort.onmidimessage = event => push.midiFromHardware(event.data)
-    push.onMidiToHardware(outputPort.send.bind(outputPort))
-    return push
-  })
-  .then(push => { /* do stuff with push */ })
-```
-
-_This convenience method works nicely on OS X, but on Windows the Push likely reports itself as "USB AudioDevice 1" or similar (MIDI devices did last time I checked in) - you may have to roll your own binding if using this under Windows. See the **Web MIDI API integration** section for more._
-
 ## Setup and IO
 
 ### Instantiation
@@ -57,12 +37,37 @@ If you are using the Web MIDI API you can bind a MIDI input/output ports to the 
 
 ```javascript
 navigator.requestMIDIAccess({ sysex: true }).then((midiAccess) => {
-  const input = midiAccess.inputs.values()[0].value
-  const output = midiAccess.outputs.values()[0].value
   const push = pushWrapper.push()
+
+  // bind to first available MIDI output
+  const output = midiAccess.outputs.values()[0].value
   push.onMidiToHardware(output.send.bind(output))
+
+  // bind to first available MIDI input
+  const input = midiAccess.inputs.values()[0].value
   input.onmidimessage = event => push.midiFromHardware(event.data)
 })
+```
+
+The library exposes a convenience method that will provide handles to named input/output ports
+
+```javascript
+pushWrapper.webMidiIO() // By default looks for ports named "Ableton Push User Port"
+  .then(
+    ({inputPort, outputPort}) => {
+      const push = pushWrapper.push()
+      inputPort.onmidimessage = event => push.midiFromHardware(event.data)
+      push.onMidiToHardware(outputPort.send.bind(outputPort))
+      return push
+    },
+    err => { console.error(err); return pushWrapper.push() } // Ports not found or Web MIDI API not supported
+  )
+  .then(push => { /* do stuff with push */ })
+```
+
+You can supply values for the port names if the default values ("Ableton Push User Port") are not be used on your system
+```javascript
+pushWrapper.webMidiIO('USB MIDI Device Port 2', 'USB MIDI Device Port 2').then(({ inputPort, outputPort }) => { /* ... */ })
 ```
 
 ## Hardware interactions

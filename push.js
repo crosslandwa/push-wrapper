@@ -68,19 +68,19 @@ const lcdSegment = (send, x, y) => ({
   display: (text = '') => send(x, y, text)
 })
 
-function webMidiIO () {
+function webMidiIO (inputPortName = 'Ableton Push User Port', outputPortName = 'Ableton Push User Port') {
   if (navigator && navigator.requestMIDIAccess) {
     return navigator.requestMIDIAccess({ sysex: true }).then(midiAccess => {
-      const userPort = ports => ports.filter(port => port.name === 'Ableton Push User Port')[0] || undefined
-      const input = userPort(Array.from(midiAccess.inputs.values()))
-      const output = userPort(Array.from(midiAccess.outputs.values()))
+      const portWithName = name => port => port.name === name
+      const inputPort = [...midiAccess.inputs.values()].find(portWithName(inputPortName))
+      const outputPort = [...midiAccess.outputs.values()].find(portWithName(outputPortName))
 
-      return (input && output)
-        ? Promise.resolve({ inputPort: input, outputPort: output })
-        : Promise.reject('No default MIDI IO ports found with name "Ableton Push User Port"')
+      return (inputPort && outputPort)
+        ? Promise.resolve({ inputPort, outputPort })
+        : Promise.reject(new Error(`No MIDI IO ports found with names "${inputPortName}"/"${outputPortName}"`))
     })
   }
-  return Promise.reject('Web MIDI API not supported by this browser!')
+  return Promise.reject(new Error('Web MIDI API not supported by this browser!'))
 }
 
 module.exports = {
