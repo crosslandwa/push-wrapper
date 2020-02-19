@@ -1,6 +1,6 @@
 {
   "name": "push-wrapper",
-  "version": "2.3.0",
+  "version": "2.3.1",
   "main": "dist/umd/push-wrapper.js",
   "module": "dist/esm/push-wrapper.js",
   "description": "A wrapper for the Ableton Push to give easy to use APIs for controlling/being controlled by the Push",
